@@ -686,3 +686,27 @@ void clGrowthOrg::DoTreeDataMemberRegistrations( clSimManager * p_oSimManager, c
     throw( stcErr );
   }
 }
+
+//////////////////////////////////////////////////////////////////////////////
+// GetGrowthCode()
+//////////////////////////////////////////////////////////////////////////////
+short int clGrowthOrg::GetGrowthCode(short int iSp, short int iTp)
+   {if (iSp < 0 || iSp >= m_iTotalSpecies) {
+     modelErr stcErr;
+     stcErr.iErrorCode = BAD_DATA;
+     stcErr.sFunction = "clGrowthOrg::GetGrowthCode";
+     std::stringstream s;
+     s << "Invalid species " << iSp << ".";
+     stcErr.sMoreInfo = s.str();
+     throw( stcErr );
+   }
+   if (iTp < 0 || iTp >= m_iTotalTypes) {
+     modelErr stcErr;
+     stcErr.iErrorCode = BAD_DATA;
+     stcErr.sFunction = "clGrowthOrg::GetGrowthCode";
+     std::stringstream s;
+     s << "Invalid type " << iTp << ".";
+     throw( stcErr );
+   }
+   return mp_iGrowthCodes[iSp][iTp];
+ }

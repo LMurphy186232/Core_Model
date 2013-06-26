@@ -180,9 +180,7 @@ class clGrowthOrg {
   * @param iTp The tree type for which to get the code.
   * @return The "Growth" data member code for the specified species and type.
   */
- short int GetGrowthCode(short int iSp, short int iTp)
-   {return mp_iGrowthCodes[iSp][iTp];};
-
+ short int GetGrowthCode(short int iSp, short int iTp);
 
   /**
   * Gets the code for the diameter data member to which growth will be applied.
