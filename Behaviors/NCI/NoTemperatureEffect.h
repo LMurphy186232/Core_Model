@@ -30,7 +30,6 @@ public:
    * @param p_oPop Tree population.
    * @param p_oNCI NCI behavior object.
    * @param p_oElement Root element of the behavior.
-   * @throws ModelException if Storm Effect parameters are not between 0 and 1.
    */
   void DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement){};
 };

@@ -38,6 +38,7 @@ clPlot::clPlot(clSimManager * p_oSimManager) : clWorkerBase(p_oSimManager)
 
     m_fMeanAnnualPrecipMm = 0;
     m_fMeanTempC = 0;
+    m_fNDep = 0;
     m_fMaxX = 0;
     m_fMaxY = 0;
 
@@ -103,6 +104,8 @@ void clPlot::GetData(DOMDocument * p_oDoc)
     FillSingleValue(p_oElement, "plot_precip_mm_yr", & m_fMeanAnnualPrecipMm, true);
     //plot mean annual temp, C
     FillSingleValue(p_oElement, "plot_temp_C", & m_fMeanTempC, true);
+    //plot annual N deposition, not required
+    FillSingleValue(p_oElement, "plot_n_dep", & m_fNDep, false);
     //plot title - not required
     sTag = XMLString::transcode("plot_title");
     p_oNodeList = p_oElement->getElementsByTagName(sTag);

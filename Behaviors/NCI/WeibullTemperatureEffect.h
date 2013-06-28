@@ -8,7 +8,7 @@
  * is:
  * <br>
  * @htmlonly
-   Temperature Effect <- exp(-0.5*(abs(temp - C)/A)<sup>B</sup>)
+   Temperature Effect = exp(-0.5*(abs(temp - C)/A)<sup>B</sup>)
    @endhtmlonly
  * where:
  * <ul>

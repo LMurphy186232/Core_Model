@@ -15,6 +15,7 @@ class clNCITermBase;
 class clCrowdingEffectBase;
 class clPrecipitationEffectBase;
 class clTemperatureEffectBase;
+class clNitrogenEffectBase;
 
 /**
 * NCI growth - Version 3.0
@@ -109,6 +110,14 @@ class clNCIMasterGrowth : virtual public clGrowthBase {
   };
 
   /**
+   * Flag values for which nitrogen effect term is desired.
+   */
+    enum nitrogen_effect {
+      no_nitrogen_effect, /**<No N effect (class clNoNitrogenEffect) */
+      gauss_nitrogen_effect /**<Gaussian nitrogen effect (class clGaussianNitrogenEffect)*/
+    };
+
+  /**
   * Constructor.
   * @param p_oSimManager Sim Manager object.
   */
@@ -190,6 +199,7 @@ class clNCIMasterGrowth : virtual public clGrowthBase {
   clNCITermBase *mp_oNCITerm;
   clPrecipitationEffectBase *mp_oPrecipEffect;
   clTemperatureEffectBase *mp_oTempEffect;
+  clNitrogenEffectBase *mp_oNEffect;
 
   /**Search query for behavior trees.*/
   std::string m_sQuery;

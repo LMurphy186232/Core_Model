@@ -29,6 +29,7 @@
 * <br>Edit history:
 * <br>-----------------
 * <br>October 20, 2011 - Wiped the slate clean for SORTIE 7.0 (LEM)
+* <br>June 27, 2013 - Added N deposition value (LEM)
 */
 class clPlot : virtual public clWorkerBase {
 
@@ -108,6 +109,19 @@ class clPlot : virtual public clWorkerBase {
    */
   void SetMeanAnnualTemp(float fMeanTemp)
     {m_fMeanTempC = fMeanTemp;};
+
+  /**
+   * Gets the annual N deposition.
+   * @return Annual N deposition.
+   */
+  float GetNDeposition() {return m_fNDep;};
+
+  /**
+   * Sets the annual N deposition.
+   * @param Annual N deposition.
+   */
+  void SetNDeposition(float fNDep)
+  {m_fNDep = fNDep;};
 
  /**
   * Gets the plot title.
@@ -323,6 +337,9 @@ class clPlot : virtual public clWorkerBase {
 
   /**Mean annual temperature, degrees Celsius.*/
   float m_fMeanTempC;
+
+  /**Annual N deposition.*/
+  float m_fNDep;
 
   /**Tangent of each azimuth angle.  Array size is 360 (degrees).*/
   float *mp_fAziTans;

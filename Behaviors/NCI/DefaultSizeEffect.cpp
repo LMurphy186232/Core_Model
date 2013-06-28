@@ -9,7 +9,6 @@
 #include "TreePopulation.h"
 #include "BehaviorBase.h"
 #include "ParsingFunctions.h"
-#include <stddef.h>
 #include <math.h>
 
 //////////////////////////////////////////////////////////////////////////////

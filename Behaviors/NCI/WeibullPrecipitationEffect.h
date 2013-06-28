@@ -10,7 +10,7 @@ class clPlot;
  * is:
  * <br>
  * @htmlonly
-   Precipitation Effect <- exp(-0.5*(abs(ppt - C)/A)<sup>B</sup>)
+   Precipitation Effect = exp(-0.5*(abs(ppt - C)/A)<sup>B</sup>)
    @endhtmlonly
  * where:
  * <ul>

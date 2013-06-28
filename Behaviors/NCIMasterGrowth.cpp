@@ -25,6 +25,8 @@
 #include "NCI/NoPrecipitationEffect.h"
 #include "NCI/WeibullPrecipitationEffect.h"
 #include "NCI/SizeEffectLowerBounded.h"
+#include "NCI/NoNitrogenEffect.h"
+#include "NCI/GaussianNitrogenEffect.h"
 
 #include <stdio.h>
 #include <sstream>
@@ -53,6 +55,7 @@ clNCIMasterGrowth::clNCIMasterGrowth(clSimManager * p_oSimManager) :
     mp_oSizeEffect = NULL;
     mp_oPrecipEffect = NULL;
     mp_oTempEffect = NULL;
+    mp_oNEffect = NULL;
 
     m_iNumTotalSpecies = 0;
 
@@ -222,6 +225,20 @@ void clNCIMasterGrowth::ReadParameterFile(xercesc::DOMDocument * p_oDoc) {
     throw(err);
   }
 
+  //Which nitrogen effect term?
+  FillSingleValue(p_oElement, "gr_nciWhichNitrogenEffect", &iVal, true);
+  if (iVal == no_nitrogen_effect) {
+    mp_oNEffect = new clNoNitrogenEffect();
+  } else if (iVal == gauss_nitrogen_effect) {
+    mp_oNEffect = new clGaussianNitrogenEffect();
+  } else {
+    modelErr err;
+    err.sFunction = "clNciGrowth::ReadParameterFile";
+    err.iErrorCode = BAD_DATA;
+    err.sMoreInfo = "Unrecognized nitrogen effect term.";
+    throw(err);
+  }
+
   mp_oCrowdingEffect->DoSetup(p_oPop, this, p_oElement);
   mp_oDamageEffect->DoSetup(p_oPop, this, p_oElement);
   mp_oNCITerm->DoSetup(p_oPop, this, p_oElement);
@@ -229,6 +246,7 @@ void clNCIMasterGrowth::ReadParameterFile(xercesc::DOMDocument * p_oDoc) {
   mp_oSizeEffect->DoSetup(p_oPop, this, p_oElement);
   mp_oPrecipEffect->DoSetup(p_oPop, this, p_oElement);
   mp_oTempEffect->DoSetup(p_oPop, this, p_oElement);
+  mp_oNEffect->DoSetup(p_oPop, this, p_oElement);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -392,7 +410,8 @@ float clNCIMasterGrowth::CalcDiameterGrowthValue(clTree * p_oTree,
 ////////////////////////////////////////////////////////////////////////////
 void clNCIMasterGrowth::PreGrowthCalcs(clTreePopulation * p_oPop) {
   float *p_fTempEffect,
-        *p_fPrecipEffect;
+        *p_fPrecipEffect,
+        *p_fNEffect;
   try
   {
 #ifdef NCI_WRITER
@@ -423,10 +442,12 @@ void clNCIMasterGrowth::PreGrowthCalcs(clTreePopulation * p_oPop) {
 
     p_fPrecipEffect = new float[p_oPop->GetNumberOfSpecies()];
     p_fTempEffect = new float[p_oPop->GetNumberOfSpecies()];
-    //Calculate precipitation and temperature effect for all species
+    p_fNEffect = new float[p_oPop->GetNumberOfSpecies()];
+    //Calculate climate effects for all species
     for (i = 0; i < m_iNumBehaviorSpecies; i++ ) {
       p_fPrecipEffect[mp_iWhatSpecies[i]] = mp_oPrecipEffect->CalculatePrecipitationEffect(p_oPlot, mp_iWhatSpecies[i]);
       p_fTempEffect[mp_iWhatSpecies[i]] = mp_oTempEffect->CalculateTemperatureEffect(p_oPlot, mp_iWhatSpecies[i]);
+      p_fNEffect[mp_iWhatSpecies[i]] = mp_oNEffect->CalculateNitrogenEffect(p_oPlot, mp_iWhatSpecies[i]);
     }
 
     p_oNCITrees = p_oPop->Find( m_sQuery );
@@ -485,7 +506,7 @@ void clNCIMasterGrowth::PreGrowthCalcs(clTreePopulation * p_oPop) {
             //Calculate actual growth in cm/yr
             fTempDiamIncrease = mp_fMaxPotentialValue[iSpecies] * fSizeEffect *
                 fCrowdingEffect * fShadingEffect * fDamageEffect *
-                p_fPrecipEffect[iSpecies] * p_fTempEffect[iSpecies];
+                p_fPrecipEffect[iSpecies] * p_fTempEffect[iSpecies] * p_fNEffect[iSpecies];
 
             //Add it to the running total of diameter increase
             fAmountDiamIncrease += fTempDiamIncrease;
@@ -520,6 +541,7 @@ void clNCIMasterGrowth::PreGrowthCalcs(clTreePopulation * p_oPop) {
 
     delete[] p_fTempEffect;
     delete[] p_fPrecipEffect;
+    delete[] p_fNEffect;
 
 #ifdef NCI_WRITER
     out.close();
@@ -530,12 +552,14 @@ void clNCIMasterGrowth::PreGrowthCalcs(clTreePopulation * p_oPop) {
   {
     delete[] p_fTempEffect;
     delete[] p_fPrecipEffect;
+    delete[] p_fNEffect;
     throw( err );
   }
   catch ( ... )
   {
     delete[] p_fTempEffect;
     delete[] p_fPrecipEffect;
+    delete[] p_fNEffect;
     modelErr stcErr;
     stcErr.iErrorCode = UNKNOWN;
     stcErr.sFunction = "clNciGrowth::PreCalcGrowth" ;
