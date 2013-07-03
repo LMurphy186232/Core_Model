@@ -19,7 +19,6 @@
 #include "NCI/NoNCITerm.h"
 #include "NCI/NoShadingEffect.h"
 #include "NCI/NoSizeEffect.h"
-#include "NCI/ShadingEffectNoExponent.h"
 #include "NCI/NoTemperatureEffect.h"
 #include "NCI/WeibullTemperatureEffect.h"
 #include "NCI/NoPrecipitationEffect.h"
@@ -75,7 +74,7 @@ clNCIMasterGrowth::clNCIMasterGrowth(clSimManager * p_oSimManager) :
   {
     modelErr stcErr;
     stcErr.iErrorCode = UNKNOWN;
-    stcErr.sFunction = "clNciGrowth::clNciGrowth" ;
+    stcErr.sFunction = "clNCIMasterGrowth::clNCIMasterGrowth" ;
     throw( stcErr );
   }
 }
@@ -91,6 +90,15 @@ clNCIMasterGrowth::~clNCIMasterGrowth() {
     delete[] mp_iGrowthCodes;
   }
   delete[] mp_fMaxPotentialValue;
+
+  delete mp_oCrowdingEffect;
+  delete mp_oDamageEffect;
+  delete mp_oNCITerm;
+  delete mp_oShadingEffect;
+  delete mp_oSizeEffect;
+  delete mp_oPrecipEffect;
+  delete mp_oTempEffect;
+  delete mp_oNEffect;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -120,37 +128,35 @@ void clNCIMasterGrowth::ReadParameterFile(xercesc::DOMDocument * p_oDoc) {
   delete[] p_fTempValues;
 
   //Which shading term?
-  FillSingleValue(p_oElement, "gr_nciWhichShadingEffect", &iVal, true);
+  FillSingleValue(p_oElement, "nciWhichShadingEffect", &iVal, true);
   if (iVal == no_shading) {
     mp_oShadingEffect = new clNoShadingEffect();
   } else if (iVal == default_shading) {
     mp_oShadingEffect = new clDefaultShadingEffect();
-  } else if (iVal == shading_no_exponent) {
-    mp_oShadingEffect = new clShadingEffectNoExponent();
   } else {
     modelErr err;
-    err.sFunction = "clNciGrowth::ReadParameterFile";
+    err.sFunction = "clNCIMasterGrowth::ReadParameterFile";
     err.iErrorCode = BAD_DATA;
     err.sMoreInfo = "Unrecognized shading term.";
     throw(err);
   }
 
   //Which crowding term?
-  FillSingleValue(p_oElement, "gr_nciWhichCrowdingEffect", &iVal, true);
+  FillSingleValue(p_oElement, "nciWhichCrowdingEffect", &iVal, true);
   if (iVal == no_crowding_effect) {
     mp_oCrowdingEffect = new clNoCrowdingEffect();
   } else if (iVal == default_crowding_effect) {
     mp_oCrowdingEffect = new clDefaultCrowdingEffect();
   } else {
     modelErr err;
-    err.sFunction = "clNciGrowth::ReadParameterFile";
+    err.sFunction = "clNCIMasterGrowth::ReadParameterFile";
     err.iErrorCode = BAD_DATA;
     err.sMoreInfo = "Unrecognized crowding term.";
     throw(err);
   }
 
   //Which NCI term?
-  FillSingleValue(p_oElement, "gr_nciWhichNCITerm", &iVal, true);
+  FillSingleValue(p_oElement, "nciWhichNCITerm", &iVal, true);
   if (iVal == no_nci_term) {
     mp_oNCITerm = new clNoNCITerm();
   } else if (iVal == default_nci_term) {
@@ -161,14 +167,14 @@ void clNCIMasterGrowth::ReadParameterFile(xercesc::DOMDocument * p_oDoc) {
     mp_oNCITerm = new clNCILargerNeighbors();
   } else {
     modelErr err;
-    err.sFunction = "clNciGrowth::ReadParameterFile";
+    err.sFunction = "clNCIMasterGrowth::ReadParameterFile";
     err.iErrorCode = BAD_DATA;
     err.sMoreInfo = "Unrecognized NCI term.";
     throw(err);
   }
 
   //Which size effect term?
-  FillSingleValue(p_oElement, "gr_nciWhichSizeEffect", &iVal, true);
+  FillSingleValue(p_oElement, "nciWhichSizeEffect", &iVal, true);
   if (iVal == no_size_effect) {
     mp_oSizeEffect = new clNoSizeEffect();
   } else if (iVal == default_size_effect) {
@@ -177,63 +183,63 @@ void clNCIMasterGrowth::ReadParameterFile(xercesc::DOMDocument * p_oDoc) {
     mp_oSizeEffect = new clSizeEffectLowerBounded();
   } else {
     modelErr err;
-    err.sFunction = "clNciGrowth::ReadParameterFile";
+    err.sFunction = "clNCIMasterGrowth::ReadParameterFile";
     err.iErrorCode = BAD_DATA;
     err.sMoreInfo = "Unrecognized size effect term.";
     throw(err);
   }
 
   //Which damage effect term?
-  FillSingleValue(p_oElement, "gr_nciWhichDamageEffect", &iVal, true);
+  FillSingleValue(p_oElement, "nciWhichDamageEffect", &iVal, true);
   if (iVal == no_damage_effect) {
     mp_oDamageEffect = new clNoDamageEffect();
   } else if (iVal == default_damage_effect) {
     mp_oDamageEffect = new clDefaultDamageEffect();
   } else {
     modelErr err;
-    err.sFunction = "clNciGrowth::ReadParameterFile";
+    err.sFunction = "clNCIMasterGrowth::ReadParameterFile";
     err.iErrorCode = BAD_DATA;
     err.sMoreInfo = "Unrecognized damage effect term.";
     throw(err);
   }
 
   //Which precipitation effect term?
-  FillSingleValue(p_oElement, "gr_nciWhichPrecipitationEffect", &iVal, true);
+  FillSingleValue(p_oElement, "nciWhichPrecipitationEffect", &iVal, true);
   if (iVal == no_precip_effect) {
     mp_oPrecipEffect = new clNoPrecipitationEffect();
   } else if (iVal == weibull_precip_effect) {
     mp_oPrecipEffect = new clWeibullPrecipitationEffect();
   } else {
     modelErr err;
-    err.sFunction = "clNciGrowth::ReadParameterFile";
+    err.sFunction = "clNCIMasterGrowth::ReadParameterFile";
     err.iErrorCode = BAD_DATA;
     err.sMoreInfo = "Unrecognized precipitation effect term.";
     throw(err);
   }
 
   //Which temperature effect term?
-  FillSingleValue(p_oElement, "gr_nciWhichTemperatureEffect", &iVal, true);
+  FillSingleValue(p_oElement, "nciWhichTemperatureEffect", &iVal, true);
   if (iVal == no_temp_effect) {
     mp_oTempEffect = new clNoTemperatureEffect();
   } else if (iVal == weibull_temp_effect) {
     mp_oTempEffect = new clWeibullTemperatureEffect();
   } else {
     modelErr err;
-    err.sFunction = "clNciGrowth::ReadParameterFile";
+    err.sFunction = "clNCIMasterGrowth::ReadParameterFile";
     err.iErrorCode = BAD_DATA;
     err.sMoreInfo = "Unrecognized temperature effect term.";
     throw(err);
   }
 
   //Which nitrogen effect term?
-  FillSingleValue(p_oElement, "gr_nciWhichNitrogenEffect", &iVal, true);
+  FillSingleValue(p_oElement, "nciWhichNitrogenEffect", &iVal, true);
   if (iVal == no_nitrogen_effect) {
     mp_oNEffect = new clNoNitrogenEffect();
   } else if (iVal == gauss_nitrogen_effect) {
     mp_oNEffect = new clGaussianNitrogenEffect();
   } else {
     modelErr err;
-    err.sFunction = "clNciGrowth::ReadParameterFile";
+    err.sFunction = "clNCIMasterGrowth::ReadParameterFile";
     err.iErrorCode = BAD_DATA;
     err.sMoreInfo = "Unrecognized nitrogen effect term.";
     throw(err);
@@ -562,7 +568,7 @@ void clNCIMasterGrowth::PreGrowthCalcs(clTreePopulation * p_oPop) {
     delete[] p_fNEffect;
     modelErr stcErr;
     stcErr.iErrorCode = UNKNOWN;
-    stcErr.sFunction = "clNciGrowth::PreCalcGrowth" ;
+    stcErr.sFunction = "clNCIMasterGrowth::PreCalcGrowth" ;
     throw( stcErr );
   }
 }

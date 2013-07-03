@@ -54,22 +54,22 @@ void clWeibullPrecipitationEffect::DoSetup(clTreePopulation *p_oPop, clBehaviorB
   for ( i = 0; i < iNumBehaviorSpecies; i++ ) p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
 
   //Precipitation effect a
-  FillSpeciesSpecificValue( p_oElement, "gr_nciWeibPrecipEffA",
-      "gr_nwpeaVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
+  FillSpeciesSpecificValue( p_oElement, "nciWeibPrecipEffA",
+      "nwpeaVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
     mp_fPrecipA[p_fTempValues[i].code] = p_fTempValues[i].val;
 
   //Precipitation effect b
-  FillSpeciesSpecificValue( p_oElement, "gr_nciWeibPrecipEffB",
-      "gr_nwpebVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
+  FillSpeciesSpecificValue( p_oElement, "nciWeibPrecipEffB",
+      "nwpebVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
     mp_fPrecipB[p_fTempValues[i].code] = p_fTempValues[i].val;
 
   //Precipitation effect c
-  FillSpeciesSpecificValue( p_oElement, "gr_nciWeibPrecipEffC",
-      "gr_nwpecVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
+  FillSpeciesSpecificValue( p_oElement, "nciWeibPrecipEffC",
+      "nwpecVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
     mp_fPrecipC[p_fTempValues[i].code] = p_fTempValues[i].val;

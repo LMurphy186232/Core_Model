@@ -4,7 +4,6 @@
 #define NCIJuvenileGrowthH
 //---------------------------------------------------------------------------
 #include "GrowthBase.h"
-#include "NCIBase.h"
 
 
 class clTree;

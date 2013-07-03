@@ -64,14 +64,14 @@ void clDefaultShadingEffect::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p
   for ( i = 0; i < iNumBehaviorSpecies; i++ ) p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
 
   //Shading coefficient (m)
-  FillSpeciesSpecificValue( p_oElement, "gr_nciShadingCoefficient", "gr_nscVal", p_fTempValues,
+  FillSpeciesSpecificValue( p_oElement, "nciShadingCoefficient", "nscVal", p_fTempValues,
       iNumBehaviorSpecies, p_oPop, true);
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
     mp_fShadingCoefficient[p_fTempValues[i].code] = p_fTempValues[i].val;
 
   //Shading exponent (n)
-  FillSpeciesSpecificValue( p_oElement, "gr_nciShadingExponent", "gr_nseVal", p_fTempValues,
+  FillSpeciesSpecificValue( p_oElement, "nciShadingExponent", "nseVal", p_fTempValues,
       iNumBehaviorSpecies, p_oPop, true);
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )

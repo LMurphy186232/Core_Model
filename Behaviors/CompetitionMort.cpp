@@ -162,7 +162,7 @@ void clCompetitionMort::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
 
     p_oElement = p_oDoc->getDocumentElement();
     //Xb - Size effect variance
-    FillSpeciesSpecificValue( p_oElement, "gr_nciSizeEffectVariance", "gr_nsevVal", p_fTempValues, m_iNumBehaviorSpecies, p_oPop, true );
+    FillSpeciesSpecificValue( p_oElement, "nciSizeEffectXb", "nsexbVal", p_fTempValues, m_iNumBehaviorSpecies, p_oPop, true );
     //Transfer to the appropriate array buckets
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       mp_fXb[mp_iIndexes[p_fTempValues[i].code]] = p_fTempValues[i].val;
@@ -175,7 +175,7 @@ void clCompetitionMort::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
       mp_fMaxPotentialGrowth[mp_iIndexes[p_fTempValues[i].code]] = p_fTempValues[i].val;
 
     //X0 - Size effect mode
-    FillSpeciesSpecificValue( p_oElement, "gr_nciSizeEffectMode", "gr_nsemVal", p_fTempValues,
+    FillSpeciesSpecificValue( p_oElement, "nciSizeEffectX0", "nsex0Val", p_fTempValues,
         m_iNumBehaviorSpecies, p_oPop, true );
     //Transfer to the appropriate array buckets
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )

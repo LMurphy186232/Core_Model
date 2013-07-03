@@ -1,10 +1,3 @@
-/*
- * SizeEffectLowerBounded.cpp
- *
- *  Created on: Nov 27, 2012
- *      Author: LORA
- */
-
 #include "SizeEffectLowerBounded.h"
 #include "TreePopulation.h"
 #include "BehaviorBase.h"
@@ -64,21 +57,21 @@ void clSizeEffectLowerBounded::DoSetup(clTreePopulation *p_oPop, clBehaviorBase 
   for ( i = 0; i < iNumBehaviorSpecies; i++ ) p_dTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
 
   //Size effect mode (X0)
-  FillSpeciesSpecificValue( p_oElement, "gr_nciSizeEffectMode", "gr_nsemVal",
+  FillSpeciesSpecificValue( p_oElement, "nciSizeEffectX0", "nsex0Val",
       p_dTempValues, iNumBehaviorSpecies, p_oPop, true);
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
     mp_fX0[p_dTempValues[i].code] = p_dTempValues[i].val;
 
   //Size effect variance (Xb)
-  FillSpeciesSpecificValue(p_oElement, "gr_nciSizeEffectVariance", "gr_nsevVal",
+  FillSpeciesSpecificValue(p_oElement, "nciSizeEffectXb", "nsexbVal",
       p_dTempValues, iNumBehaviorSpecies, p_oPop, true);
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++)
     mp_fXb[p_dTempValues[i].code] = p_dTempValues[i].val;
 
   //Size effect lower bound
-  FillSpeciesSpecificValue(p_oElement, "gr_nciSizeEffectLowerBound", "gr_nselbVal",
+  FillSpeciesSpecificValue(p_oElement, "nciSizeEffectLowerBound", "nselbVal",
       p_dTempValues, iNumBehaviorSpecies, p_oPop, true);
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++)

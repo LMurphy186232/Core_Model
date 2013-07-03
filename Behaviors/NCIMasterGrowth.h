@@ -1,10 +1,10 @@
 //---------------------------------------------------------------------------
 
-#ifndef NCIGrowthH
-#define NCIGrowthH
+#ifndef NCIMasterGrowthH
+#define NCIMasterGrowthH
 //---------------------------------------------------------------------------
 #include "GrowthBase.h"
-
+#include "NCIEffectsList.h"
 
 class clTree;
 class clTreePopulation;
@@ -21,16 +21,15 @@ class clNitrogenEffectBase;
 * NCI growth - Version 3.0
 *
 * This is a growth shell object which applies the NCI (neighborhood competition
-* index) function.
+* index) function. The basic function is a maximum rate of growth that is
+* reduced by a set of multiplicative effects. The set of effects used is up
+* to the user.
 *
 * The amount of growth is in cm/year. For multi-year timesteps, the behavior
 * will calculate total growth with a loop. Each loop iteration will increment
 * DBH for one year. For each year, effects are recalculated with the previous
 * year's new DBH value. All values for each year of growth are summed to get
 * the growth for the timestep.
-*
-* This is a generic behavior. It is expected that not all terms in the growth
-* equation will be used.
 *
 * The parameter file call string for this to be diameter-incrementing with
 * auto-height updating is "NCIMasterGrowth"; for diameter-only incrementing, use
@@ -48,74 +47,6 @@ class clNCIMasterGrowth : virtual public clGrowthBase {
 //note: need the virtual keyword to avoid base class ambiguity.
 
   public:
-
-  /**
-   * Flag values for which shading effect term is desired.
-   */
-  enum shading_effect {
-    no_shading, /**<No shading (class clNoShadingEffect) */
-    default_shading, /**<Default shading (class clDefaultShadingEffect) */
-    shading_no_exponent /**<Shading effect with no exponent (class clShadingEffectNoExponent) */
-  };
-
-  /**
-   * Flag values for which size effect term is desired.
-   */
-  enum size_effect {
-    no_size_effect, /**<No size effect (class clNoSizeEffect) */
-    default_size_effect, /**<Default size effect (class clDefaultSizeEffect) */
-    size_effect_bounded /**<Size effect with minimum DBH (class clSizeEffectLowerBounded) */
-  };
-
-  /**
-   * Flag values for which damage effect term is desired.
-   */
-  enum damage_effect {
-    no_damage_effect, /**<No damage effect (class clNoDamageEffect) */
-    default_damage_effect /**<Default damage effect (class clDefaultDamageEffect)*/
-  };
-
-  /**
-   * Flag values for which NCI term is desired.
-   */
-  enum nci_term {
-    no_nci_term, /**<No NCI term (class clNoNCITerm) */
-    default_nci_term, /**<Default NCI term (class clDefaultNCITerm) */
-    nci_with_neighbor_damage, /**<NCI term with neighbor damage (class clNCITermWithNeighborDamage)*/
-    larger_neighbors /**<Count of larger neighbors (class clNCILargerNeighbors)*/
-  };
-
-  /**
-   * Flag values for which crowding effect term is desired.
-   */
-  enum crowding_effect {
-    no_crowding_effect, /**<No crowding effect (class clNoCrowdingEffect) */
-    default_crowding_effect /**<Default crowding effect (class clDefaultCrowdingEffect) */
-  };
-
-  /**
-   * Flag values for which temperature effect term is desired.
-   */
-  enum temperature_effect {
-    no_temp_effect, /**<No temperature effect (class clNoTemperatureEffect) */
-    weibull_temp_effect /**<Weibull temperature effect (class clWeibullTemperatureEffect)*/
-  };
-
-  /**
-   * Flag values for which precipitation effect term is desired.
-   */
-  enum precipitation_effect {
-    no_precip_effect, /**<No precip effect (class clNoPrecipitationEffect) */
-    weibull_precip_effect /**<Weibull precipitation effect (class clWeibullPrecipitationEffect)*/
-  };
-
-  /**
-   * Flag values for which nitrogen effect term is desired.
-   */
-    enum nitrogen_effect {
-      no_nitrogen_effect, /**<No N effect (class clNoNitrogenEffect) */
-      gauss_nitrogen_effect /**<Gaussian nitrogen effect (class clGaussianNitrogenEffect)*/
-    };
 
   /**
   * Constructor.
@@ -214,7 +145,7 @@ class clNCIMasterGrowth : virtual public clGrowthBase {
 
   /**
   * Makes sure all input data is valid. Max growth for each species must be > 0.
-  * @throws modelErr if any of the above conditions are not met.
+  * @throws modelErr if max growth for any species is < 0.
   */
   void ValidateData();
 

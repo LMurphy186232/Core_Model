@@ -59,6 +59,15 @@ int main( int argc, char * argv[] )
   //Capture the application path
   string sPath = argv[0];
 
+
+  //cout << argc << " arguments.\n";
+  //for (int i = 0; i < argc; i++)
+  //cout << "Argument " << (i+1) << ": " << argv[i] << "\n";
+
+  if (sPath.find("coremodel.exe") != string::npos) {
+    sPath = sPath.substr(0, sPath.find("coremodel.exe"));
+  }
+
   //***************************************
   // Version numbers
   //***************************************

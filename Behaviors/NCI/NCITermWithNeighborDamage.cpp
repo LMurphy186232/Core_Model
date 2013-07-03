@@ -193,21 +193,21 @@ void clNCITermWithNeighborDamage::DoSetup(clTreePopulation *p_oPop, clBehaviorBa
     p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
 
   //Max crowding radius
-  FillSpeciesSpecificValue( p_oElement, "gr_nciMaxCrowdingRadius", "gr_nmcrVal", p_fTempValues,
+  FillSpeciesSpecificValue( p_oElement, "nciMaxCrowdingRadius", "nmcrVal", p_fTempValues,
       iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
     mp_fMaxCrowdingRadius[p_fTempValues[i].code] = p_fTempValues[i].val;
 
   //Neighbor DBH effect (alpha)
-  FillSpeciesSpecificValue(p_oElement, "gr_nciAlpha", "gr_naVal", p_fTempValues,
+  FillSpeciesSpecificValue(p_oElement, "nciAlpha", "naVal", p_fTempValues,
       iNumBehaviorSpecies, p_oPop, true);
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
     mp_fAlpha[p_fTempValues[i].code] = p_fTempValues[i].val;
 
   //Neighbor distance effect (beta)
-  FillSpeciesSpecificValue(p_oElement, "gr_nciBeta", "gr_nbVal", p_fTempValues,
+  FillSpeciesSpecificValue(p_oElement, "nciBeta", "nbVal", p_fTempValues,
       iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
   for (i = 0; i < iNumBehaviorSpecies; i++ )
@@ -215,8 +215,8 @@ void clNCITermWithNeighborDamage::DoSetup(clTreePopulation *p_oPop, clBehaviorBa
 
   //Lambda
   for (i = 0; i < m_iNumTotalSpecies; i++) {
-    sLabel << "gr_nci" << p_oPop->TranslateSpeciesCodeToName(i) << "NeighborLambda";
-    FillSpeciesSpecificValue(p_oElement, sLabel.str(), "gr_nlVal",
+    sLabel << "nci" << p_oPop->TranslateSpeciesCodeToName(i) << "NeighborLambda";
+    FillSpeciesSpecificValue(p_oElement, sLabel.str(), "nlVal",
         p_fTempValues, iNumBehaviorSpecies, p_oPop, true);
     sLabel.str("");
     for ( j = 0; j < iNumBehaviorSpecies; j++ )      {
@@ -225,7 +225,7 @@ void clNCITermWithNeighborDamage::DoSetup(clTreePopulation *p_oPop, clBehaviorBa
   }
 
   //Minimum neighbor DBH
-  FillSpeciesSpecificValue( p_oElement, "gr_nciMinNeighborDBH", "gr_nmndVal",
+  FillSpeciesSpecificValue( p_oElement, "nciMinNeighborDBH", "nmndVal",
       mp_fMinimumNeighborDBH, p_oPop, true);
 
   //Neighbor storm effect - medium damage - not required if not using
@@ -233,8 +233,8 @@ void clNCITermWithNeighborDamage::DoSetup(clTreePopulation *p_oPop, clBehaviorBa
   for (i = 0; i < iNumBehaviorSpecies; i++) {
     mp_fMedDamageEta[i] = 1.0;
   }
-  FillSpeciesSpecificValue( p_oElement, "gr_nciNeighStormEffMedDmg",
-      "gr_nnsemdVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, false );
+  FillSpeciesSpecificValue( p_oElement, "nciNeighStormEffMedDmg",
+      "nnsemdVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, false );
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
     mp_fMedDamageEta[p_fTempValues[i].code] = p_fTempValues[i].val;
@@ -244,17 +244,17 @@ void clNCITermWithNeighborDamage::DoSetup(clTreePopulation *p_oPop, clBehaviorBa
   for (i = 0; i < iNumBehaviorSpecies; i++) {
     mp_fFullDamageEta[i] = 1.0;
   }
-  FillSpeciesSpecificValue(p_oElement, "gr_nciNeighStormEffFullDmg",
-      "gr_nnsefdVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, false);
+  FillSpeciesSpecificValue(p_oElement, "nciNeighStormEffFullDmg",
+      "nnsefdVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, false);
   //Transfer to the appropriate array buckets
   for (i = 0; i < iNumBehaviorSpecies; i++)
     mp_fFullDamageEta[p_fTempValues[i].code] = p_fTempValues[i].val;
 
   //NCI DBH divisor
-  FillSingleValue(p_oElement, "gr_nciDbhDivisor", & m_fDbhDivisor, true);
+  FillSingleValue(p_oElement, "nciDbhDivisor", & m_fDbhDivisor, true);
 
   //Whether to include snags
-  FillSingleValue( p_oElement, "gr_nciIncludeSnagsInNCI", & m_bIncludeSnags, true );
+  FillSingleValue( p_oElement, "nciIncludeSnagsInNCI", & m_bIncludeSnags, true );
 
   delete[] p_fTempValues;
 

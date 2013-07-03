@@ -40,7 +40,7 @@
 #include "LognormalGrowth.h"
 #include "WeibullSnagMort.h"
 #include "SelectionHarvest.h" //(JM)
-#include "NCIMort.h"
+#include "NCIMasterMortality.h"
 #include "StormDamageApplier.h"
 #include "Storm.h"
 #include "VolumeCalculator.h"
@@ -100,7 +100,6 @@
 #include "EpiphyticEstablishment.h"
 #include "DensitySelfThinningGompertz.h"
 #include "NCIJuvenileGrowth.h"
-#include "WeibullClimateSurvival.h"
 #include "WeibullClimateQuadratGrowth.h"
 #include "TempDependentNeighborhoodDisperse.h"
 #include "TempDependentNeighborhoodSurvival.h"
@@ -739,9 +738,9 @@ void clBehaviorManager::CreateBehavior(behaviorData * p_data)
       mp_oObjectArray[iIndex] = p_oMort;
 
     }
-    else if (p_data->sNameString.compare("NCIMortality") == 0)
+    else if (p_data->sNameString.compare("NCIMasterMortality") == 0)
     {
-      clNCIMort * p_oMort = new clNCIMort(mp_oSimManager);
+      clNCIMasterMortality * p_oMort = new clNCIMasterMortality(mp_oSimManager);
       mp_oObjectArray[iIndex] = p_oMort;
 
     }
@@ -815,12 +814,6 @@ void clBehaviorManager::CreateBehavior(behaviorData * p_data)
     else if (p_data->sNameString.compare("GompertzDensitySelfThinning") == 0)
     {
       clDensitySelfThinningGompertz * p_oMort = new clDensitySelfThinningGompertz(mp_oSimManager);
-      mp_oObjectArray[iIndex] = p_oMort;
-
-    }
-    else if (p_data->sNameString.compare("WeibullClimateSurvival") == 0)
-    {
-      clWeibullClimateSurvival * p_oMort = new clWeibullClimateSurvival(mp_oSimManager);
       mp_oObjectArray[iIndex] = p_oMort;
 
     }

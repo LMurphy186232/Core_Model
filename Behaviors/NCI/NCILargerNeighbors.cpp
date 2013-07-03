@@ -73,7 +73,8 @@ float clNCILargerNeighbors::CalculateNCITerm(clTree * p_oTree, clTreePopulation 
         if ( -1 != iDeadCode )  p_oNeighbor->GetValue( iDeadCode, & iIsDead );
         else iIsDead = notdead;
 
-        if ( notdead == iIsDead ) iNumNeighbors++;
+        //if ( notdead == iIsDead ) iNumNeighbors++;
+        if ( notdead == iIsDead || natural == iIsDead) iNumNeighbors++;
       }
     }
 
@@ -108,14 +109,14 @@ void clNCILargerNeighbors::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_o
   }
 
   //Max crowding radius
-  FillSpeciesSpecificValue( p_oElement, "gr_nciMaxCrowdingRadius", "gr_nmcrVal", p_fTempValues,
+  FillSpeciesSpecificValue( p_oElement, "nciMaxCrowdingRadius", "nmcrVal", p_fTempValues,
       iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
     mp_fMaxCrowdingRadius[p_fTempValues[i].code] = p_fTempValues[i].val;
 
   //Minimum neighbor DBH
-  FillSpeciesSpecificValue( p_oElement, "gr_nciMinNeighborDBH", "gr_nmndVal",
+  FillSpeciesSpecificValue( p_oElement, "nciMinNeighborDBH", "nmndVal",
       mp_fMinimumNeighborDBH, p_oPop, true);
 
   //Make sure that the max radius of neighbor effects is > 0

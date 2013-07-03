@@ -51,14 +51,14 @@ void clGaussianNitrogenEffect::DoSetup(clTreePopulation *p_oPop, clBehaviorBase 
   }
 
   //X0
-  FillSpeciesSpecificValue( p_oElement, "gr_nciNitrogenX0", "gr_nnx0Val", p_fTempValues,
+  FillSpeciesSpecificValue( p_oElement, "nciNitrogenX0", "nnx0Val", p_fTempValues,
       iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
     mp_fX0[p_fTempValues[i].code] = p_fTempValues[i].val;
 
   //Xb
-  FillSpeciesSpecificValue( p_oElement, "gr_nciNitrogenXb", "gr_nnxbVal", p_fTempValues,
+  FillSpeciesSpecificValue( p_oElement, "nciNitrogenXb", "nnxbVal", p_fTempValues,
       iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )

@@ -54,21 +54,21 @@ void clDefaultCrowdingEffect::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *
   for ( i = 0; i < iNumBehaviorSpecies; i++ ) p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
 
   //Size sensitivity to NCI parameter (gamma)
-  FillSpeciesSpecificValue( p_oElement, "gr_nciSizeSensNCI", "gr_nssnVal", p_fTempValues,
+  FillSpeciesSpecificValue( p_oElement, "nciCrowdingGamma", "ncgVal", p_fTempValues,
       iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
     mp_fGamma[p_fTempValues[i].code] = p_fTempValues[i].val;
 
   //Crowding Slope (C)
-  FillSpeciesSpecificValue( p_oElement, "gr_nciCrowdingSlope", "gr_ncslVal", p_fTempValues,
+  FillSpeciesSpecificValue( p_oElement, "nciCrowdingC", "nccVal", p_fTempValues,
       iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
     mp_fC[p_fTempValues[i].code] = p_fTempValues[i].val;
 
   //Crowding Steepness (D)
-  FillSpeciesSpecificValue( p_oElement, "gr_nciCrowdingSteepness", "gr_ncstVal", p_fTempValues,
+  FillSpeciesSpecificValue( p_oElement, "nciCrowdingD", "ncdVal", p_fTempValues,
       iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )

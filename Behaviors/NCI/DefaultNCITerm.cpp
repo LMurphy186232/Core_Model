@@ -151,21 +151,21 @@ void clDefaultNCITerm::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI,
     p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
 
   //Max crowding radius
-  FillSpeciesSpecificValue( p_oElement, "gr_nciMaxCrowdingRadius", "gr_nmcrVal", p_fTempValues,
+  FillSpeciesSpecificValue( p_oElement, "nciMaxCrowdingRadius", "nmcrVal", p_fTempValues,
       iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
     mp_fMaxCrowdingRadius[p_fTempValues[i].code] = p_fTempValues[i].val;
 
   //Neighbor DBH effect (alpha)
-  FillSpeciesSpecificValue(p_oElement, "gr_nciAlpha", "gr_naVal", p_fTempValues,
+  FillSpeciesSpecificValue(p_oElement, "nciAlpha", "naVal", p_fTempValues,
       iNumBehaviorSpecies, p_oPop, true);
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
     mp_fAlpha[p_fTempValues[i].code] = p_fTempValues[i].val;
 
   //Neighbor distance effect (beta)
-  FillSpeciesSpecificValue(p_oElement, "gr_nciBeta", "gr_nbVal", p_fTempValues,
+  FillSpeciesSpecificValue(p_oElement, "nciBeta", "nbVal", p_fTempValues,
       iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
   for (i = 0; i < iNumBehaviorSpecies; i++ )
@@ -173,8 +173,8 @@ void clDefaultNCITerm::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI,
 
   //Lambda
   for (i = 0; i < m_iNumTotalSpecies; i++) {
-    sLabel << "gr_nci" << p_oPop->TranslateSpeciesCodeToName(i) << "NeighborLambda";
-    FillSpeciesSpecificValue(p_oElement, sLabel.str(), "gr_nlVal",
+    sLabel << "nci" << p_oPop->TranslateSpeciesCodeToName(i) << "NeighborLambda";
+    FillSpeciesSpecificValue(p_oElement, sLabel.str(), "nlVal",
         p_fTempValues, iNumBehaviorSpecies, p_oPop, true);
     sLabel.str("");
     for ( j = 0; j < iNumBehaviorSpecies; j++ )      {
@@ -183,14 +183,14 @@ void clDefaultNCITerm::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI,
   }
 
   //Minimum neighbor DBH
-  FillSpeciesSpecificValue( p_oElement, "gr_nciMinNeighborDBH", "gr_nmndVal",
+  FillSpeciesSpecificValue( p_oElement, "nciMinNeighborDBH", "nmndVal",
       mp_fMinimumNeighborDBH, p_oPop, true);
 
   //NCI DBH divisor
-  FillSingleValue(p_oElement, "gr_nciDbhDivisor", & m_fDbhDivisor, true);
+  FillSingleValue(p_oElement, "nciDbhDivisor", & m_fDbhDivisor, true);
 
   //Whether to include snags
-  FillSingleValue( p_oElement, "gr_nciIncludeSnagsInNCI", & m_bIncludeSnags, true );
+  FillSingleValue( p_oElement, "nciIncludeSnagsInNCI", & m_bIncludeSnags, true );
 
   delete[] p_fTempValues;
 

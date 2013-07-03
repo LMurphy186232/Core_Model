@@ -54,22 +54,22 @@ void clWeibullTemperatureEffect::DoSetup(clTreePopulation *p_oPop, clBehaviorBas
   for ( i = 0; i < iNumBehaviorSpecies; i++ ) p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
 
   //Temperature effect a
-  FillSpeciesSpecificValue( p_oElement, "gr_nciWeibTempEffA",
-      "gr_nwteaVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
+  FillSpeciesSpecificValue( p_oElement, "nciWeibTempEffA",
+      "nwteaVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
     mp_fTempA[p_fTempValues[i].code] = p_fTempValues[i].val;
 
   //Temperature effect b
-  FillSpeciesSpecificValue( p_oElement, "gr_nciWeibTempEffB",
-      "gr_nwtebVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
+  FillSpeciesSpecificValue( p_oElement, "nciWeibTempEffB",
+      "nwtebVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
     mp_fTempB[p_fTempValues[i].code] = p_fTempValues[i].val;
 
   //Temperature effect c
-  FillSpeciesSpecificValue( p_oElement, "gr_nciWeibTempEffC",
-      "gr_nwtecVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
+  FillSpeciesSpecificValue( p_oElement, "nciWeibTempEffC",
+      "nwtecVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
     mp_fTempC[p_fTempValues[i].code] = p_fTempValues[i].val;

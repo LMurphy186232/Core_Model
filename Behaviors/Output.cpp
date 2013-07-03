@@ -134,112 +134,93 @@ clOutput::~clOutput()
 /////////////////////////////////////////////////////////////////////////////
 void clOutput::GetData( DOMDocument * p_oDoc )
 {
-  try
-  {
-    clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );;
-    DOMElement * p_oElement; //for casting to DOM_Element
-    string sTemp;
-    int i, j;
-    bool bTest;
+  clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );;
+  DOMElement * p_oElement; //for casting to DOM_Element
+  string sTemp;
+  int i, j;
+  bool bTest;
 
-    //Get the number of cells in each direction
-    m_iNumXCells = p_oPop->GetNumXCells();
-    m_iNumYCells = p_oPop->GetNumYCells();
-    m_fXCellLength = p_oPop->GetGridCellSize();
-    m_fYCellLength = p_oPop->GetGridCellSize();
+  //Get the number of cells in each direction
+  m_iNumXCells = p_oPop->GetNumXCells();
+  m_iNumYCells = p_oPop->GetNumYCells();
+  m_fXCellLength = p_oPop->GetGridCellSize();
+  m_fYCellLength = p_oPop->GetGridCellSize();
 
-    ExtractLiveTreeInfo( p_oDoc );
-    ExtractDeadTreeInfo( p_oDoc );
-    ExtractGridInfo( p_oDoc );
-    ExtractSubplotInfo( p_oDoc );
+  ExtractLiveTreeInfo( p_oDoc );
+  ExtractDeadTreeInfo( p_oDoc );
+  ExtractGridInfo( p_oDoc );
+  ExtractSubplotInfo( p_oDoc );
 
-    MakeMasterTreeSettings();
+  MakeMasterTreeSettings();
 
-    //General data and flags
+  //General data and flags
 
-    //Filenames
-    //get the doc root element
-    p_oElement = p_oDoc->getDocumentElement();
-    FillSingleValue( p_oElement, "ou_filename", &m_sFileRoot, true );
+  //Filenames
+  //get the doc root element
+  p_oElement = p_oDoc->getDocumentElement();
+  FillSingleValue( p_oElement, "ou_filename", &m_sFileRoot, true );
 
-    //Strip the filename of the tarball extension, if it's there, to get the
-    //file root
+  //Strip the filename of the tarball extension, if it's there, to get the
+  //file root
 
-    //Work backwards the length of the file extension and compare
-    if ( m_sFileRoot.length() > TARBALL_FILE_EXT.length()) {
+  //Work backwards the length of the file extension and compare
+  if ( m_sFileRoot.length() > TARBALL_FILE_EXT.length()) {
 
-      if(m_sFileRoot.substr(m_sFileRoot.length() - TARBALL_FILE_EXT.length()).compare(TARBALL_FILE_EXT) == 0) {
+    if(m_sFileRoot.substr(m_sFileRoot.length() - TARBALL_FILE_EXT.length()).compare(TARBALL_FILE_EXT) == 0) {
 
-        //The file extension's already on there - so strip the extension
-        //off of root
-        m_sFileRoot = m_sFileRoot.substr(0,
-            m_sFileRoot.length() - TARBALL_FILE_EXT.length());
-      }
+      //The file extension's already on there - so strip the extension
+      //off of root
+      m_sFileRoot = m_sFileRoot.substr(0,
+          m_sFileRoot.length() - TARBALL_FILE_EXT.length());
     }
-    m_sTarball = m_sFileRoot + TARBALL_FILE_EXT;
-
-    //Make the tarball names of all the subplots
-    for (i = 0; i < m_iNumSubplotsToSave; i++) {
-      mp_subplots[i].sSubplotTarball = m_sFileRoot + "_" +
-          mp_subplots[i].sSubplotName + TARBALL_FILE_EXT;
-    }
-
-    //Now take off the directory structure so that TAR won't preserve a
-    //directory structure for files - which is good since very long filenames
-    //confound TAR otherwise
-    if (m_sFileRoot.find('\\') != string::npos) {
-      m_sFileRoot.substr(m_sFileRoot.rfind('\\', m_sFileRoot.length()) + 1);
-    }
-    if (m_sFileRoot.find('/') != string::npos) {
-      m_sFileRoot.substr(m_sFileRoot.rfind('/', m_sFileRoot.length()) + 1);
-    }
-
-    //Just double-check that we have settings to save - if not, erase the
-    //filename
-    bTest = false;
-    for ( i = 0; i < m_iNumSpecies; i++ )
-      for ( j = 0; j < m_iNumTypes; j++ )
-        if ( mp_treeSettings[i][j].iSaveFreq > -1 )
-        {
-          bTest = true; break;
-        }
-    if ( false == bTest && 0 == m_iNumGridsToSave )
-      m_sFileRoot = "";
-
-    //Make sure that everything's in place for zipping - if not throw error
-    sTemp = mp_oSimManager->GetAppPath();
-    if ( !TarballSetup( sTemp ) )
-    {
-      modelErr stcErr;
-      stcErr.iErrorCode = CANT_FIND_OBJECT;
-      stcErr.sMoreInfo = "Missing file gzip.exe and/or tar.exe in path ";
-      stcErr.sMoreInfo += mp_oSimManager->GetAppPath();
-      stcErr.sFunction = "clOutput::GetData" ;
-      throw( stcErr );
-    }
-
-    //Write the output file headers
-    WriteDetailedOutputHeader();
-
-    //Write the initial conditions timestep
-    Action();
-
-  } //end of try block
-  catch ( modelErr & err )
-  {
-    throw( err );
   }
-  catch ( modelMsg & msg )
-  {
-    throw( msg );
-  } //non-fatal error
-  catch ( ... )
+  m_sTarball = m_sFileRoot + TARBALL_FILE_EXT;
+
+  //Make the tarball names of all the subplots
+  for (i = 0; i < m_iNumSubplotsToSave; i++) {
+    mp_subplots[i].sSubplotTarball = m_sFileRoot + "_" +
+        mp_subplots[i].sSubplotName + TARBALL_FILE_EXT;
+  }
+
+  //Now take off the directory structure so that TAR won't preserve a
+  //directory structure for files - which is good since very long filenames
+  //confound TAR otherwise
+  if (m_sFileRoot.find('\\') != string::npos) {
+    m_sFileRoot.substr(m_sFileRoot.rfind('\\', m_sFileRoot.length()) + 1);
+  }
+  if (m_sFileRoot.find('/') != string::npos) {
+    m_sFileRoot.substr(m_sFileRoot.rfind('/', m_sFileRoot.length()) + 1);
+  }
+
+  //Just double-check that we have settings to save - if not, erase the
+  //filename
+  bTest = false;
+  for ( i = 0; i < m_iNumSpecies; i++ )
+    for ( j = 0; j < m_iNumTypes; j++ )
+      if ( mp_treeSettings[i][j].iSaveFreq > -1 )
+      {
+        bTest = true; break;
+      }
+  if ( false == bTest && 0 == m_iNumGridsToSave )
+    m_sFileRoot = "";
+
+  //Make sure that everything's in place for zipping - if not throw error
+  sTemp = mp_oSimManager->GetAppPath();
+  if ( !TarballSetup( sTemp ) )
   {
     modelErr stcErr;
-    stcErr.iErrorCode = UNKNOWN;
+    stcErr.iErrorCode = CANT_FIND_OBJECT;
+    stcErr.sMoreInfo = "Missing file gzip.exe and/or tar.exe in path ";
+    stcErr.sMoreInfo += mp_oSimManager->GetAppPath();
     stcErr.sFunction = "clOutput::GetData" ;
     throw( stcErr );
   }
+
+  //Write the output file headers
+  WriteDetailedOutputHeader();
+
+  //Write the initial conditions timestep
+  Action();
 }
 
 
@@ -1310,7 +1291,7 @@ void clOutput::WriteDetailedOutputHeader()
       stcErr.sFunction = "clOutput::WriteDetailedOutputHeader";
       std::stringstream s;
       s << "Couldn't save the output file \"" << p_sFilename[0]
-        << "\". Check that the path exists.";
+                                                             << "\". Check that the path exists.";
       stcErr.sMoreInfo = s.str();
       throw( stcErr );
     }
@@ -1635,7 +1616,7 @@ void clOutput::WriteTreeData( string * p_sFilename )
       AddToBuffer( p_cBuf[iBuf], cTemp, p_out[iBuf], BUFFER_SIZE );
       for ( j = 0; j < m_iNumSpecies; j++ ) {
         sprintf( cTemp, "%s%s%s", "<tm_species speciesName=\"",
-                   p_oTrees->TranslateSpeciesCodeToName(j).c_str(), "\"/>" );
+            p_oTrees->TranslateSpeciesCodeToName(j).c_str(), "\"/>" );
         AddToBuffer( p_cBuf[iBuf], cTemp, p_out[iBuf], BUFFER_SIZE );
       }
       strcpy( cTemp, "</tm_speciesList>" );

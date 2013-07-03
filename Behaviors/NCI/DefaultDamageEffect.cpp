@@ -63,14 +63,14 @@ void clDefaultDamageEffect::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_
   for ( i = 0; i < iNumBehaviorSpecies; i++ ) p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
 
   //Storm effect - medium damage
-  FillSpeciesSpecificValue(p_oElement, "gr_nciStormEffMedDmg", "gr_nsemdVal",
+  FillSpeciesSpecificValue(p_oElement, "nciStormEffMedDmg", "nsemdVal",
       p_fTempValues, iNumBehaviorSpecies, p_oPop, true);
   //Transfer to the appropriate array buckets
   for (i = 0; i < iNumBehaviorSpecies; i++)
     mp_fMedDamageStormEff[p_fTempValues[i].code] = p_fTempValues[i].val;
 
   //Storm effect - full damage
-  FillSpeciesSpecificValue(p_oElement, "gr_nciStormEffFullDmg", "gr_nsefdVal",
+  FillSpeciesSpecificValue(p_oElement, "nciStormEffFullDmg", "nsefdVal",
       p_fTempValues, iNumBehaviorSpecies, p_oPop, true);
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
