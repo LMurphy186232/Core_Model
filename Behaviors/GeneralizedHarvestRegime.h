@@ -10,22 +10,25 @@ class clTree;
 using namespace whyDead;
 
 /**
-* Generalized Harvest Regime - Version 1.0
+* Generalized Harvest Regime - Version 1.1
 *
-* Logs based on plot basal area and biomass.
+* Logs based on plot basal area and/or biomass. The user chooses whether to
+* base calculations on total plot adult basal area or biomass. In the case
+* of biomass, the Dimension Analysis behavior must be applied.
 *
 * The probability that the plot is logged in a given time step is a function of
-* the total plot biomass, as follows:
+* the total plot biomass or basal area, as follows:
 * P = a * exp(-m * X^b)
-* Where P is the probability, X is the total plot adult biomass in Mg/ha, and
-* a, m, and b are the log probability parameters. This is evaluated each time
-* step; it does not matter whether logging occurred the previous time step.
+* Where P is the probability, X is the total plot adult biomass in Mg/ha OR
+* the total plot adult basal area in m2/ha, and a, m, and b are the log
+* probability parameters. This is evaluated each time step; it does not matter
+* whether logging occurred the previous time step.
 *
 * If the plot is to be logged, the amount of adult basal area to remove is:
 * BAR = alpha * exp(-mu * X^beta)
 * where BAR is the percentage to remove (between 0 and 100), X is the total plot
-* adult biomass, and alpha, beta, and mu are removal parameters. This percentage
-* is then used as the mean in a draw on a gamma distribution.
+* adult biomass OR basal area, and alpha, beta, and mu are removal parameters.
+* This percentage is then used as the mean in a draw on a gamma distribution.
 *
 * Individual trees have a cut preference function as follows:
 * P = (1 - gamma * exp(-beta * R ^ alpha)) * (exp(-0.5*((DBH - mu)/sigma)^2))
@@ -42,7 +45,8 @@ using namespace whyDead;
 * made.
 *
 * All adults of all species must participate. All must have "Dimension Analysis"
-* applied. Seedlings and saplings are always ignored by this behavior.
+* applied if biomass is being used for cut decisions. Seedlings and saplings
+* are always ignored by this behavior.
 *
 * The parameter file call string and namestring are "GeneralizedHarvestRegime".
 *
@@ -52,6 +56,7 @@ using namespace whyDead;
 * <br>Edit history:
 * <br>-----------------
 * <br>January 16, 2011 - Created (LEM)
+* <br>July 7, 2013 - Added flag for BA or Biomass and made version 1.1 (LEM)
 */
 class clGeneralizedHarvestRegime : virtual public clBehaviorBase {
 
@@ -162,6 +167,9 @@ class clGeneralizedHarvestRegime : virtual public clBehaviorBase {
   /**Reason code to pass to the tree population when trees are killed.*/
   deadCode m_iReasonCode;
 
+  /**Whether to use biomass (true) or basal area (false) in cut decisions */
+  bool m_bUseBiomass;
+
  /**
   * Reads harvest data from the parameter file.
   * @param p_oDoc DOM tree of parsed input file.
@@ -170,8 +178,9 @@ class clGeneralizedHarvestRegime : virtual public clBehaviorBase {
 
   /**
    * Decides whether or not a harvest will occur this timestep. This gets the
-   * total amount of biomass and evaluates the probability equation. The
-   * result is compared to a random number to determine logging probability.
+   * total amount of biomass or basal area and evaluates the probability
+   * equation. The result is compared to a random number to determine logging
+   * probability.
    *
    * While this is totaling biomass, it will also total basal area for
    * m_fTotalBA.
@@ -180,7 +189,8 @@ class clGeneralizedHarvestRegime : virtual public clBehaviorBase {
   bool CutThisTimestep();
 
   /**
-   * Gets the "Biomass" data member code for adults of each species.
+   * Gets the "Biomass" data member code for adults of each species. If basal
+   * area is being used, this function exits without doing anything.
    * @throw modelErr if there is a missing code.
    */
   void GetDataCodes();

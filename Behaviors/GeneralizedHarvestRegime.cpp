@@ -16,7 +16,7 @@ clGeneralizedHarvestRegime::clGeneralizedHarvestRegime( clSimManager * p_oSimMan
   m_sXMLRoot = "GeneralizedHarvestRegime";
 
   //Versions
-  m_fVersionNumber = 1;
+  m_fVersionNumber = 1.1;
   m_fMinimumVersionNumber = 1;
 
   m_iReasonCode = harvest;
@@ -45,6 +45,7 @@ clGeneralizedHarvestRegime::clGeneralizedHarvestRegime( clSimManager * p_oSimMan
   m_fTotalBA = 0;
   m_fAllowedRange = 0;
   m_fCutProbA = 0;
+  m_bUseBiomass = true;
 
   //Allowed file types
   m_iNumAllowedTypes = 2;
@@ -128,6 +129,9 @@ void clGeneralizedHarvestRegime::ReadHarvestParameterFileData( xercesc::DOMDocum
 
   //Allowed range
   FillSingleValue( p_oElement, "di_genHarvAllowedDeviation", &m_fAllowedRange, true);
+
+  //Whether to use biomass (true) or basal area (false)
+  FillSingleValue( p_oElement, "di_genHarvUseBiomassOrBA", & m_bUseBiomass, true );
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -164,7 +168,8 @@ void clGeneralizedHarvestRegime::Action()
   if (!CutThisTimestep()) return;
 
   //*****************************
-  //Calculate the proportion of BA to remove
+  //Calculate the proportion of BA to remove (the correct value, either total
+  //biomass or total BA, is held in m_fTotalBiomass)
   fPercentBAToCut = m_fRemoveA * exp(-m_fRemoveM * pow(m_fTotalBiomass, m_fRemoveB));
   if (fPercentBAToCut <= 0) return;
   fPercentBAToCut = clModelMath::GammaRandomDraw(fPercentBAToCut, m_fScale);
@@ -270,6 +275,9 @@ void clGeneralizedHarvestRegime::Action()
 // GetDataCodes()
 //////////////////////////////////////////////////////////////////////////////
 void clGeneralizedHarvestRegime::GetDataCodes() {
+
+  if (m_bUseBiomass == false) return;
+
   int i;
   mp_iBiomassCode = new short int [m_iNumSpecies];
   for (i = 0; i < m_iNumSpecies; i++) {
@@ -303,18 +311,32 @@ bool clGeneralizedHarvestRegime::CutThisTimestep() {
   m_fTotalBiomass = 0;
   m_fTotalBA = 0;
 
-  //Add up total biomass and BA
-  while (p_oTree) {
-    p_oTree->GetValue(mp_iBiomassCode[p_oTree->GetSpecies()], &fVal);
-    m_fTotalBiomass += fVal;
+  if (m_bUseBiomass) {
 
-    p_oTree->GetValue(mp_oPop->GetDbhCode(p_oTree->GetSpecies(),
-                                          p_oTree->GetType()), &fVal);
-    m_fTotalBA += clModelMath::CalculateBasalArea(fVal);
+    //Add up total biomass and BA
+    while (p_oTree) {
+      p_oTree->GetValue(mp_iBiomassCode[p_oTree->GetSpecies()], &fVal);
+      m_fTotalBiomass += fVal;
 
-    p_oTree = p_oAdults->NextTree();
+      p_oTree->GetValue(mp_oPop->GetDbhCode(p_oTree->GetSpecies(),
+          p_oTree->GetType()), &fVal);
+      m_fTotalBA += clModelMath::CalculateBasalArea(fVal);
+
+      p_oTree = p_oAdults->NextTree();
+    }
+    m_fTotalBiomass /= fPlotArea;
+  } else {
+    //Add up total BA only
+    while (p_oTree) {
+
+      p_oTree->GetValue(mp_oPop->GetDbhCode(p_oTree->GetSpecies(),
+          p_oTree->GetType()), &fVal);
+      m_fTotalBA += clModelMath::CalculateBasalArea(fVal);
+
+      p_oTree = p_oAdults->NextTree();
+    }
+    m_fTotalBiomass = m_fTotalBA / fPlotArea;
   }
-  m_fTotalBiomass /= fPlotArea;
 
   //Assess the probability equation - remember that this is probability of
   //NOT logging
