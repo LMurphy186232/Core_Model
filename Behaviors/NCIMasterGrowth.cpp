@@ -8,12 +8,14 @@
 #include "Allometry.h"
 
 #include "NCI/DefaultCrowdingEffect.h"
+#include "NCI/CrowdingEffect2.h"
 #include "NCI/DefaultDamageEffect.h"
 #include "NCI/DefaultNCITerm.h"
 #include "NCI/DefaultShadingEffect.h"
 #include "NCI/DefaultSizeEffect.h"
 #include "NCI/NCITermWithNeighborDamage.h"
 #include "NCI/NCILargerNeighbors.h"
+#include "NCI/NCINeighborBA.h"
 #include "NCI/NoCrowdingEffect.h"
 #include "NCI/NoDamageEffect.h"
 #include "NCI/NoNCITerm.h"
@@ -147,6 +149,8 @@ void clNCIMasterGrowth::ReadParameterFile(xercesc::DOMDocument * p_oDoc) {
     mp_oCrowdingEffect = new clNoCrowdingEffect();
   } else if (iVal == default_crowding_effect) {
     mp_oCrowdingEffect = new clDefaultCrowdingEffect();
+  } else if (iVal == crowding_effect_two) {
+    mp_oCrowdingEffect = new clCrowdingEffectTwo();
   } else {
     modelErr err;
     err.sFunction = "clNCIMasterGrowth::ReadParameterFile";
@@ -165,6 +169,8 @@ void clNCIMasterGrowth::ReadParameterFile(xercesc::DOMDocument * p_oDoc) {
     mp_oNCITerm = new clNCITermWithNeighborDamage();
   } else if (iVal == larger_neighbors) {
     mp_oNCITerm = new clNCILargerNeighbors();
+  } else if (iVal == neighbor_ba) {
+    mp_oNCITerm = new clNCINeighborBA();
   } else {
     modelErr err;
     err.sFunction = "clNCIMasterGrowth::ReadParameterFile";

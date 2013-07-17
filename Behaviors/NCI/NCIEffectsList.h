@@ -33,7 +33,8 @@ enum nci_term {
   no_nci_term, /**<No NCI term (class clNoNCITerm) */
   default_nci_term, /**<Default NCI term (class clDefaultNCITerm) */
   nci_with_neighbor_damage, /**<NCI term with neighbor damage (class clNCITermWithNeighborDamage)*/
-  larger_neighbors /**<Count of larger neighbors (class clNCILargerNeighbors)*/
+  larger_neighbors, /**<Count of larger neighbors (class clNCILargerNeighbors)*/
+  neighbor_ba /**<Neighbor BA (class clNCINeighborBA)*/
 };
 
 /**
@@ -41,7 +42,8 @@ enum nci_term {
  */
 enum crowding_effect {
   no_crowding_effect, /**<No crowding effect (class clNoCrowdingEffect) */
-  default_crowding_effect /**<Default crowding effect (class clDefaultCrowdingEffect) */
+  default_crowding_effect, /**<Default crowding effect (class clDefaultCrowdingEffect) */
+  crowding_effect_two /**<Crowding effect 2 (class clCrowdingEffectTwo)*/
 };
 
 /**

@@ -27,11 +27,15 @@ clDefaultCrowdingEffect::~clDefaultCrowdingEffect() {
 // CalculateCrowdingEffect
 //////////////////////////////////////////////////////////////////////////////
 float clDefaultCrowdingEffect::CalculateCrowdingEffect(clTree *p_oTree, float fDiam, float fNCI) {
+  float fCrowdingEffect;
   int iSpecies = p_oTree->GetSpecies();
   //Avoid a domain error - if NCI is 0, return 1
   if ( fNCI > 0 ) {
-    return exp( -mp_fC[iSpecies] * pow( fDiam, mp_fGamma[iSpecies] )
+    fCrowdingEffect = exp( -mp_fC[iSpecies] * pow( fDiam, mp_fGamma[iSpecies] )
         * pow( fNCI, mp_fD[iSpecies]));
+    if ( fCrowdingEffect < 0 ) fCrowdingEffect = 0;
+    if ( fCrowdingEffect > 1 ) fCrowdingEffect = 1;
+    return fCrowdingEffect;
   }
   return 1.0;
 }

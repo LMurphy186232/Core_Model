@@ -64,7 +64,6 @@
 #include "StochasticBiLevelMortality.h"
 #include "GLIPoints.h"
 #include "TreeAgeCalculator.h"
-#include "NCIBAGrowth.h"
 #include "BasalAreaLight.h"
 #include "StormKiller.h"
 #include "HeightGLIWeibullMortality.h"
@@ -645,12 +644,6 @@ void clBehaviorManager::CreateBehavior(behaviorData * p_data)
     else if (p_data->sNameString.compare("PRSemiStochastic diam only") == 0)
     {
       clPRSemiStochGrowth * p_oGrowth = new clPRSemiStochGrowth(mp_oSimManager);
-      mp_oObjectArray[iIndex] = p_oGrowth;
-    }
-    else if (p_data->sNameString.compare("NCIBAGrowth") == 0 ||
-        p_data->sNameString.compare("NCIBAGrowth diam only") == 0)
-    {
-      clNCIBAGrowth * p_oGrowth = new clNCIBAGrowth(mp_oSimManager);
       mp_oObjectArray[iIndex] = p_oGrowth;
     }
     else if (p_data->sNameString.compare("PRStormBilevelGrowth") == 0)
