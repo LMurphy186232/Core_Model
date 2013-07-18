@@ -11,7 +11,7 @@
 clSizeEffectLowerBounded::clSizeEffectLowerBounded() {
   mp_fXb = NULL;
   mp_fX0 = NULL;
-  mp_fMinDBH = NULL;
+  mp_fMinDiam = NULL;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -20,7 +20,7 @@ clSizeEffectLowerBounded::clSizeEffectLowerBounded() {
 clSizeEffectLowerBounded::~clSizeEffectLowerBounded() {
   delete[] mp_fXb;
   delete[] mp_fX0;
-  delete[] mp_fMinDBH;
+  delete[] mp_fMinDiam;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -30,8 +30,8 @@ float clSizeEffectLowerBounded::CalculateSizeEffect(int iSpecies, float fDiam) {
   float fSizeEffect;
 
   //Make sure the diameter is above the minimum
-  if (fDiam < mp_fMinDBH[iSpecies])
-    fDiam = mp_fMinDBH[iSpecies];
+  if (fDiam < mp_fMinDiam[iSpecies])
+    fDiam = mp_fMinDiam[iSpecies];
   fSizeEffect = exp(-0.5 * pow(log(fDiam / mp_fX0[iSpecies] ) / mp_fXb[iSpecies], 2));
   //Make sure it's bounded between 0 and 1
   if ( fSizeEffect < 0 ) fSizeEffect = 0;
@@ -49,7 +49,7 @@ void clSizeEffectLowerBounded::DoSetup(clTreePopulation *p_oPop, clBehaviorBase 
 
   mp_fX0 = new double[iNumTotalSpecies];
   mp_fXb = new double[iNumTotalSpecies];
-  mp_fMinDBH = new double[iNumTotalSpecies];
+  mp_fMinDiam = new double[iNumTotalSpecies];
 
   //Set up our floatVal array that will extract values only for the species
   //assigned to this behavior
@@ -75,7 +75,7 @@ void clSizeEffectLowerBounded::DoSetup(clTreePopulation *p_oPop, clBehaviorBase 
       p_dTempValues, iNumBehaviorSpecies, p_oPop, true);
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++)
-    mp_fMinDBH[p_dTempValues[i].code] = p_dTempValues[i].val;
+    mp_fMinDiam[p_dTempValues[i].code] = p_dTempValues[i].val;
 
   delete[] p_dTempValues;
 

@@ -1,32 +1,31 @@
-#ifndef DEFAULTSIZEEFFECT_H_
-#define DEFAULTSIZEEFFECT_H_
+#ifndef SIZEEFFECTPOWERFUNCTION_H_
+#define SIZEEFFECTPOWERFUNCTION_H_
 
 #include "SizeEffectBase.h"
 
 /**
- * Calculates the default size effect.
+ * Calculates the size effect as a power function.
  * Size Effect is calculated as:
- * <center><i>SE = exp(-0.5(ln(diam/X<sub>0</sub>)/X<sub>b</sub>)<sup>2</sup>)</i></center>
+ * <center><i>Size Effect = a * diam<sup>b</sup></i></center>
  *
  * where:
  * <ul>
  * <li><i>diam</i> is the diameter of the target tree, in cm (d10 for seedlings, DBH for everyone else)</li>
- * <li><i>X<sub>0</sub></i> is the size effect mode, in cm</li>
- * <li><i>X<sub>b</sub></i> is the size effect variance, in cm</li>
+ * <li><i>a</i> and <i>b</i> are parameters</li>
  * </ul>
  */
-class clDefaultSizeEffect: virtual public clSizeEffectBase {
+class clSizeEffectPowerFunction: virtual public clSizeEffectBase {
 public:
 
   /**
    * Constructor.
    */
-  clDefaultSizeEffect();
+  clSizeEffectPowerFunction();
 
   /**
    * Destructor.
    */
-  ~clDefaultSizeEffect();
+  ~clSizeEffectPowerFunction();
 
   /**
    * Calculates size effect. This is bounded between 0 and 1.
@@ -46,13 +45,11 @@ public:
   void DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement);
 
 protected:
-  /**Size effect variance parameter. X<sub>b</sub> in Size Effect equation
-   * above. Array is sized number of species.*/
-  double *mp_fXb;
+  /**Size effect "a" parameter. Array is sized number of species.*/
+  float *mp_fA;
 
-  /**Size effect mode parameter. X<sub>0</sub> in Size Effect equation above.
-   * Array is sized number of species.*/
-  double *mp_fX0;
+  /**Size effect "b" parameter. Array is sized number of species.*/
+  float *mp_fB;
 };
 
-#endif /* DEFAULTSIZEEFFECT_H_ */
+#endif /* SIZEEFFECTPOWERFUNCTION_H_ */

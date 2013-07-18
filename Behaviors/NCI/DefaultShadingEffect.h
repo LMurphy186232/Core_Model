@@ -20,8 +20,7 @@
  * <ul>
  * <li><i>SE</i> = Shading Effect</li>
  * <li><i>m</i> = shading coefficient</li>
- * <li><i>S</i> = amount of shade cast by neighbors, as calculated by
- * clSailLight, between 0 and 1</li>
+ * <li><i>S</i> = light level</li>
  * <li><i>n</i> = shading exponent</li>
  * </ul>
  */

@@ -9,7 +9,9 @@ class clTree;
 class clPlot;
 
 /**
- * Provides a base for objects that calculate the NCI term.
+ * Provides a base for objects that calculate the NCI term. The default is that
+ * objects descended from this class can handle any tree type. If this is not
+ * the case, child objects must throw the appropriate error during setup.
  */
 class clNCITermBase {
 

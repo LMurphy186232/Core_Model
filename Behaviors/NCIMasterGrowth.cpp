@@ -9,6 +9,7 @@
 
 #include "NCI/DefaultCrowdingEffect.h"
 #include "NCI/CrowdingEffect2.h"
+#include "NCI/CrowdingEffectNoSize.h"
 #include "NCI/DefaultDamageEffect.h"
 #include "NCI/DefaultNCITerm.h"
 #include "NCI/DefaultShadingEffect.h"
@@ -16,6 +17,7 @@
 #include "NCI/NCITermWithNeighborDamage.h"
 #include "NCI/NCILargerNeighbors.h"
 #include "NCI/NCINeighborBA.h"
+#include "NCI/NCIWithSeedlings.h"
 #include "NCI/NoCrowdingEffect.h"
 #include "NCI/NoDamageEffect.h"
 #include "NCI/NoNCITerm.h"
@@ -26,6 +28,7 @@
 #include "NCI/NoPrecipitationEffect.h"
 #include "NCI/WeibullPrecipitationEffect.h"
 #include "NCI/SizeEffectLowerBounded.h"
+#include "NCI/SizeEffectPowerFunction.h"
 #include "NCI/NoNitrogenEffect.h"
 #include "NCI/GaussianNitrogenEffect.h"
 
@@ -129,6 +132,17 @@ void clNCIMasterGrowth::ReadParameterFile(xercesc::DOMDocument * p_oDoc) {
 
   delete[] p_fTempValues;
 
+  for (i = 0; i < m_iNumBehaviorSpecies; i++) {
+    //Make sure that the maximum growth for each species is > 0
+    if (mp_fMaxPotentialValue[mp_iWhatSpecies[i]] <= 0) {
+      modelErr err;
+      err.sFunction = "clNCIMasterGrowth::ValidateData";
+      err.iErrorCode = BAD_DATA;
+      err.sMoreInfo = "All values for max potential growth must be greater than 0.";
+      throw(err);
+    }
+  }
+
   //Which shading term?
   FillSingleValue(p_oElement, "nciWhichShadingEffect", &iVal, true);
   if (iVal == no_shading) {
@@ -151,6 +165,8 @@ void clNCIMasterGrowth::ReadParameterFile(xercesc::DOMDocument * p_oDoc) {
     mp_oCrowdingEffect = new clDefaultCrowdingEffect();
   } else if (iVal == crowding_effect_two) {
     mp_oCrowdingEffect = new clCrowdingEffectTwo();
+  } else if (iVal == crowding_effect_no_size) {
+    mp_oCrowdingEffect = new clCrowdingEffectNoSize();
   } else {
     modelErr err;
     err.sFunction = "clNCIMasterGrowth::ReadParameterFile";
@@ -171,6 +187,8 @@ void clNCIMasterGrowth::ReadParameterFile(xercesc::DOMDocument * p_oDoc) {
     mp_oNCITerm = new clNCILargerNeighbors();
   } else if (iVal == neighbor_ba) {
     mp_oNCITerm = new clNCINeighborBA();
+  } else if (iVal == nci_with_seedlings) {
+    mp_oNCITerm = new clNCIWithSeedlings();
   } else {
     modelErr err;
     err.sFunction = "clNCIMasterGrowth::ReadParameterFile";
@@ -187,6 +205,8 @@ void clNCIMasterGrowth::ReadParameterFile(xercesc::DOMDocument * p_oDoc) {
     mp_oSizeEffect = new clDefaultSizeEffect();
   } else if (iVal == size_effect_bounded) {
     mp_oSizeEffect = new clSizeEffectLowerBounded();
+  } else if (iVal == size_effect_power_function) {
+    mp_oSizeEffect = new clSizeEffectPowerFunction();
   } else {
     modelErr err;
     err.sFunction = "clNCIMasterGrowth::ReadParameterFile";
@@ -262,23 +282,6 @@ void clNCIMasterGrowth::ReadParameterFile(xercesc::DOMDocument * p_oDoc) {
 }
 
 ////////////////////////////////////////////////////////////////////////////
-// ValidateData
-////////////////////////////////////////////////////////////////////////////
-void clNCIMasterGrowth::ValidateData() {
-  int i;
-  for (i = 0; i < m_iNumBehaviorSpecies; i++) {
-    //Make sure that the maximum growth for each species is > 0
-    if (mp_fMaxPotentialValue[mp_iWhatSpecies[i]] <= 0) {
-      modelErr err;
-      err.sFunction = "clNCIMasterGrowth::ValidateData";
-      err.iErrorCode = BAD_DATA;
-      err.sMoreInfo = "All values for max potential growth must be greater than 0.";
-      throw(err);
-    }
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////
 // GetTreeMemberCodes()
 ////////////////////////////////////////////////////////////////////////////
 void clNCIMasterGrowth::GetTreeMemberCodes() {
@@ -313,7 +316,6 @@ void clNCIMasterGrowth::DoShellSetup(xercesc::DOMDocument * p_oDoc) {
 
   FormatQueryString();
   ReadParameterFile( p_oDoc );
-  ValidateData();
   GetTreeMemberCodes();
 
 }
@@ -325,7 +327,7 @@ void clNCIMasterGrowth::FormatQueryString()
 {
   std::stringstream sQueryTemp;
   int i;
-  bool bSapling = false, bAdult = false, bSnag = false;
+  bool bSeedling = false, bSapling = false, bAdult = false, bSnag = false;
 
   //Do a type/species search on all the types and species
   sQueryTemp << "species=";
@@ -336,7 +338,9 @@ void clNCIMasterGrowth::FormatQueryString()
 
   //Find all the types
   for (i = 0; i < m_iNumSpeciesTypeCombos; i++) {
-    if ( clTreePopulation::sapling == mp_whatSpeciesTypeCombos[i].iType ) {
+    if ( clTreePopulation::seedling == mp_whatSpeciesTypeCombos[i].iType ) {
+      bSeedling = true;
+    } else if ( clTreePopulation::sapling == mp_whatSpeciesTypeCombos[i].iType ) {
       bSapling = true;
     } else if ( clTreePopulation::adult == mp_whatSpeciesTypeCombos[i].iType ) {
       bAdult = true;
@@ -345,7 +349,9 @@ void clNCIMasterGrowth::FormatQueryString()
     }
   }
   sQueryTemp << "::type=";
-  if (bSapling) {
+  if (bSeedling) {
+    sQueryTemp << clTreePopulation::seedling << ",";
+  } if (bSapling) {
     sQueryTemp << clTreePopulation::sapling << ",";
   } if (bAdult) {
     sQueryTemp << clTreePopulation::adult << ",";

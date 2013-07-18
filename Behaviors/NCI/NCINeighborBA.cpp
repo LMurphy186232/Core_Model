@@ -167,4 +167,18 @@ void clNCINeighborBA::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, 
       throw( stcErr );
     }
   }
+
+  //Make sure that NCI is not applied to seedlings if m_bUseOnlyLargerNeighbors
+  //is true.
+  if (m_bUseOnlyLargerNeighbors) {
+    for (i = 0; i < p_oNCI->GetNumSpeciesTypeCombos(); i++) {
+      if (p_oNCI->GetSpeciesTypeCombo(i).iType == clTreePopulation::seedling) {
+        modelErr stcErr;
+        stcErr.iErrorCode = BAD_DATA;
+        stcErr.sFunction = "clNCINeighborBA::DoSetup";
+        stcErr.sMoreInfo = "This behavior cannot be applied to seedlings if the use only larger neighbors flag is true.";
+        throw( stcErr );
+      }
+    }
+  }
 }

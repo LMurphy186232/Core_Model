@@ -139,4 +139,15 @@ void clNCILargerNeighbors::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_o
       throw( stcErr );
     }
   }
+
+  //Make sure this is not applied to seedlings
+  for (i = 0; i < p_oNCI->GetNumSpeciesTypeCombos(); i++) {
+    if (p_oNCI->GetSpeciesTypeCombo(i).iType == clTreePopulation::seedling) {
+      modelErr stcErr;
+      stcErr.iErrorCode = BAD_DATA;
+      stcErr.sFunction = "clNCILargerNeighbors::DoSetup";
+      stcErr.sMoreInfo = "This behavior cannot be applied to seedlings.";
+      throw( stcErr );
+    }
+  }
 }

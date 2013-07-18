@@ -36,6 +36,10 @@ class clNitrogenEffectBase;
 * "NCIMasterGrowth diam only". The namestring for this behavior is
 * "ncigrowthshell". The XML string is "NCIMasterGrowth".
 *
+* Several behaviors with a prescribed set of effects were folded into this
+* flexible system to create version 3. The trees to which this can be applied
+* depends on the set of effects chosen.
+*
 * Copyright 2012 Charles D. Canham.
 * @author Lora E. Murphy
 *
@@ -71,21 +75,13 @@ class clNCIMasterGrowth : virtual public clGrowthBase {
   float CalcDiameterGrowthValue(clTree *p_oTree, clTreePopulation *p_oPop, float fHeightGrowth);
 
   /**
-  * Calculates growth for all NCI trees.  The values are stashed in the
-  * "Growth" tree float data member for later application.
-  *
-  * Steps:
-  * <ol>
-  * <li>Get all trees for this behavior.</li>
-  * <li>For each tree, calculate NCI<sub>i</sub> by calling the function in the
-  * function pointer NCI.  Stash the value in "Growth" for each tree.
-  * On the way, pick up the max NCI<sub>i</sub> value for each species
-  * (NCI<sub>max</sub>) if it is being used (if m_bUseNciMax = true).</li>
-  * <li>Go through all the NCI trees again.  Calculate the amount of growth for
-  * each using the equations above.  Use the function pointers to make sure
-  * that the proper function forms are used.  Stash the end result in
-  * "Growth".</li>
-  * </ol>
+  * Calculates growth for all NCI trees. Climate effects, which do not depend
+  * on individual trees, are called once; effects which do not depend on a
+  * target tree's size are called once per tree; and effects with a size
+  * component are called once per year, looping over the years in a timestep.
+  * The values are stashed in the "Growth" tree float data member for later
+  * application.
+
   * This must be called first of any growth stuff, since it uses other trees'
   * DBHs to calculate NCI, and these must be before growth has been applied.
   *
@@ -104,7 +100,6 @@ class clNCIMasterGrowth : virtual public clGrowthBase {
   * <li>ReadParameterFile() is called to read the parameter file's data.</li>
   * <li>ValidateData() is called to validate the data.</li>
   * <li>GetTreeMemberCodes() is called to get tree data return codes.</li>
-  * <li>SetFunctionPointers() is called to set up our function pointers.</li>
   * </ol>
   *
   * @param p_oDoc DOM tree of parsed input tree.
@@ -123,13 +118,28 @@ class clNCIMasterGrowth : virtual public clGrowthBase {
 
   protected:
 
+  /** The shading effect object. */
   clShadingEffectBase *mp_oShadingEffect;
+
+  /** The damage effect object. */
   clDamageEffectBase *mp_oDamageEffect;
+
+  /** The size effect object. */
   clSizeEffectBase *mp_oSizeEffect;
+
+  /** The crowding effect object. */
   clCrowdingEffectBase *mp_oCrowdingEffect;
+
+  /** The NCI term object. */
   clNCITermBase *mp_oNCITerm;
+
+  /** The precipitation effect object. */
   clPrecipitationEffectBase *mp_oPrecipEffect;
+
+  /** The temperature effect object. */
   clTemperatureEffectBase *mp_oTempEffect;
+
+  /** The nitrogen effect object. */
   clNitrogenEffectBase *mp_oNEffect;
 
   /**Search query for behavior trees.*/
@@ -138,16 +148,12 @@ class clNCIMasterGrowth : virtual public clGrowthBase {
   /**Maximum growth value. Array sized number of species.*/
   float *mp_fMaxPotentialValue;
 
-  short int **mp_iGrowthCodes; /**<Holds return data codes for the "Growth"
-  tree data member.  Array size is number of species to which this behavior
-  applies by 2 (saplings and adults).*/
-  short int m_iNumTotalSpecies; /**<Total number of species - for the destructor */
+  /**Holds return data codes for the "Growth" tree data member. Array size is
+   * number of species by number of types.*/
+  short int **mp_iGrowthCodes;
 
-  /**
-  * Makes sure all input data is valid. Max growth for each species must be > 0.
-  * @throws modelErr if max growth for any species is < 0.
-  */
-  void ValidateData();
+  /**Total number of species - for the destructor */
+  short int m_iNumTotalSpecies;
 
   /**
   * Gets the return codes for needed tree data members.
@@ -159,8 +165,8 @@ class clNCIMasterGrowth : virtual public clGrowthBase {
   /**
   * Reads data from the parameter file.
   * @param p_oDoc DOM tree of parsed input tree.
-  * @throws modelErr if this behavior has been applied to any types except
-  * sapling and adult, or if any of the effect terms is not recognized.
+  * @throws modelErr if max growth for any species is < 0, or any of the
+  * effects terms is unrecognized.
   */
   void ReadParameterFile( xercesc::DOMDocument *p_oDoc );
 

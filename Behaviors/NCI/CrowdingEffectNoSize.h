@@ -1,36 +1,33 @@
-#ifndef DEFAULTCROWDINGEFFECT_H_
-#define DEFAULTCROWDINGEFFECT_H_
+#ifndef CROWDINGEFFECTNOSIZE_H_
+#define CROWDINGEFFECTNOSIZE_H_
 
 #include "CrowdingEffectBase.h"
 
 /**
  * This class calculates a crowding effect according to the term:
  * @htmlonly
-  <center><i>CE = exp(-C * diam <sup>&gamma;</sup> * NCI<sup>D</sup>)</i></center>
+  <center><i>CE = exp(-C * NCI<sup>D</sup>)</i></center>
   @endhtmlonly
  * <br>
  * where:
  * <ul>
  * <li><i>CE</i> = crowding effect</li>
- * <li><i>C</i> is the NCI slope parameter</li>
- * <li><i>D</i> is the NCI steepness parameter</li>
- * <li><i>diam</i> is the diameter of the target tree, in cm (d10 for seedlings, DBH for everyone else)</li>
- * <li>@htmlonly <i>&gamma;</i> @endhtmlonly is the size sensitivity to NCI parameter</li>
+ * <li><i>C</i> and <i>D</i> are parameters</li>
  * <li><i>NCI</i> is this tree's NCI value</li>
  * </ul>
  */
-class clDefaultCrowdingEffect: public clCrowdingEffectBase {
+class clCrowdingEffectNoSize: public clCrowdingEffectBase {
 public:
 
   /**
    * Constructor.
    */
-  clDefaultCrowdingEffect();
+  clCrowdingEffectNoSize();
 
   /**
    * Destructor.
    */
-  ~clDefaultCrowdingEffect();
+  ~clCrowdingEffectNoSize();
 
   /**
    * Calculates crowding effect.
@@ -58,10 +55,6 @@ protected:
   /**Crowding effect steepness. D in Crowding Effect equation above. Array
    * sized number of species.*/
   float *mp_fD;
-
-  /**Size sensitivity to NCI parameter. @htmlonly &gamma; @endhtmlonly in
-   * Crowding Effect equation above.  Array sized number of species.*/
-  float *mp_fGamma;
 };
 
-#endif /* DEFAULTCROWDINGEFFECT_H_ */
+#endif /* CROWDINGEFFECTNOSIZE_H_ */

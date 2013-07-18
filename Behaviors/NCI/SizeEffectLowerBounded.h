@@ -6,17 +6,17 @@
 /**
  * Calculates the size effect.
  * Size Effect is calculated as:
- * <center><i>SE = exp(-0.5(ln(DBH/X<sub>0</sub>)/X<sub>b</sub>)<sup>2</sup>)</i></center>
+ * <center><i>SE = exp(-0.5(ln(diam/X<sub>0</sub>)/X<sub>b</sub>)<sup>2</sup>)</i></center>
  *
  * where:
  * <ul>
- * <li><i>DBH</i> is for the target tree, in cm</li>
+ * <li><i>diam</i> is target tree's diameter (d10 for seedlings, DBH for all others), in cm</li>
  * <li><i>X<sub>0</sub></i> is the size effect mode, in cm</li>
  * <li><i>X<sub>b</sub></i> is the size effect variance, in cm</li>
  * </ul>
  *
- * Size effect is subject to a minimum value for DBH, below which all trees will
- * just get the minimum.
+ * Size effect is subject to a minimum value for diameter, below which all
+ * trees will just get the minimum.
  *
  * Copyright 2013 Charles D. Canham.
  * @author Lora E. Murphy
@@ -65,8 +65,8 @@ protected:
    * Array is sized number of species.*/
   double *mp_fX0;
 
-  /**Size effect minimum DBH. Array is sized number of species.*/
-  double *mp_fMinDBH;
+  /**Size effect minimum diameter. Array is sized number of species.*/
+  double *mp_fMinDiam;
 };
 
 #endif /* DEFAULTSIZEEFFECT_H_ */

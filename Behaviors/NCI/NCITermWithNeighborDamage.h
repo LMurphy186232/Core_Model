@@ -16,9 +16,8 @@
   depending on the damage status.  It’s 1 if the neighbor is undamaged.</li>
   <li><i>&alpha;</i> is the neighbor DBH effect parameter</li>
   <li><i>&beta;</i> is the neighbor distance effect parameter</li>
-  <li><i>DBH</i> is of the target tree, in cm</li>
   <li><i>q</i> is the DBH divisor parameter</li>
-  <li><i>DBH<sub>k</sub></i> is the DBH of the kth neighbor, in meters</li>
+  <li><i>DBH<sub>k</sub></i> is the DBH of the kth neighbor, in cm</li>
   <li><i>&gamma;</i> is the size sensitivity to NCI parameter</li>
   <li><i>&lambda;<sub>k</sub></i> is the NCI lambda parameter for the species
   of the kth neighbor</li>

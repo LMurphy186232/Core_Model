@@ -98,7 +98,6 @@
 #include "LaggedPostHarvestGrowth.h"
 #include "EpiphyticEstablishment.h"
 #include "DensitySelfThinningGompertz.h"
-#include "NCIJuvenileGrowth.h"
 #include "WeibullClimateQuadratGrowth.h"
 #include "TempDependentNeighborhoodDisperse.h"
 #include "TempDependentNeighborhoodSurvival.h"
@@ -676,12 +675,6 @@ void clBehaviorManager::CreateBehavior(behaviorData * p_data)
         p_data->sNameString.compare("LaggedPostHarvestGrowth diam only") == 0)
     {
       clLaggedPostHarvestGrowth * p_oGrowth = new clLaggedPostHarvestGrowth(mp_oSimManager);
-      mp_oObjectArray[iIndex] = p_oGrowth;
-    }
-    else if (p_data->sNameString.compare("NCIJuvenileGrowth") == 0 ||
-        p_data->sNameString.compare("NCIJuvenileGrowth diam only") == 0)
-    {
-      clNCIJuvenileGrowth * p_oGrowth = new clNCIJuvenileGrowth(mp_oSimManager);
       mp_oObjectArray[iIndex] = p_oGrowth;
     }
     else if (p_data->sNameString.compare("WeibullClimateQuadratGrowth") == 0 ||

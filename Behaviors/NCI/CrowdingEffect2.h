@@ -6,14 +6,14 @@
 /**
  * This class calculates a crowding effect according to the term:
  * @htmlonly
-  <center>CE = exp(-C * ( DBH<sup>&gamma;</sup> * NCI)<sup>D</sup>)</center>
+  <center>CE = exp(-C * ( diam<sup>&gamma;</sup> * NCI)<sup>D</sup>)</center>
   @endhtmlonly
  * <br>
  * where:
  * <ul>
  * <li><i>CE</i> = crowding effect</li>
  * <li><i>C</i>, <i>D</i>, and <i>&gamma; </i> are parameters</li>
- * <li><i>DBH</i> is of the target tree, in meters</li>
+ * <li><i>diam</i> is diameter of the target tree, in cm (d10 for seedlings, DBH for everyone else)</li>
  * <li><i>NCI</i> is this tree's NCI value</li>
  * </ul>
  *

@@ -15,7 +15,8 @@ enum shading_effect {
 enum size_effect {
   no_size_effect, /**<No size effect (class clNoSizeEffect) */
   default_size_effect, /**<Default size effect (class clDefaultSizeEffect) */
-  size_effect_bounded /**<Size effect with minimum DBH (class clSizeEffectLowerBounded) */
+  size_effect_bounded, /**<Size effect with minimum DBH (class clSizeEffectLowerBounded) */
+  size_effect_power_function /**<Power function size effect (class clSizeEffectPowerFunction) */
 };
 
 /**
@@ -34,7 +35,8 @@ enum nci_term {
   default_nci_term, /**<Default NCI term (class clDefaultNCITerm) */
   nci_with_neighbor_damage, /**<NCI term with neighbor damage (class clNCITermWithNeighborDamage)*/
   larger_neighbors, /**<Count of larger neighbors (class clNCILargerNeighbors)*/
-  neighbor_ba /**<Neighbor BA (class clNCINeighborBA)*/
+  neighbor_ba, /**<Neighbor BA (class clNCINeighborBA)*/
+  nci_with_seedlings /**<NCI with seedling competition (class clNCIWithSeedlings)*/
 };
 
 /**
@@ -43,7 +45,8 @@ enum nci_term {
 enum crowding_effect {
   no_crowding_effect, /**<No crowding effect (class clNoCrowdingEffect) */
   default_crowding_effect, /**<Default crowding effect (class clDefaultCrowdingEffect) */
-  crowding_effect_two /**<Crowding effect 2 (class clCrowdingEffectTwo)*/
+  crowding_effect_two, /**<Crowding effect 2 (class clCrowdingEffectTwo)*/
+  crowding_effect_no_size /**<Crowding effect with no DBH term (class clCrowdingEffectNoSize) */
 };
 
 /**

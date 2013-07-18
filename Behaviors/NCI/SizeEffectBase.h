@@ -8,7 +8,9 @@ class clBehaviorBase;
 class clTree;
 
 /**
- * Provides a base for objects that calculate a size effect.
+ * Provides a base for objects that calculate a size effect. The default is that
+ * objects descended from this class can handle any tree type. If this is not
+ * the case, child objects must throw the appropriate error during setup.
  */
 class clSizeEffectBase {
 
