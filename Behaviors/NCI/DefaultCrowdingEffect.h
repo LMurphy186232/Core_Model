@@ -4,7 +4,9 @@
 #include "CrowdingEffectBase.h"
 
 /**
- * This class calculates a crowding effect according to the term:
+ * This class calculates a crowding effect using the default NCI function.
+ *
+ * Crowding effect is calculated as follows:
  * @htmlonly
   <center><i>CE = exp(-C * diam <sup>&gamma;</sup> * NCI<sup>D</sup>)</i></center>
   @endhtmlonly

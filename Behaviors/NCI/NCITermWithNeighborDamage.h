@@ -4,6 +4,9 @@
 #include "NCITermBase.h"
 
 /**
+ * Calculates NCI according to a function that takes into account neighbors
+ * damaged by storms (class clStormDamageApplier).
+ *
  * NCI<sub>i</sub> is calculated as follows (simplifying the notation):
  * @htmlonly
   <center><i>NCI<sub>i</sub> = &Sigma; &eta; &lambda;<sub>k</sub>((DBH<sub>k</sub>/q)<sup>&alpha;</sup>/distance<sup>&beta;</sup>)</i></center>

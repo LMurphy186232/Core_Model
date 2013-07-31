@@ -95,7 +95,7 @@ class clGLIMap : public clGLIBase {
 
   /**
    * Gets the maximum search distance for shading neighbors.
-   * @param Maximum search distance for shading neighbors.
+   * @return Maximum search distance for shading neighbors.
    */
   float GetMaxSearchDistance() {return m_fMaxSearchDistance;};
 

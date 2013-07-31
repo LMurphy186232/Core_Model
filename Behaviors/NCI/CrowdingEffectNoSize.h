@@ -4,6 +4,8 @@
 #include "CrowdingEffectBase.h"
 
 /**
+ * Calculates a crowding effect with no size term.
+ *
  * This class calculates a crowding effect according to the term:
  * @htmlonly
   <center><i>CE = exp(-C * NCI<sup>D</sup>)</i></center>

@@ -16,7 +16,7 @@
 * Jenkins, J.C., D.C. Chojnacky, L.S Heath, and R.A. Birdsey.  2004.
 * Comprehensive Database of Diameter-based Biomass Regressions for North
 * American Tree Species.  United States Department of Agriculture, Forest
-* Service General Technical Report NE-319.  http://www.fs.fed.us/ne
+* Service General Technical Report NE-319.  http://www.nrs.fs.fed.us/
 *
 * The list of equations is in Table 6.  The equations are as follows:
 * <table border=1 cellpadding=5>

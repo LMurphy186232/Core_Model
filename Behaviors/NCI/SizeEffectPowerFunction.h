@@ -6,7 +6,9 @@
 /**
  * Calculates the size effect as a power function.
  * Size Effect is calculated as:
- * <center><i>Size Effect = a * diam<sup>b</sup></i></center>
+ * @htmlonly
+   <center><i>Size Effect = a * diam<sup>b</sup></i></center>
+   @endhtmlonly
  *
  * where:
  * <ul>

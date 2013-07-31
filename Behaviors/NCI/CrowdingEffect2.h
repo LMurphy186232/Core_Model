@@ -4,6 +4,9 @@
 #include "CrowdingEffectBase.h"
 
 /**
+ * Calculates a crowding effect which is a slight variation on the one in
+ * clDefaultCrowdingEffect.
+ *
  * This class calculates a crowding effect according to the term:
  * @htmlonly
   <center>CE = exp(-C * ( diam<sup>&gamma;</sup> * NCI)<sup>D</sup>)</center>

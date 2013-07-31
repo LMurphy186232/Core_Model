@@ -91,7 +91,7 @@ public:
 
   /**
    * Gets the maximum search distance for shading neighbors.
-   * @param Maximum search distance for shading neighbors.
+   * @return Maximum search distance for shading neighbors.
    */
   float GetMaxSearchRad() {return m_fMaxSearchRad;};
 

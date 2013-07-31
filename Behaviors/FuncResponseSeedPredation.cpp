@@ -559,7 +559,7 @@ void clFuncResponseSeedPredation::GetParameterFileData(DOMDocument * p_oDoc) {
     //Throw an error if not positive
     if (m_iNumWeeksSeedFall <= 0)
     {
-      delete[] p_fTempValues;
+      delete[] p_fTempValues; p_fTempValues = NULL;
       modelErr stcErr;
       stcErr.iErrorCode = BAD_DATA;
       stcErr.sFunction = "clFuncResponseSeedPredation::GetParameterFileData";
@@ -572,7 +572,7 @@ void clFuncResponseSeedPredation::GetParameterFileData(DOMDocument * p_oDoc) {
     //Throw an error if not between 0 and 53 (non-inclusive)
     if (m_iNumWeeksToModel <= 0 || m_iNumWeeksToModel > 52)
     {
-      delete[] p_fTempValues;
+      delete[] p_fTempValues; p_fTempValues = NULL;
       modelErr stcErr;
       stcErr.iErrorCode = BAD_DATA;
       stcErr.sFunction = "clFuncResponseSeedPredation::GetParameterFileData";
@@ -585,7 +585,7 @@ void clFuncResponseSeedPredation::GetParameterFileData(DOMDocument * p_oDoc) {
     //Throw an error if not between 0 and 52 (inclusive)
     if (m_iWeekGerminationStarts < 0 || m_iWeekGerminationStarts > 52)
     {
-      delete[] p_fTempValues;
+      delete[] p_fTempValues; p_fTempValues = NULL;
       modelErr stcErr;
       stcErr.iErrorCode = BAD_DATA;
       stcErr.sFunction = "clFuncResponseSeedPredation::GetParameterFileData";
@@ -598,7 +598,7 @@ void clFuncResponseSeedPredation::GetParameterFileData(DOMDocument * p_oDoc) {
     //Throw an error if not between 0 and 52 (inclusive)
     if (m_iWeekSeason2Starts < 0 || m_iWeekSeason2Starts > 52)
     {
-      delete[] p_fTempValues;
+      delete[] p_fTempValues; p_fTempValues = NULL;
       modelErr stcErr;
       stcErr.iErrorCode = BAD_DATA;
       stcErr.sFunction = "clFuncResponseSeedPredation::GetParameterFileData";
@@ -611,7 +611,7 @@ void clFuncResponseSeedPredation::GetParameterFileData(DOMDocument * p_oDoc) {
     //Throw an error if not between 0 and 1 (inclusive)
     if (m_fProportionGerminating < 0 || m_fProportionGerminating > 1)
     {
-      delete[] p_fTempValues;
+      delete[] p_fTempValues; p_fTempValues = NULL;
       modelErr stcErr;
       stcErr.iErrorCode = BAD_DATA;
       stcErr.sFunction = "clFuncResponseSeedPredation::GetParameterFileData";
@@ -630,7 +630,7 @@ void clFuncResponseSeedPredation::GetParameterFileData(DOMDocument * p_oDoc) {
     //Throw an error if not positive
     if (m_fPredatorInitialDensity <= 0)
     {
-      delete[] p_fTempValues;
+      delete[] p_fTempValues; p_fTempValues = NULL;
       modelErr stcErr;
       stcErr.iErrorCode = BAD_DATA;
       stcErr.sFunction = "clFuncResponseSeedPredation::GetParameterFileData";

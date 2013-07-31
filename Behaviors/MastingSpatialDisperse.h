@@ -83,7 +83,7 @@ friend class clTestMastingSpatialDisperse;
 
   /**
    * Gets the number of years since the last mast for a species.
-   * @param Species.
+   * @param iSp Species.
    * @return Number of years since the last mast.
    */
   int GetTimestepsSinceLastMast(int iSp) {return mp_iTimestepsSinceLastMast[iSp];};

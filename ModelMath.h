@@ -177,7 +177,7 @@ class clModelMath {
 
   /**
    * Returns a random number over the inverse Gaussian distribution. I got this
-   * code from http://www.cbr.washington.edu/papers/zabel/index.html, which is
+   * code from http://www.cbr.washington.edu/node/617, which is
    * the dissertation "Spatial and Temporal Models of Migrating Juvenile Salmon
    * with Applications", by Richard W. Zabel, University of Washington.
    *

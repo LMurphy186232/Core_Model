@@ -4,6 +4,8 @@
 #include "NCITermBase.h"
 
 /**
+ * Calculates NCI and allows seedlings to compete.
+ *
  * NCI<sub>i</sub> is calculated as follows (simplifying the notation):
  * @htmlonly
   <center><i>NCI<sub>i</sub> = &Sigma; &lambda;<sub>k</sub>((d10<sub>k</sub>/q)<sup>&alpha;</sup>/distance<sup>&beta;</sup>)</i></center>

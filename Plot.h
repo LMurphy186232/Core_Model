@@ -118,7 +118,7 @@ class clPlot : virtual public clWorkerBase {
 
   /**
    * Sets the annual N deposition.
-   * @param Annual N deposition.
+   * @param fNDep Annual N deposition.
    */
   void SetNDeposition(float fNDep)
   {m_fNDep = fNDep;};

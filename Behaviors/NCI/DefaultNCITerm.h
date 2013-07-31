@@ -4,6 +4,8 @@
 #include "NCITermBase.h"
 
 /**
+ * This calculates NCI for a tree according to the default function.
+ *
  * NCI<sub>i</sub> is calculated as follows (simplifying the notation):
  * @htmlonly
   <center><i>NCI<sub>i</sub> = &Sigma; &lambda;<sub>k</sub>((DBH<sub>k</sub>/q)<sup>&alpha;</sup>/distance<sup>&beta;</sup>)</i></center>
