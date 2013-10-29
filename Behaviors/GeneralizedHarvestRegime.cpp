@@ -155,6 +155,7 @@ void clGeneralizedHarvestRegime::Action()
   float *p_fPlotCutProb = new float[m_iNumSpecies];
   float fAmtBAToCut,  //target amount of plot BA to cut
         fPercentBAToCut, //target percentage of plot BA to cut
+        fPercentBAToCutMean,
         fThisBA,
         fCutProbSigma,
         fCutProb,
@@ -170,11 +171,22 @@ void clGeneralizedHarvestRegime::Action()
   //*****************************
   //Calculate the proportion of BA to remove (the correct value, either total
   //biomass or total BA, is held in m_fTotalBiomass)
-  fPercentBAToCut = m_fRemoveA * exp(-m_fRemoveM * pow(m_fTotalBiomass, m_fRemoveB));
-  if (fPercentBAToCut <= 0) return;
-  fPercentBAToCut = clModelMath::GammaRandomDraw(fPercentBAToCut, m_fScale);
+  fPercentBAToCutMean = m_fRemoveA * exp(-m_fRemoveM * pow(m_fTotalBiomass, m_fRemoveB));
+  if (fPercentBAToCutMean <= 0) return;
+
+  //Cut it off at 100 draws; after that we'll go with 100
+  i = 0;
+  do {
+    fPercentBAToCut = clModelMath::GammaRandomDraw(fPercentBAToCutMean, m_fScale);
+    i++;
+  } while (fPercentBAToCut > 100 && i < 100);
+  if (i == 99 && fPercentBAToCut > 100) fPercentBAToCut = 100;
+
+  //LEM: Specifically don't do this next step - rounding down to 100 means that
+  //the entire tail of the gamma >= 100 is artificially lumped at 100. That's
+  //why we throw out values greater than 100 and draw again.
   //Bound the result between zero and one hundred
-  fPercentBAToCut = fPercentBAToCut > 100 ? 100 : fPercentBAToCut;
+  //fPercentBAToCut = fPercentBAToCut > 100 ? 100 : fPercentBAToCut;
   fPercentBAToCut = fPercentBAToCut < 0 ? 0 : fPercentBAToCut;
   //Multiply by the total amount of basal area to get the actual target
   fAmtBAToCut = fPercentBAToCut * 0.01 * m_fTotalBA; //convert from percent to proportion

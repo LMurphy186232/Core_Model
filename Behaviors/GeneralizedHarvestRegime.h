@@ -57,6 +57,8 @@ using namespace whyDead;
 * <br>-----------------
 * <br>January 16, 2011 - Created (LEM)
 * <br>July 7, 2013 - Added flag for BA or Biomass and made version 1.1 (LEM)
+* <br>September 27, 2013 - Added gamma redraw if above 100, rather than a cap
+* at 100 (which artificially raises the chances of 100) (LEM)
 */
 class clGeneralizedHarvestRegime : virtual public clBehaviorBase {
 

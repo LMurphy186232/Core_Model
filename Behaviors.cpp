@@ -108,6 +108,7 @@
 #include "GeneralizedHarvestRegime.h"
 #include "SuppressionDurationMort.h"
 #include "QualityVigorClassifier.h"
+#include "BBDInfestation.h"
 //Test objects
 #include "RandomSeedLogger.h"
 
@@ -1006,6 +1007,11 @@ void clBehaviorManager::CreateBehavior(behaviorData * p_data)
     else if (p_data->sNameString.compare("GeneralizedHarvestRegime") == 0)
     {
       clGeneralizedHarvestRegime * p_oObj = new clGeneralizedHarvestRegime(mp_oSimManager);
+      mp_oObjectArray[iIndex] = p_oObj;
+    }
+    else if (p_data->sNameString.compare("BBDInfestation") == 0)
+    {
+      clBBDInfestation * p_oObj = new clBBDInfestation(mp_oSimManager);
       mp_oObjectArray[iIndex] = p_oObj;
     }
     else if (p_data->sNameString.compare("QualityVigorClassifier") == 0)
