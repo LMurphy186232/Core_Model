@@ -29,6 +29,8 @@ class clTreePopulation;
 * <br>-----------------
 * <br>October 20, 2011 - Wiped the slate clean for SORTIE 7.0; created
 * version 2.0 (LEM)
+* <br>May 18, 2015 - Changed GetParentParametersElement so it wasn't an
+* error if element was not found (LEM)
 */
 class clBehaviorBase : virtual public clWorkerBase{
 
@@ -191,13 +193,13 @@ public:
   * pass to clTreePopulation::Find() in order to get the trees to act on.
   * @return Query string.
   */
-// string FormatSpeciesTypeQueryString();
+ std::string FormatSpeciesTypeQueryString();
 
   /**
    * This will get the correct set of parameters for this behavior based on
    * the behavior list position number.
    * @param p_oDoc Parsed XML doc.
-   * @return DOMElement corresponding to this behavior.
+   * @return DOMElement corresponding to this behavior; NULL if not found.
    */
   virtual DOMElement* GetParentParametersElement(xercesc::DOMDocument *p_oDoc);
 

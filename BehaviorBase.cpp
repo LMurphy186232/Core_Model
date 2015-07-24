@@ -244,13 +244,14 @@ DOMElement* clBehaviorBase::GetParentParametersElement(xercesc::DOMDocument *p_o
   p_oNodeList = p_oDoc->getElementsByTagName(sVal);
   XMLString::release(&sVal);
   if (0 == p_oNodeList->getLength()) {
-    modelErr stcErr;
+    /*modelErr stcErr;
     stcErr.iErrorCode = DATA_MISSING;
     stcErr.sFunction = "clBehaviorBase::GetParentParametersElement";
     std::stringstream s;
     s << m_sXMLRoot << m_iBehaviorListNumber;
     stcErr.sMoreInfo = s.str();
-    throw (&stcErr);
+    throw (&stcErr);*/
+    return NULL;
   }
 
   p_oDocNode = p_oNodeList->item(0);
@@ -260,9 +261,9 @@ DOMElement* clBehaviorBase::GetParentParametersElement(xercesc::DOMDocument *p_o
 ////////////////////////////////////////////////////////////////////////////
 // FormatSpeciesTypeQueryString()
 ////////////////////////////////////////////////////////////////////////////
-/*string clBehaviorBase::FormatSpeciesTypeQueryString()
+std::string clBehaviorBase::FormatSpeciesTypeQueryString()
 {
-  string sQuery;
+  std::string sQuery;
   char cQueryPiece[5]; //for assembling the search query
   int i;
   bool bSeedling = false, bSapling = false, bAdult = false, bSnag = false;
@@ -321,7 +322,7 @@ DOMElement* clBehaviorBase::GetParentParametersElement(xercesc::DOMDocument *p_o
 
   //Remove the last comma
   return sQuery.substr(0, sQuery.length() - 1);
-}*/
+}
 
 
 /////////////////////////////////////////////////////////////////////////////
