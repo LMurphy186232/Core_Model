@@ -9,6 +9,8 @@
 #include "GrowthOrg.h"
 #include "Allometry.h"
 
+#define MINDIAM 0.001
+
 //////////////////////////////////////////////////////////////////////////////
 // Constructor
 /////////////////////////////////////////////////////////////////////////////*/
@@ -208,7 +210,7 @@ void clPRStormBiLevelGrowth::DoShellSetup( DOMDocument * p_oDoc )
 /////////////////////////////////////////////////////////////////////////////*/
 float clPRStormBiLevelGrowth::CalcDiameterGrowthValue(clTree *p_oTree, clTreePopulation *p_oPop, float fHeightGrowth) {
   clAllometry *p_oAllom;
-  float fLightLevel, fDiam, fX, fY, fNumYears, fHeight;
+  float fLightLevel, fDiam, fX, fY, fNumYears, fHeight, fGrowth;
   int iSp = p_oTree->GetSpecies(), iTp = p_oTree->GetType();
 
   //Get the storm light level at the tree's location
@@ -222,7 +224,9 @@ float clPRStormBiLevelGrowth::CalcDiameterGrowthValue(clTree *p_oTree, clTreePop
 
   //Calculate the function value according to the light level
   if (fLightLevel < mp_fHiLightThreshold[mp_iIndexes[iSp]]) {
-    return m_fYearsPerTimestep * clModelMath::CalcPointValue(fDiam, mp_fLoLightSlope[mp_iIndexes[iSp]], mp_fLoLightIntercept[mp_iIndexes[iSp]]);
+    fGrowth = m_fYearsPerTimestep * clModelMath::CalcPointValue(fDiam, mp_fLoLightSlope[mp_iIndexes[iSp]], mp_fLoLightIntercept[mp_iIndexes[iSp]]);
+    if (fDiam + fGrowth < MINDIAM) fGrowth = fDiam - MINDIAM;
+    return fGrowth;
   }
 
   p_oAllom = p_oPop->GetAllometryObject();

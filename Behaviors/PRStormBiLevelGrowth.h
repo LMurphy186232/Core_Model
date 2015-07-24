@@ -56,6 +56,7 @@ class clGrid;
 * <br>Edit history:
 * <br>-----------------
 * <br>October 20, 2011 - Wiped the slate clean for SORTIE 7.0 (LEM)
+* <br>March 17, 2015 - Trapped for setting growth too small (LEM)
 */
 class clPRStormBiLevelGrowth : virtual public clGrowthBase {
 //note: need the virtual keyword to avoid base class ambiguity.
@@ -137,6 +138,8 @@ class clPRStormBiLevelGrowth : virtual public clGrowthBase {
   /** Conversion factor to translate the results of the function to the
   * appropriate units per timestep*/
   float m_fYearsPerTimestep;
+
+  /** Minimum size of seedling, to avoid setting smaller than this */
 
   /** Code for the "Light" data member of the "Storm Light" grid*/
   int m_iLightCode;
