@@ -12,6 +12,10 @@
 clGeneralizedHarvestRegime::clGeneralizedHarvestRegime( clSimManager * p_oSimManager ) : clWorkerBase( p_oSimManager ), clBehaviorBase( p_oSimManager )
 {
 
+//#ifdef DEBUG_GEN_HARV
+//  out = std::fstream();
+//#endif
+
   m_sNameString = "GeneralizedHarvestRegime";
   m_sXMLRoot = "GeneralizedHarvestRegime";
 
@@ -22,6 +26,7 @@ clGeneralizedHarvestRegime::clGeneralizedHarvestRegime( clSimManager * p_oSimMan
   m_iReasonCode = harvest;
 
   m_iNewTreeBools = 1;
+  m_iNumUserDefDistSizeClasses = 10;
 
   mp_iBiomassCode = NULL;
   mp_fCutProbAlpha = NULL;
@@ -29,23 +34,30 @@ clGeneralizedHarvestRegime::clGeneralizedHarvestRegime( clSimManager * p_oSimMan
   mp_fCutProbGamma = NULL;
   mp_fCutProbMu = NULL;
   mp_iHarvestCode = NULL;
+  mp_fCutAmtIntensityClasses = NULL;
+  mp_fCutAmtIntensityClassProb = NULL;
 
-  m_fRemoveM = 0;
+  m_fGammaMeanRemoveM = 0;
   m_fLogProbB = 0;
   m_iNumSpecies = 0;
   m_fTotalBiomass = 0;
   m_fLogProbA = 0;
   m_fCutProbC = 0;
   m_fScale = 0;
-  m_fRemoveA = 0;
+  m_fGammaMeanRemoveA = 0;
   mp_oPop = NULL;
-  m_fRemoveB = 0;
+  m_fGammaMeanRemoveB = 0;
   m_fCutProbB = 0;
   m_fLogProbM = 0;
   m_fTotalBA = 0;
   m_fAllowedRange = 0;
   m_fCutProbA = 0;
   m_bUseBiomass = true;
+  m_bSaplingMortality = false;
+  m_bUseGammaDist = true;
+  m_fSapP = 0;
+  m_fSapM = 0;
+  m_fSapN = 0;
 
   //Allowed file types
   m_iNumAllowedTypes = 2;
@@ -60,12 +72,18 @@ clGeneralizedHarvestRegime::clGeneralizedHarvestRegime( clSimManager * p_oSimMan
 /////////////////////////////////////////////////////////////////////////////
 clGeneralizedHarvestRegime::~clGeneralizedHarvestRegime()
 {
+
+#ifdef DEBUG_GEN_HARV
+  out.close();
+#endif
   delete[] mp_iBiomassCode;
   delete[] mp_fCutProbAlpha;
   delete[] mp_fCutProbBeta;
   delete[] mp_fCutProbGamma;
   delete[] mp_fCutProbMu;
   delete[] mp_iHarvestCode;
+  delete[] mp_fCutAmtIntensityClasses;
+  delete[] mp_fCutAmtIntensityClassProb;
 }
 
 
@@ -76,10 +94,13 @@ void clGeneralizedHarvestRegime::ReadHarvestParameterFileData( xercesc::DOMDocum
 {
   DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
 
-  mp_fCutProbAlpha = new float[m_iNumSpecies];
-  mp_fCutProbBeta = new float[m_iNumSpecies];
-  mp_fCutProbGamma = new float[m_iNumSpecies];
-  mp_fCutProbMu = new float[m_iNumSpecies];
+  mp_fCutProbAlpha = new double[m_iNumSpecies];
+  mp_fCutProbBeta = new double[m_iNumSpecies];
+  mp_fCutProbGamma = new double[m_iNumSpecies];
+  mp_fCutProbMu = new double[m_iNumSpecies];
+
+  //------------------------------------
+  // Logging probability parameters
 
   // Logging probability A
   FillSingleValue( p_oElement, "di_genHarvLogProbA", &m_fLogProbA, true);
@@ -90,31 +111,117 @@ void clGeneralizedHarvestRegime::ReadHarvestParameterFileData( xercesc::DOMDocum
   // Logging probability M
   FillSingleValue( p_oElement, "di_genHarvLogProbM", &m_fLogProbM, true);
 
-  // Amount to remove alpha
-  FillSingleValue( p_oElement, "di_genHarvLogRemoveAlpha", &m_fRemoveA, true);
+  //------------------------------------
+  // Remove amount probability distribution
 
-  // Amount to remove beta
-    FillSingleValue( p_oElement, "di_genHarvLogRemoveBeta", &m_fRemoveB, true);
+  //Which distribution are we using?
+  FillSingleValue( p_oElement, "di_genHarvRemoveDist", & m_bUseGammaDist, false );
 
-  // Amount to remove mu
-  FillSingleValue( p_oElement, "di_genHarvLogRemoveMu", &m_fRemoveM, true);
+  if (m_bUseGammaDist) {
+    // *** Using gamma ***
 
-  // Gamma scale parameter
-  FillSingleValue( p_oElement, "di_genHarvGammaScale", &m_fScale, true);
+    // Amount to remove alpha
+    FillSingleValue( p_oElement, "di_genHarvLogRemoveAlpha", &m_fGammaMeanRemoveA, true);
 
-  // Cut probability alpha - species specific-->
+    // Amount to remove beta
+    FillSingleValue( p_oElement, "di_genHarvLogRemoveBeta", &m_fGammaMeanRemoveB, true);
+
+    // Amount to remove mu
+    FillSingleValue( p_oElement, "di_genHarvLogRemoveMu", &m_fGammaMeanRemoveM, true);
+
+    // Gamma scale parameter
+    FillSingleValue( p_oElement, "di_genHarvGammaScale", &m_fScale, true);
+
+  } else {
+    // *** Using user-defined ***
+
+    mp_fCutAmtIntensityClasses = new double[m_iNumUserDefDistSizeClasses];
+    mp_fCutAmtIntensityClassProb = new double[m_iNumUserDefDistSizeClasses];
+    double *p1 = mp_fCutAmtIntensityClasses, *p2 = mp_fCutAmtIntensityClassProb;
+    double fTemp = 0;
+    std::stringstream sLabel;
+    int i;
+    //Get first 9 values
+    for (i = 0; i < (m_iNumUserDefDistSizeClasses-1); i++) {
+      sLabel << "di_genHarvIntensClass" << (i+1);
+      FillSingleValue( p_oElement, sLabel.str(), p1, true);
+      sLabel.str("");
+      sLabel << "di_genHarvIntensClassProb" << (i+1);
+      FillSingleValue( p_oElement, sLabel.str(), p2, true);
+      sLabel.str("");
+      p1++;
+      p2++;
+    }
+    //The last intensity class must be 1, so don't even bother to read it.
+    //Get the last probability though
+    mp_fCutAmtIntensityClasses[(m_iNumUserDefDistSizeClasses-1)] = 1.0;
+    sLabel << "di_genHarvIntensClassProb" << m_iNumUserDefDistSizeClasses;
+    FillSingleValue( p_oElement, sLabel.str(), p2, true);
+    sLabel.str("");
+
+    //Make sure all the intensity classes and harvest probabilities are between
+    //0 and 1, and that all intensity classes are larger than the previous
+    //class
+    for (i = 0; i < m_iNumUserDefDistSizeClasses; i++) {
+      if (mp_fCutAmtIntensityClasses[i] < 0 ||
+          mp_fCutAmtIntensityClasses[i] > 1) {
+        modelErr stcErr;
+        stcErr.iErrorCode = BAD_DATA;
+        stcErr.sFunction = "clGeneralizedHarvestRegime::ReadHarvestParameterFileData";
+        stcErr.sMoreInfo = "All values for harvest intensity classes must be between 0 and 1.";
+        throw( stcErr );
+      }
+
+      if (mp_fCutAmtIntensityClassProb[i] < 0 ||
+          mp_fCutAmtIntensityClassProb[i] > 1) {
+        modelErr stcErr;
+        stcErr.iErrorCode = BAD_DATA;
+        stcErr.sFunction = "clGeneralizedHarvestRegime::ReadHarvestParameterFileData";
+        stcErr.sMoreInfo = "All values for harvest intensity class probabilities must be between 0 and 1.";
+        throw( stcErr );
+      }
+      fTemp += mp_fCutAmtIntensityClassProb[i];
+    }
+    if (abs(fTemp - 1) > 0.001) {
+      modelErr stcErr;
+      stcErr.iErrorCode = BAD_DATA;
+      stcErr.sFunction = "clGeneralizedHarvestRegime::ReadHarvestParameterFileData";
+      stcErr.sMoreInfo = "Harvest intensity class probabilities must add up to 1.";
+      throw( stcErr );
+    }
+
+    for (i = 1; i < m_iNumUserDefDistSizeClasses; i++) {
+      if (mp_fCutAmtIntensityClasses[i] <= mp_fCutAmtIntensityClasses[i-1]) {
+        modelErr stcErr;
+        stcErr.iErrorCode = BAD_DATA;
+        stcErr.sFunction = "clGeneralizedHarvestRegime::ReadHarvestParameterFileData";
+        stcErr.sMoreInfo = "Harvest intensity classes must be ordered from lowest to highest.";
+        throw( stcErr );
+      }
+    }
+
+    //Make the user distribution cumulative
+    for (i = 1; i < m_iNumUserDefDistSizeClasses; i++) {
+      mp_fCutAmtIntensityClassProb[i] += mp_fCutAmtIntensityClassProb[i-1];
+    }
+  }
+
+  //------------------------------------
+  // Cut preference parameters
+
+  // Cut probability alpha - species specific
   FillSpeciesSpecificValue( p_oElement, "di_genHarvLogCutProbAlpha",
       "di_ghlcpaVal", mp_fCutProbAlpha, mp_oPop, true );
 
-  // Cut probability beta - species specific-->
+  // Cut probability beta - species specific
   FillSpeciesSpecificValue( p_oElement, "di_genHarvLogCutProbBeta",
       "di_ghlcpbVal", mp_fCutProbBeta, mp_oPop, true );
 
-  // Cut probability gamma - species specific-->
+  // Cut probability gamma - species specific
   FillSpeciesSpecificValue( p_oElement, "di_genHarvLogCutProbGamma",
       "di_ghlcpgVal", mp_fCutProbGamma, mp_oPop, true );
 
-  // Cut probability mu - species specific-->
+  // Cut probability mu - species specific
   FillSpeciesSpecificValue( p_oElement, "di_genHarvLogCutProbMu",
       "di_ghlcpmVal", mp_fCutProbMu, mp_oPop, true );
 
@@ -132,6 +239,16 @@ void clGeneralizedHarvestRegime::ReadHarvestParameterFileData( xercesc::DOMDocum
 
   //Whether to use biomass (true) or basal area (false)
   FillSingleValue( p_oElement, "di_genHarvUseBiomassOrBA", & m_bUseBiomass, true );
+
+  //Whether to implement sapling mortality
+  FillSingleValue( p_oElement, "di_genHarvDoSaplingMort", & m_bSaplingMortality, false );
+
+  //If we're using sapling mortality, get the parameters
+  if (m_bSaplingMortality) {
+    FillSingleValue( p_oElement, "di_genHarvSapMortP", &m_fSapP, true);
+    FillSingleValue( p_oElement, "di_genHarvSapMortM", &m_fSapM, true);
+    FillSingleValue( p_oElement, "di_genHarvSapMortN", &m_fSapN, true);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -139,6 +256,16 @@ void clGeneralizedHarvestRegime::ReadHarvestParameterFileData( xercesc::DOMDocum
 //////////////////////////////////////////////////////////////////////////////
 void clGeneralizedHarvestRegime::GetData( xercesc::DOMDocument * p_oDoc )
 {
+
+#ifdef DEBUG_GEN_HARV
+    using namespace std;
+    char cFilename[100];
+    std::string sfile = mp_oSimManager->GetParFilename();
+    sprintf(cFilename, "%s%s", sfile.c_str(),"GenHarv.txt");
+    out.open( cFilename, ios::trunc | ios::out );
+    out << "Timestep\tDesired PC\tDesired BA\tFirst Pass BA\tFinal BA\n";
+#endif
+
   ReadHarvestParameterFileData( p_oDoc );
   GetDataCodes();
 }
@@ -152,44 +279,32 @@ void clGeneralizedHarvestRegime::Action()
   sprintf(cQuery, "%s%d", "type=", clTreePopulation::adult);
   clTreeSearch *p_oAdults = mp_oPop->Find(cQuery);
   clTree *p_oTree = p_oAdults->NextTree(), *p_oNextTree;
-  float *p_fPlotCutProb = new float[m_iNumSpecies];
-  float fAmtBAToCut,  //target amount of plot BA to cut
+  double *p_fPlotCutProb = new double[m_iNumSpecies];
+  double fAmtBAToCut,  //target amount of plot BA to cut
         fPercentBAToCut, //target percentage of plot BA to cut
-        fPercentBAToCutMean,
         fThisBA,
         fCutProbSigma,
         fCutProb,
         fCorrectionFactor,
-        fBARemoved = 0,
-        fDbh;
+        fBARemoved = 0;
+  float fDbh;
   int i, iSp;
   bool bIsHarvested;
 
   //Are we harvesting this timestep? If not, exit
-  if (!CutThisTimestep()) return;
+  if (!CutThisTimestep()) {
+    delete[] p_fPlotCutProb;
+    #ifdef DEBUG_GEN_HARV
+      out << mp_oSimManager->GetCurrentTimestep() << "\t0\t0\t0\t0\n";
+    #endif
+    return;
+  }
 
-  //*****************************
-  //Calculate the proportion of BA to remove (the correct value, either total
-  //biomass or total BA, is held in m_fTotalBiomass)
-  fPercentBAToCutMean = m_fRemoveA * exp(-m_fRemoveM * pow(m_fTotalBiomass, m_fRemoveB));
-  if (fPercentBAToCutMean <= 0) return;
-
-  //Cut it off at 100 draws; after that we'll go with 100
-  i = 0;
-  do {
-    fPercentBAToCut = clModelMath::GammaRandomDraw(fPercentBAToCutMean, m_fScale);
-    i++;
-  } while (fPercentBAToCut > 100 && i < 100);
-  if (i == 99 && fPercentBAToCut > 100) fPercentBAToCut = 100;
-
-  //LEM: Specifically don't do this next step - rounding down to 100 means that
-  //the entire tail of the gamma >= 100 is artificially lumped at 100. That's
-  //why we throw out values greater than 100 and draw again.
-  //Bound the result between zero and one hundred
-  //fPercentBAToCut = fPercentBAToCut > 100 ? 100 : fPercentBAToCut;
-  fPercentBAToCut = fPercentBAToCut < 0 ? 0 : fPercentBAToCut;
-  //Multiply by the total amount of basal area to get the actual target
-  fAmtBAToCut = fPercentBAToCut * 0.01 * m_fTotalBA; //convert from percent to proportion
+  fPercentBAToCut = GetPercentToCut();
+  fAmtBAToCut = fPercentBAToCut * 0.01 * m_fTotalBA; //convert from % to proportion
+  #ifdef DEBUG_GEN_HARV
+      out << mp_oSimManager->GetCurrentTimestep() << "\t" << fPercentBAToCut << "\t" << fAmtBAToCut << "\t";
+  #endif
 
   //******************************
   //Calculate the non size dependent portions of the cut probability
@@ -220,17 +335,25 @@ void clGeneralizedHarvestRegime::Action()
 
   } //end of while (p_oTree)
 
+   #ifdef DEBUG_GEN_HARV
+      out << fBARemoved << "\t";
+  #endif
+
   //*****************************
   //Second harvesting pass, if needed
   if ((fabs(fBARemoved - fAmtBAToCut) / fAmtBAToCut) >= m_fAllowedRange) {
     p_oAdults->StartOver();
     p_oTree = p_oAdults->NextTree();
     fCorrectionFactor = fAmtBAToCut / fBARemoved;
+    fBARemoved = 0;
     if (fCorrectionFactor < 1) { //too much cut - put some back
       while ( p_oTree ) {
         iSp = p_oTree->GetSpecies();
-        p_oTree->GetValue(mp_iHarvestCode[iSp], &bIsHarvested);
-        if (bIsHarvested) {
+//        p_oTree->GetValue(mp_iHarvestCode[iSp], &bIsHarvested);
+        //NOTE: DON'T WORK ONLY ON HARVESTED TREES. The correction factor
+        //is an all-plot correction factor. If you take only the harvested
+        //trees you will way underestimate the amount to remove.
+//        if (bIsHarvested) {
 
           //Calculate cut probability
           p_oTree->GetValue(mp_oPop->GetDbhCode(iSp, p_oTree->GetType()), &fDbh);
@@ -244,14 +367,14 @@ void clGeneralizedHarvestRegime::Action()
             fThisBA = clModelMath::CalculateBasalArea( fDbh );
             fBARemoved += fThisBA;
           } else p_oTree->SetValue(mp_iHarvestCode[iSp], false);
-        }
+//        }
         p_oTree = p_oAdults->NextTree();
       } //end of while (p_oTree)
     } else { //too little cut - get some more
       while ( p_oTree ) {
         iSp = p_oTree->GetSpecies();
-        p_oTree->GetValue(mp_iHarvestCode[iSp], &bIsHarvested);
-        if (!bIsHarvested) {
+//        p_oTree->GetValue(mp_iHarvestCode[iSp], &bIsHarvested);
+        //if (!bIsHarvested) {
           //Calculate cut probability
           p_oTree->GetValue(mp_oPop->GetDbhCode(iSp, p_oTree->GetType()), &fDbh);
           fCutProb = p_fPlotCutProb[iSp] *
@@ -264,11 +387,15 @@ void clGeneralizedHarvestRegime::Action()
             fThisBA = clModelMath::CalculateBasalArea( fDbh );
             fBARemoved += fThisBA;
           } else p_oTree->SetValue(mp_iHarvestCode[iSp], false);
-        }
+       // }
         p_oTree = p_oAdults->NextTree();
       } //end of while (p_oTree)
     }
   }
+
+#ifdef DEBUG_GEN_HARV
+  out << fBARemoved << "\n";
+#endif
 
   //Killing pass
   p_oAdults->StartOver();
@@ -280,6 +407,28 @@ void clGeneralizedHarvestRegime::Action()
     p_oTree = p_oNextTree;
   } //end of while (p_oTree)
   delete[] p_fPlotCutProb;
+
+  //Sapling mortality, if applicable; I'm re-using some variables here
+  if (m_bSaplingMortality) {
+
+    //Get the percent of basal area removed
+    fPercentBAToCut = 100.0 * fBARemoved / m_fTotalBA;
+
+    //Get the probability of sapling mortality
+    fCutProb = m_fSapP + ((1-m_fSapP)/(1 + pow(fPercentBAToCut/m_fSapM, m_fSapN)));
+
+    //Get all the saplings
+    sprintf(cQuery, "%s%d", "type=", clTreePopulation::sapling);
+    p_oAdults = mp_oPop->Find(cQuery);
+    p_oTree = p_oAdults->NextTree();
+    while ( p_oTree ) {
+
+      if (clModelMath::GetRand() <= fCutProb) {
+        mp_oPop->KillTree(p_oTree, m_iReasonCode);
+      }
+      p_oTree = p_oAdults->NextTree();
+    }
+  }
 }
 
 
@@ -400,4 +549,70 @@ void clGeneralizedHarvestRegime::RegisterTreeDataMembers()
       stcErr.iErrorCode = BAD_DATA;
       throw( stcErr );
     }
+}
+
+////////////////////////////////////////////////////////////////////////////
+// GetPercentToCut()
+////////////////////////////////////////////////////////////////////////////
+double clGeneralizedHarvestRegime::GetPercentToCut()
+{
+  double fPercentBAToCutMean,
+         fPercentBAToCut;
+  int i;
+
+  //Which distribution function are we using?
+  if (m_bUseGammaDist) {
+    //*****************************
+    // Gamma distribution
+    //*****************************
+    //Calculate the proportion of BA to remove (the correct value, either total
+    //biomass or total BA, is held in m_fTotalBiomass)
+    fPercentBAToCutMean = m_fGammaMeanRemoveA * exp(-m_fGammaMeanRemoveM * pow(m_fTotalBiomass, m_fGammaMeanRemoveB));
+    if (fPercentBAToCutMean <= 0) return 0;
+
+    //Cut it off at 100 draws; after that we'll go with 100
+    i = 0;
+    do {
+      fPercentBAToCut = clModelMath::GammaRandomDraw(fPercentBAToCutMean, m_fScale);
+      i++;
+    } while (fPercentBAToCut > 100 && i < 100);
+    if (i == 99 && fPercentBAToCut > 100) fPercentBAToCut = 100;
+
+    //LEM: Specifically don't do this next step - rounding down to 100 means that
+    //the entire tail of the gamma >= 100 is artificially lumped at 100. That's
+    //why we throw out values greater than 100 and draw again.
+    //Bound the result between zero and one hundred
+    //fPercentBAToCut = fPercentBAToCut > 100 ? 100 : fPercentBAToCut;
+    fPercentBAToCut = fPercentBAToCut < 0 ? 0 : fPercentBAToCut;
+
+  } else {
+
+    //*****************************
+    // User-defined distribution
+    //*****************************
+    //Get a random number on a uniform distribution between 0 and 1 to find
+    //the intensity class we're in
+    float fRand = clModelMath::GetRand();
+    double fUpperBound, fLowerBound;
+    i = 0;
+    for (i = 0; i < m_iNumUserDefDistSizeClasses; i++) {
+      if (mp_fCutAmtIntensityClassProb[i] > 0 &&
+         fRand <= mp_fCutAmtIntensityClassProb[i]) {
+        break;
+      }
+    }
+
+    if (i >= m_iNumUserDefDistSizeClasses) i = m_iNumUserDefDistSizeClasses-1;
+
+    //Get the upper and lower bounds of the intensity class
+    fUpperBound = mp_fCutAmtIntensityClasses[i];
+    if (i == 0) fLowerBound = 0;
+    else fLowerBound = mp_fCutAmtIntensityClasses[i-1];
+
+    //Get a random value on a uniform distribution within those bounds
+    fRand = clModelMath::GetRand();
+    fPercentBAToCut = fLowerBound + fRand * (fUpperBound - fLowerBound);
+    fPercentBAToCut *= 100.0; //convert from proportion to percent
+  }
+  return fPercentBAToCut;
 }
