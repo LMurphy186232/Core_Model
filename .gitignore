@@ -1,2 +1,10 @@
 /Debug
 /Release
+
+*.a
+*.la
+*.lai
+*.exe
+*.o
+.cproject
+*.xml
