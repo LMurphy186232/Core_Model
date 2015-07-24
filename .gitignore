@@ -1,5 +1,5 @@
-/Debug
-/Release
+Debug
+Release
 
 *.a
 *.la
@@ -8,3 +8,4 @@
 *.o
 .cproject
 *.xml
+.cproject
