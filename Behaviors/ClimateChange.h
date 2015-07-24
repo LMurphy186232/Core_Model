@@ -23,6 +23,9 @@ class clGrid;
 *
 * The user can set upper and lower bounds on the climate variable.
 *
+* If this is updating precipitation, the user has the option to update the
+* seasonal precipitation by the same proportion of change.
+*
 * This class's namestring is "climate change". The parameter file call string
 * for the temperature version is "TemperatureClimateChange". For
 * precipitation, it's "PrecipitationClimateChange".
@@ -33,6 +36,7 @@ class clGrid;
   <br>Edit history:
   <br>-----------------
   <br>October 20, 2011 - Wiped the slate clean for SORTIE 7.0 (LEM)
+  <br>November 11, 2013 - Added updating of other precip variables (LEM)
 */
 class clClimateChange : virtual public clBehaviorBase {
 //note: need the virtual keyword to avoid base class ambiguity.
@@ -97,6 +101,9 @@ class clClimateChange : virtual public clBehaviorBase {
 
   /** Whether this is for temperature (True) or precipitation (False).*/
   bool m_bIsTemp;
+
+  /** Whether to update the other precip variables. */
+  bool m_bUpdateAllPrecip;
 
 };
 //---------------------------------------------------------------------------

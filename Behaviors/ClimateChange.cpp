@@ -36,6 +36,7 @@ clClimateChange::clClimateChange(clSimManager * p_oSimManager) : clWorkerBase( p
     m_fMin = 0;
     m_fMax = 0;
     m_bIsTemp = false;
+    m_bUpdateAllPrecip = false;
   }
   catch (modelErr& err)
   {
@@ -76,6 +77,7 @@ void clClimateChange::GetData(DOMDocument * p_oDoc)
       FillSingleValue(p_oElement, "sc_climateChangePrecipC", &m_fC, true);
       FillSingleValue(p_oElement, "sc_climateChangeMinPrecip", &m_fMin, true);
       FillSingleValue(p_oElement, "sc_climateChangeMaxPrecip", &m_fMax, true);
+      FillSingleValue(p_oElement, "sc_climateChangeOtherPrecip", &m_bUpdateAllPrecip, true);
       m_fStartingValue = p_oPlot->GetMeanAnnualPrecip();
     }
 
@@ -116,7 +118,20 @@ void clClimateChange::Action()
   if (m_bIsTemp) {
     p_oPlot->SetMeanAnnualTemp(fNewValue);
   } else {
+
+    if (m_bUpdateAllPrecip) {
+      //We're updating seasonal precip - find the proportion change in value
+      float fCurrent = p_oPlot->GetMeanAnnualPrecip(),
+            fPropChange = (fNewValue - fCurrent) / fCurrent,
+            fSeasPrecip = p_oPlot->GetSeasonalPrecipitation();
+
+      fSeasPrecip = fSeasPrecip + (fPropChange * fSeasPrecip);
+
+      p_oPlot->SetSeasonalPrecipitation(fSeasPrecip);
+    }
+
     p_oPlot->SetMeanAnnualPrecip(fNewValue);
+
   }
   m_fTimeElapsed += m_fTimestepLength;
 }
