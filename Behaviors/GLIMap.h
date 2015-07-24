@@ -41,6 +41,8 @@ class clTreePopulation;
  * <br>Edit history:
  * <br>-----------------
  * <br>October 20, 2011 - Wiped the slate clean for SORTIE 7.0 (LEM)
+ * <br>May 14, 2015 - Made it so multiple copies of this behavior will each
+ * have their own grid map (LEM)
 */
 class clGLIMap : public clGLIBase {
 
@@ -102,10 +104,10 @@ class clGLIMap : public clGLIBase {
  protected:
 
   /**
-  * Grid object which holds the GLI values.  The name of the grid is "GLI Map".
-  * There is one float data member ("GLI") for holding GLI as a value from 0 to
-  * 100.  Grid data in the parameter file can only set cell resolution; any map
-  * values will be ignored.
+  * Grid object which holds the GLI values.  The name of the grid is "GLI Map X",
+  * where X is the behavior order number. There is one float data member ("GLI")
+  * for holding GLI as a value from 0 to 100.  Grid data in the parameter file
+  * can only set cell resolution; any map values will be ignored.
   */
   clGrid *mp_oMapGrid;
 

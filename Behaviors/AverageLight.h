@@ -15,11 +15,16 @@ class clTreePopulation;
 *
 * This behavior averages light values taken over a finer scale to a coarser
 * resolution.  It gets the light levels for averaging from the GLI Map
-* Creator's grid (class clGLIMap).  This grid is called "GLI Map".
+* Creator's grid (class clGLIMap). This grid is called "GLI Map X" where X
+* is the position in the behavior list. This will average the
+* first GLI Map X grid that it finds. Putting multiple copies of the GLI Map
+* Creator in a run would be a problem: because of the clLightOrg hooking
+* process, it is impossible to guarantee that all copies of GLI Map
+* Creator will run before Average Light.
 *
-* The Average Light behavior also has a grid, called "Average Light".  The user
-* sets the grid resolution on this grid to control the area over which light
-* is averaged, up to the whole plot.
+* The Average Light behavior produces one grid, called "Average Light".
+* The user sets the grid resolution on this grid to control the area over
+* which light is averaged, up to the whole plot.
 *
 * If the grid cell area of Average Light is not an exact multiple of the GLI
 * Map grid cell area, then the averaging will be over all the cells touched by
@@ -35,6 +40,7 @@ class clTreePopulation;
 * <br>Edit history:
 * <br>-----------------
 * <br>October 20, 2011 - Wiped the slate clean for SORTIE 7.0 (LEM)
+* <br>May 18, 20145 - Added support for multiple GLI Map grids (LEM)
 */
 class clAverageLight : virtual public clLightBase {
 

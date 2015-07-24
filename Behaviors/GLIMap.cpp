@@ -9,6 +9,7 @@
 #include "LightOrg.h"
 #include "Allometry.h"
 #include <stdio.h>
+#include <sstream>
 
 ////////////////////////////////////////////////////////////////////////////
 // Constructor
@@ -65,12 +66,14 @@ void clGLIMap::SetUpGrid()
   float fGLI; //for setting initial value
   short int iNumXCells, iNumYCells, //number X and Y grid cells
        i, j; //loop counters
-  mp_oMapGrid = mp_oSimManager->GetGridObject( "GLI Map" );
+  std::stringstream sMapName;
+  sMapName << "GLI Map " << GetBehaviorListNumber();
+  mp_oMapGrid = mp_oSimManager->GetGridObject( sMapName.str().c_str() );
 
   if ( !mp_oMapGrid )
   {
     //Create the grid with one float data member
-    mp_oMapGrid = mp_oSimManager->CreateGrid( "GLI Map", 0, 1, 0, 0 );
+    mp_oMapGrid = mp_oSimManager->CreateGrid( sMapName.str().c_str(), 0, 1, 0, 0 );
     //Register the data member - called "GLI"
     m_iGridGliCode = mp_oMapGrid->RegisterFloat( "GLI" );
   }

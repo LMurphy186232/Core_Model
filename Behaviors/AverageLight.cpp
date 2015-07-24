@@ -38,10 +38,23 @@ void clAverageLight::DoShellSetup( xercesc::DOMDocument * p_oDoc )
 {
   try
   {
+    std::string sGridName = ""; //Name of GLI Map grid to average
+    std::string sTemp;
+    int i;
+
     m_bAvgCalculated = false;
 
+    //Find the first GLI Map grid
+    for (i = 0; i < mp_oSimManager->GetNumberOfGrids(); i++) {
+      sTemp = mp_oSimManager->GetGridObject(i)->GetName();
+      if (sTemp.find("GLI Map") != std::string::npos) {
+        sGridName = sTemp;
+        break;
+      }
+    }
+
     //Get the pointer to the light grid
-    mp_oGLIMapGrid = mp_oSimManager->GetGridObject( "GLI Map" );
+    mp_oGLIMapGrid = mp_oSimManager->GetGridObject( sGridName.c_str() );
 
     if ( !mp_oGLIMapGrid )
     {
