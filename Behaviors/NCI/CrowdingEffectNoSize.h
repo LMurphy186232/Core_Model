@@ -15,8 +15,12 @@
  * <ul>
  * <li><i>CE</i> = crowding effect</li>
  * <li><i>C</i> and <i>D</i> are parameters</li>
- * <li><i>NCI</i> is this tree's NCI value</li>
  * </ul>
+ *
+ * If this is used with an NCI behavior returning 2 values, the format is
+ * @htmlonly
+  <center><i>CE = exp(-C * nci2<sup>D</sup>)</i></center>
+  @endhtmlonly
  */
 class clCrowdingEffectNoSize: public clCrowdingEffectBase {
 public:
@@ -36,8 +40,9 @@ public:
    * @param p_oTree Tree for which to calculate crowding effect.
    * @param fDiam Diameter of tree.
    * @param fNCI NCI term.
+   * @param iSpecies Species for which to calculate effect.
    */
-  float CalculateCrowdingEffect(clTree *p_oTree, float fDiam, float fNCI);
+  float CalculateCrowdingEffect(clTree *p_oTree, const float &fDiam, const clNCITermBase::ncivals nci, const int &iSpecies);
 
   /**
    * Does setup.
@@ -45,7 +50,7 @@ public:
    * @param p_oNCI NCI behavior object.
    * @param p_oElement Root element of the behavior.
    */
-  void DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement);
+  void DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, clNCIBehaviorBase *p_oNCIBase, xercesc::DOMElement *p_oElement);
 
 
 

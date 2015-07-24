@@ -2,7 +2,7 @@
 #include "ParsingFunctions.h"
 #include "Tree.h"
 #include "TreePopulation.h"
-#include "BehaviorBase.h"
+#include "NCIBehaviorBase.h"
 #include <math.h>
 
 //////////////////////////////////////////////////////////////////////////////
@@ -24,9 +24,13 @@ clCrowdingEffectNoSize::~clCrowdingEffectNoSize() {
 //////////////////////////////////////////////////////////////////////////////
 // CalculateCrowdingEffect
 //////////////////////////////////////////////////////////////////////////////
-float clCrowdingEffectNoSize::CalculateCrowdingEffect(clTree *p_oTree, float fDiam, float fNCI) {
-  float fCrowdingEffect;
-  int iSpecies = p_oTree->GetSpecies();
+float clCrowdingEffectNoSize::CalculateCrowdingEffect(clTree *p_oTree, const float &fDiam, const clNCITermBase::ncivals nci, const int &iSpecies) {
+  float fCrowdingEffect, fNCI;
+  if (!m_b2ValNCI) {
+    fNCI = nci.fNCI1;
+  } else {
+    fNCI = nci.fNCI2;
+  }
   //Avoid a domain error - if NCI is 0, return 1
   if ( fNCI > 0 ) {
     fCrowdingEffect = exp( -mp_fC[iSpecies] * pow( fNCI, mp_fD[iSpecies]));
@@ -40,10 +44,14 @@ float clCrowdingEffectNoSize::CalculateCrowdingEffect(clTree *p_oTree, float fDi
 //////////////////////////////////////////////////////////////////////////////
 // DoSetup
 //////////////////////////////////////////////////////////////////////////////
-void clCrowdingEffectNoSize::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) {
+void clCrowdingEffectNoSize::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, clNCIBehaviorBase *p_oNCIBase, xercesc::DOMElement *p_oElement) {
   floatVal * p_fTempValues; //for getting species-specific values
   int iNumBehaviorSpecies = p_oNCI->GetNumBehaviorSpecies(),
       iNumTotalSpecies = p_oPop->GetNumberOfSpecies(), i;
+
+  //Find out how many NCI terms
+  clNCITermBase *p_oNCITerm = p_oNCIBase->GetNCITerm();
+  if (p_oNCITerm->GetNumberNCIs() == 2) m_b2ValNCI = true;
 
   mp_fC = new float[iNumTotalSpecies];
   mp_fD = new float[iNumTotalSpecies];

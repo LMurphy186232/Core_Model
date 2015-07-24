@@ -12,8 +12,24 @@ class clPlot;
  */
 class clPrecipitationEffectBase {
 
-
 public:
+
+  /**
+   * Constructor. Sets defaults.
+   */
+  clPrecipitationEffectBase() {bRequiresTargetDiam = false;};
+
+  /**
+   * Destructor
+   */
+  virtual ~clPrecipitationEffectBase(){};
+
+  /**Precipitation type*/
+  enum precipType {
+    mean_precip, /**<Mean annual precipitation*/
+    seasonal_precip, /**<Seasonal precipitation*/
+    water_deficit /**<Water deficit*/
+  };
 
   /**
    * Calculates precipitation effect for a particular species.
@@ -30,10 +46,12 @@ public:
    */
   virtual void DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) = 0;
 
-  /**
-   * Destructor
-   */
-  virtual ~clPrecipitationEffectBase(){};
+  bool DoesRequireTargetDiam() {return bRequiresTargetDiam;};
+
+  protected:
+
+  /** Whether or not this effect depends on a target diameter being available.*/
+  bool bRequiresTargetDiam;
 };
 
 #endif

@@ -41,11 +41,11 @@ public:
 
   /**
    * Calculates size effect. This is bounded between 0 and 1.
-   * @param iSpecies Species of tree.
+   * @param p_oTree Tree for which to calculate size effect.
    * @param fDiam Diameter of tree. Diameter at 10 cm for seedlings, DBH for
    * all other types.
    */
-  float CalculateSizeEffect(int iSpecies, float fDiam);
+  float CalculateSizeEffect(clTree *p_oTree, const float &fDiam);
 
   /**
    * Does any desired setup.

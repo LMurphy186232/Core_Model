@@ -26,13 +26,13 @@ clSizeEffectLowerBounded::~clSizeEffectLowerBounded() {
 ////////////////////////////////////////////////////////////////////////////
 // CalculateSizeEffect
 ////////////////////////////////////////////////////////////////////////////
-float clSizeEffectLowerBounded::CalculateSizeEffect(int iSpecies, float fDiam) {
-  float fSizeEffect;
+float clSizeEffectLowerBounded::CalculateSizeEffect(clTree *p_oTree, const float &fDiam) {
+  float fSizeEffect, fDiam2;
+  int iSpecies = p_oTree->GetSpecies();
 
   //Make sure the diameter is above the minimum
-  if (fDiam < mp_fMinDiam[iSpecies])
-    fDiam = mp_fMinDiam[iSpecies];
-  fSizeEffect = exp(-0.5 * pow(log(fDiam / mp_fX0[iSpecies] ) / mp_fXb[iSpecies], 2));
+  fDiam2 = (fDiam < mp_fMinDiam[iSpecies]) ? mp_fMinDiam[iSpecies] : fDiam;
+  fSizeEffect = exp(-0.5 * pow(log(fDiam2 / mp_fX0[iSpecies] ) / mp_fXb[iSpecies], 2));
   //Make sure it's bounded between 0 and 1
   if ( fSizeEffect < 0 ) fSizeEffect = 0;
   if ( fSizeEffect > 1 ) fSizeEffect = 1;

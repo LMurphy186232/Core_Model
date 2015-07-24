@@ -14,6 +14,8 @@
  *
  * BA is reported in cm2, but there is a divisor term which can be used to
  * adjust units if desired.
+ *
+ * This returns 1 value for NCI.
  */
 class clNCINeighborBA: public clNCITermBase {
 public:
@@ -28,8 +30,11 @@ public:
    * @param p_oTree Tree for which to calculate NCI.
    * @param p_oPop Tree population.
    * @param p_oPlot Plot object.
+   * @param fX X coordinate for which to calculate NCI.
+   * @param fY Y coordinate for which to calculate NCI.
+   * @param iSpecies Species for which to calculate NCI.
    */
-  float CalculateNCITerm(clTree * p_oTree, clTreePopulation * p_oPop, clPlot * p_oPlot);
+  ncivals CalculateNCITerm(clTree * p_oTree, clTreePopulation * p_oPop, clPlot * p_oPlot, const float &fX, const float &fY, const int &iSpecies);
 
   /**
    * Does any desired setup.

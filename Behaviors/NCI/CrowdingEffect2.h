@@ -24,6 +24,12 @@
  *
  * I'm calling this "Crowding effect 2" because it's just a slight variation
  * on the default and I didn't know what else to call it.
+ *
+ * Alternately, this can use NCI behaviors returning 2 values, in which case
+ * the format is
+ * @htmlonly
+  <center><i>CE = exp(-C * (nci1 <sup>&gamma;</sup> * nci2)<sup>D</sup>)</i></center>
+  @endhtmlonly
  */
 class clCrowdingEffectTwo: public clCrowdingEffectBase {
 public:
@@ -43,8 +49,9 @@ public:
    * @param p_oTree Tree for which to calculate crowding effect.
    * @param fDiam Diameter of tree.
    * @param fNCI NCI term.
+   * @param iSpecies Species for which to calculate effect.
    */
-  float CalculateCrowdingEffect(clTree *p_oTree, float fDiam, float fNCI);
+  float CalculateCrowdingEffect(clTree *p_oTree, const float &fDiam, const clNCITermBase::ncivals nci, const int &iSpecies);
 
   /**
    * Does setup.
@@ -52,7 +59,7 @@ public:
    * @param p_oNCI NCI behavior object.
    * @param p_oElement Root element of the behavior.
    */
-  void DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement);
+  void DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, clNCIBehaviorBase *p_oNCIBase, xercesc::DOMElement *p_oElement);
 
 
 

@@ -2,7 +2,7 @@
 #include "ParsingFunctions.h"
 #include "Tree.h"
 #include "TreePopulation.h"
-#include "BehaviorBase.h"
+#include "NCIBehaviorBase.h"
 #include <math.h>
 
 //////////////////////////////////////////////////////////////////////////////
@@ -12,6 +12,7 @@ clCrowdingEffectTwo::clCrowdingEffectTwo() {
   mp_fC = NULL;
   mp_fD = NULL;
   mp_fGamma = NULL;
+  m_bRequiresTargetDiam = true;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -26,13 +27,19 @@ clCrowdingEffectTwo::~clCrowdingEffectTwo() {
 //////////////////////////////////////////////////////////////////////////////
 // CalculateCrowdingEffect
 //////////////////////////////////////////////////////////////////////////////
-float clCrowdingEffectTwo::CalculateCrowdingEffect(clTree *p_oTree, float fDiam, float fNCI) {
-  float fCrowdingEffect;
-  int iSpecies = p_oTree->GetSpecies();
+float clCrowdingEffectTwo::CalculateCrowdingEffect(clTree *p_oTree, const float &fDiam, const clNCITermBase::ncivals nci, const int &iSpecies) {
+  float fCrowdingEffect, fTerm1, fTerm2;
+  if (!m_b2ValNCI) {
+    fTerm1 = fDiam;
+    fTerm2 = nci.fNCI1;
+  } else {
+    fTerm1 = nci.fNCI1;
+    fTerm2 = nci.fNCI2;
+  }
   //Avoid a domain error - if NCI is 0, return 1
-  if ( fNCI > 0 ) {
+  if ( fTerm2 > 0 ) {
     fCrowdingEffect = exp(-mp_fC[iSpecies] *
-         pow(pow(fDiam, mp_fGamma[iSpecies]) * fNCI, mp_fD[iSpecies]));
+         pow(pow(fTerm1, mp_fGamma[iSpecies]) * fTerm2, mp_fD[iSpecies]));
     if ( fCrowdingEffect < 0 ) fCrowdingEffect = 0;
     if ( fCrowdingEffect > 1 ) fCrowdingEffect = 1;
     return fCrowdingEffect;
@@ -43,10 +50,14 @@ float clCrowdingEffectTwo::CalculateCrowdingEffect(clTree *p_oTree, float fDiam,
 //////////////////////////////////////////////////////////////////////////////
 // DoSetup
 //////////////////////////////////////////////////////////////////////////////
-void clCrowdingEffectTwo::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) {
+void clCrowdingEffectTwo::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, clNCIBehaviorBase *p_oNCIBase, xercesc::DOMElement *p_oElement) {
   floatVal * p_fTempValues; //for getting species-specific values
   int iNumBehaviorSpecies = p_oNCI->GetNumBehaviorSpecies(),
       iNumTotalSpecies = p_oPop->GetNumberOfSpecies(), i;
+
+  //Find out how many NCI terms
+  clNCITermBase *p_oNCITerm = p_oNCIBase->GetNCITerm();
+  if (p_oNCITerm->GetNumberNCIs() == 2) m_b2ValNCI = true;
 
   mp_fC = new float[iNumTotalSpecies];
   mp_fD = new float[iNumTotalSpecies];

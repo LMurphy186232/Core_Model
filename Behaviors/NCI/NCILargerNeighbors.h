@@ -5,10 +5,10 @@
 
 /**
  * The NCI term is simply a count of sapling and adult neighbors with a larger
- * DBH than the target within a certain radius, subject to a minimum value.
+ * DBH than the target within a certain radius, subject to a minimum value. If
+ * there is no target, then all greater than the minimum DBH are used.
  *
- * This cannot be applied to seedlings. No real reason, I could allow this if
- * someone wants it.
+ * This returns 1 value for NCI.
  */
 class clNCILargerNeighbors: public clNCITermBase {
 public:
@@ -23,15 +23,17 @@ public:
    * @param p_oTree Tree for which to calculate NCI.
    * @param p_oPop Tree population.
    * @param p_oPlot Plot object.
+   * @param fX X coordinate for which to calculate NCI.
+   * @param fY Y coordinate for which to calculate NCI.
+   * @param iSpecies Species for which to calculate NCI.
    */
-  float CalculateNCITerm(clTree * p_oTree, clTreePopulation * p_oPop, clPlot * p_oPlot);
+  ncivals CalculateNCITerm(clTree * p_oTree, clTreePopulation * p_oPop, clPlot * p_oPlot, const float &fX, const float &fY, const int &iSpecies);
 
   /**
    * Does any desired setup.
    * @param p_oPop Tree population.
    * @param p_oNCI NCI behavior object.
    * @param p_oElement Root element of the behavior.
-   * @throws ModelException if this is applied to seedlings.
    */
   void DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement);
 

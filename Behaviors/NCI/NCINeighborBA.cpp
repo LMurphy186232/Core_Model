@@ -18,6 +18,7 @@ clNCINeighborBA::clNCINeighborBA() {
   m_fMinSaplingHeight = 0;
   m_fBADivisor = 1;
   m_bUseOnlyLargerNeighbors = false;
+  iNumNCIs = 1;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -31,33 +32,29 @@ clNCINeighborBA::~clNCINeighborBA() {
 //////////////////////////////////////////////////////////////////////////////
 // CalculateNCITerm
 //////////////////////////////////////////////////////////////////////////////
-float clNCINeighborBA::CalculateNCITerm(clTree * p_oTree, clTreePopulation * p_oPop, clPlot * p_oPlot) {
+clNCITermBase::ncivals clNCINeighborBA::CalculateNCITerm(clTree * p_oTree, clTreePopulation * p_oPop, clPlot * p_oPlot, const float &fX, const float &fY, const int &iSpecies) {
   clTreeSearch * p_oAllNeighbors; //neighborhood trees within crowding radius
   clTree * p_oNeighbor; //competing neighbor
+  ncivals toReturn;
   char cQuery[75]; //format search strings into this
   float fBASum = 0, //sum of all qualifying neighbor basal area
       fNeighDbh, //neighbor's dbh
-      fTargetDbh, //target's dbh
-      fTargetX, fTargetY; //holders for the target tree's X and Y location
+      fTargetDbh; //target's dbh
   int iIsDead; //whether a neighbor is dead
   short int iNeighSpecies, iNeighType, //species and type for neighbor
-  iTargetSpecies = p_oTree->GetSpecies(), //target tree's species
-  iTargetType = p_oTree->GetType(), //target tree's type
   iDeadCode; //neighbor's dead code
 
   //Get the target tree's DBH
-  if (m_bUseOnlyLargerNeighbors)
-    p_oTree->GetValue( p_oPop->GetDbhCode( iTargetSpecies, iTargetType ), & fTargetDbh );
+  if (m_bUseOnlyLargerNeighbors && p_oTree != NULL)
+    p_oTree->GetValue( p_oPop->GetDbhCode( p_oTree->GetSpecies(), p_oTree->GetType()), & fTargetDbh );
   else fTargetDbh = 0;
 
   //Format the query to get all competing neighbors
-  p_oTree->GetValue( p_oPop->GetXCode( iTargetSpecies, iTargetType ), & fTargetX );
-  p_oTree->GetValue( p_oPop->GetYCode( iTargetSpecies, iTargetType ), & fTargetY );
 
   //Get all trees taller than seedlings within the max crowding radius -
   //seedlings don't compete
-  sprintf( cQuery, "%s%f%s%f%s%f%s%f", "distance=", mp_fMaxCrowdingRadius[iTargetSpecies], "FROM x=", fTargetX,
-      "y=", fTargetY, "::height=", m_fMinSaplingHeight );
+  sprintf( cQuery, "%s%f%s%f%s%f%s%f", "distance=", mp_fMaxCrowdingRadius[iSpecies], "FROM x=", fX,
+      "y=", fY, "::height=", m_fMinSaplingHeight );
   p_oAllNeighbors = p_oPop->Find( cQuery );
 
   //Loop through and get the basal area of each
@@ -65,7 +62,7 @@ float clNCINeighborBA::CalculateNCITerm(clTree * p_oTree, clTreePopulation * p_o
 
   while ( p_oNeighbor )
   {
-    if ( p_oNeighbor != p_oTree )
+    if ( p_oTree != NULL && p_oNeighbor != p_oTree )
     {
 
       iNeighSpecies = p_oNeighbor->GetSpecies();
@@ -102,7 +99,8 @@ float clNCINeighborBA::CalculateNCITerm(clTree * p_oTree, clTreePopulation * p_o
     p_oNeighbor = p_oAllNeighbors->NextTree();
   }
   fBASum /= m_fBADivisor;
-  return fBASum;
+  toReturn.fNCI1 = fBASum;
+  return toReturn;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -146,6 +144,8 @@ void clNCINeighborBA::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, 
   //Minimum neighbor DBH
   FillSpeciesSpecificValue( p_oElement, "nciMinNeighborDBH", "nmndVal",
       mp_fMinimumNeighborDBH, p_oPop, true);
+
+  delete[] p_fTempValues;
 
   //Make sure that the max radius of neighbor effects is > 0
   for ( i = 0; i < iNumBehaviorSpecies; i++) {

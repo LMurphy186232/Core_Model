@@ -23,8 +23,10 @@ clSizeEffectPowerFunction::~clSizeEffectPowerFunction() {
 ////////////////////////////////////////////////////////////////////////////
 // CalculateSizeEffect
 ////////////////////////////////////////////////////////////////////////////
-float clSizeEffectPowerFunction::CalculateSizeEffect(int iSpecies, float fDiam) {
+float clSizeEffectPowerFunction::CalculateSizeEffect(clTree *p_oTree, const float &fDiam) {
   float fSizeEffect;
+  int iSpecies = p_oTree->GetSpecies();
+
   fSizeEffect = mp_fA[iSpecies] * pow(fDiam, mp_fB[iSpecies]);
   //Make sure it's bounded between 0 and 1
   if ( fSizeEffect < 0 ) fSizeEffect = 0;

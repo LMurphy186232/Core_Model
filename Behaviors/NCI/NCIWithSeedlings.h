@@ -30,6 +30,8 @@
  * NCI ignores neighbors with disturbance and harvest death codes. Natural deaths
  * are NOT ignored, because it presumes that those deaths occurred in the current
  * timestep and they should still be considered as live neighbors.
+ *
+ * This returns 1 value for NCI.
  */
 class clNCIWithSeedlings: virtual public clNCITermBase {
 public:
@@ -49,8 +51,11 @@ public:
    * @param p_oTree Tree for which to calculate NCI.
    * @param p_oPop Tree population.
    * @param p_oPlot Plot object.
+   * @param fX X coordinate for which to calculate NCI.
+   * @param fY Y coordinate for which to calculate NCI.
+   * @param iSpecies Species for which to calculate NCI.
    */
-  float CalculateNCITerm(clTree * p_oTree, clTreePopulation * p_oPop, clPlot * p_oPlot);
+  ncivals CalculateNCITerm(clTree * p_oTree, clTreePopulation * p_oPop, clPlot * p_oPlot, const float &fX, const float &fY, const int &iSpecies);
 
   /**
    * Does setup.

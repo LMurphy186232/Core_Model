@@ -20,6 +20,7 @@ clNCIWithSeedlings::clNCIWithSeedlings() {
   m_bIncludeSnags = false;
   m_fDiam10Divisor = 0;
   m_iNumTotalSpecies = 0;
+  iNumNCIs = 1;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -42,38 +43,35 @@ clNCIWithSeedlings::~clNCIWithSeedlings() {
 //////////////////////////////////////////////////////////////////////////////
 // CalculateNCITerm
 //////////////////////////////////////////////////////////////////////////////
-float clNCIWithSeedlings::CalculateNCITerm(clTree * p_oTree, clTreePopulation * p_oPop, clPlot * p_oPlot) {
+clNCITermBase::ncivals clNCIWithSeedlings::CalculateNCITerm(clTree * p_oTree, clTreePopulation * p_oPop, clPlot * p_oPlot, const float &fX, const float &fY, const int &iSpecies) {
 
   clAllometry *p_oAllom = p_oPop->GetAllometryObject();
   clTreeSearch * p_oAllNeighbors; //neighborhood trees within crowding radius
   clTree * p_oNeighbor; //competing neighbor
+  ncivals toReturn;
   std::stringstream sQuery; //format search strings into this
   float fNCI = 0, //nci - the end result of all this math
       fDistance, //distance between target and neighbor
       fDiam10, //neighbor's dbh
       fTemp,
-      fNeighX, fNeighY, //holders for the neighbor tree's X and Y
-      fTargetX, fTargetY; //holders for the target tree's X and Y location
+      fNeighX, fNeighY; //holders for the neighbor tree's X and Y
   int iIsDead; //neighbor's damage value
   short int iNeighSpecies, iNeighType, //species and type for neighbor
-  iTargetSpecies = p_oTree->GetSpecies(), //target tree's species
-  iDeadCode; //neighbor's dead code
+            iDeadCode; //neighbor's dead code
 
   //Format the query to get all competing neighbors
-  p_oTree->GetValue( p_oPop->GetXCode( iTargetSpecies, p_oTree->GetType() ), & fTargetX );
-  p_oTree->GetValue( p_oPop->GetYCode( iTargetSpecies, p_oTree->GetType() ), & fTargetY );
 
   //Get all trees taller than seedlings within the max crowding radius -
   //seedlings don't compete
-  sQuery << "distance=" << mp_fMaxCrowdingRadius[iTargetSpecies] << "FROM x="
-         << fTargetX << "y=" << fTargetY << "::height=0";
+  sQuery << "distance=" << mp_fMaxCrowdingRadius[iSpecies] << "FROM x="
+         << fX << "y=" << fY << "::height=0";
   p_oAllNeighbors = p_oPop->Find(sQuery.str());
 
   //Loop through and assess the competitive effects of each
   p_oNeighbor = p_oAllNeighbors->NextTree();
 
   while ( p_oNeighbor ) {
-    if ( p_oNeighbor == p_oTree ) goto nextTree;
+    if (p_oTree != NULL && p_oNeighbor == p_oTree ) goto nextTree;
 
     iNeighSpecies = p_oNeighbor->GetSpecies();
     iNeighType = p_oNeighbor->GetType();
@@ -104,7 +102,7 @@ float clNCIWithSeedlings::CalculateNCITerm(clTree * p_oTree, clTreePopulation * 
     p_oNeighbor->GetValue( p_oPop->GetYCode( iNeighSpecies, iNeighType ), & fNeighY );
 
     //Get the distance between the two trees
-    fDistance = p_oPlot->GetDistance( fTargetX, fTargetY, fNeighX, fNeighY );
+    fDistance = p_oPlot->GetDistance( fX, fY, fNeighX, fNeighY );
 
 
     //Only goto nextTree if distance is not 0 - it will be a fluke condition to
@@ -113,15 +111,15 @@ float clNCIWithSeedlings::CalculateNCITerm(clTree * p_oTree, clTreePopulation * 
     if ( fDistance < VERY_SMALL_VALUE) goto nextTree;
 
     //Add competitive effect to NCI
-    fNCI += mp_fLambda[iTargetSpecies][iNeighSpecies]
-         * (pow( ( fDiam10 / m_fDiam10Divisor ), mp_fAlpha[iTargetSpecies] )
-         / pow( fDistance, mp_fBeta[iTargetSpecies] ) );
+    fNCI += mp_fLambda[iSpecies][iNeighSpecies]
+         * (pow( ( fDiam10 / m_fDiam10Divisor ), mp_fAlpha[iSpecies] )
+         / pow( fDistance, mp_fBeta[iSpecies] ) );
 
     nextTree:
     p_oNeighbor = p_oAllNeighbors->NextTree();
   }
-
-  return fNCI;
+  toReturn.fNCI1 = fNCI;
+  return toReturn;
 }
 
 //////////////////////////////////////////////////////////////////////////////

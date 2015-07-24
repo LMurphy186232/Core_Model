@@ -18,11 +18,12 @@ public:
 
   /**
    * Calculates size effect.
-   * @param iSpecies Species of tree.
+   * @param p_oTree Tree for which to calculate size effect.
    * @param fDiam Diameter of tree. Diameter at 10 cm for seedlings, DBH for
-   * all other types.
+   * all other types. This can be got from the tree but it's already been
+   * extracted so let's pass it in.
    */
-  virtual float CalculateSizeEffect(int iSpecies, float fDiam) = 0;
+  virtual float CalculateSizeEffect(clTree *p_oTree, const float &fDiam) = 0;
 
   /**
    * Does any desired setup.
@@ -33,9 +34,16 @@ public:
   virtual void DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) = 0;
 
   /**
+  * Performs calculations like either clGrowthBase::PreGrowthCalcs or
+  * clMortalityBase::PreMortCalcs.
+  */
+  virtual void PreCalcs( clTreePopulation *p_oPop ){;};
+
+  /**
    * Destructor
    */
   virtual ~clSizeEffectBase(){};
+
 };
 
 #endif /* SIZEEFFECTBASE_H_ */

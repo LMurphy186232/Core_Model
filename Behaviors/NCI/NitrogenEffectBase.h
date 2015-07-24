@@ -12,8 +12,17 @@ class clPlot;
  */
 class clNitrogenEffectBase {
 
-
 public:
+
+  /**
+   * Constructor. Sets defaults.
+   */
+  clNitrogenEffectBase() {bRequiresTargetDiam = false;};
+
+  /**
+   * Destructor
+   */
+  virtual ~clNitrogenEffectBase(){};
 
   /**
    * Calculates nitrogen effect for a particular species.
@@ -30,10 +39,12 @@ public:
    */
   virtual void DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) = 0;
 
-  /**
-   * Destructor
-   */
-  virtual ~clNitrogenEffectBase(){};
+  bool DoesRequireTargetDiam() {return bRequiresTargetDiam;};
+
+protected:
+
+  /** Whether or not this effect depends on a target diameter being available.*/
+  bool bRequiresTargetDiam;
 };
 
 #endif

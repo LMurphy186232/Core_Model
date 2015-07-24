@@ -12,8 +12,12 @@ class clPlot;
  */
 class clTemperatureEffectBase {
 
-
 public:
+
+  /**
+   * Constructor. Sets defaults.
+   */
+  clTemperatureEffectBase() {bRequiresTargetDiam = false;};
 
   /**
    * Calculates temperature effect for a particular species.
@@ -34,6 +38,13 @@ public:
    * Destructor
    */
   virtual ~clTemperatureEffectBase(){};
+
+  bool DoesRequireTargetDiam() {return bRequiresTargetDiam;};
+
+  protected:
+
+  /** Whether or not this effect depends on a target diameter being available.*/
+  bool bRequiresTargetDiam;
 };
 
 #endif

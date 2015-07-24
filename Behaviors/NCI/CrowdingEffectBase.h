@@ -2,9 +2,10 @@
 #define CROWDINGEFFECTBASE_H_
 
 #include <xercesc/dom/DOM.hpp>
+#include "NCITermBase.h"
 
 class clTreePopulation;
-class clBehaviorBase;
+class clNCIBehaviorBase;
 class clTree;
 
 /**
@@ -12,17 +13,29 @@ class clTree;
  */
 class clCrowdingEffectBase {
 
-
 public:
 
   /**
+   * Constructor. Sets defaults.
+   */
+  clCrowdingEffectBase() {m_bRequiresTargetDiam = false; m_b2ValNCI = false;};
+
+  /**
+   * Destructor
+   */
+  virtual ~clCrowdingEffectBase(){};
+
+  /**
    * Calculates crowding effect.
-   * @param p_oTree Tree for which to calculate crowding effect.
+   * @param p_oTree Tree for which to calculate crowding effect. If
+   * bRequiresTargetDiam is false, be prepared for this to be NULL.
    * @param fDiam Diameter of tree. May not be the same as the one recorded in
    * the tree record if it is being updated for consecutive years in a timestep.
    * @param fNCI NCI term. May be 0 if NCI not used.
+   * @param iSpecies Species for which to calculate effect. This is separate
+   * in case p_oTree is NULL because there is no target.
    */
-  virtual float CalculateCrowdingEffect(clTree *p_oTree, float fDiam, float fNCI) = 0;
+  virtual float CalculateCrowdingEffect(clTree *p_oTree, const float &fDiam, const clNCITermBase::ncivals nci, const int &iSpecies) = 0;
 
   /**
    * Does any desired setup.
@@ -30,12 +43,25 @@ public:
    * @param p_oNCI NCI behavior object.
    * @param p_oElement Root element of the behavior.
    */
-  virtual void DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) = 0;
+  virtual void DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, clNCIBehaviorBase *p_oNCIBase, xercesc::DOMElement *p_oElement) = 0;
 
   /**
-   * Destructor
-   */
-  virtual ~clCrowdingEffectBase(){};
+  * Performs calculations like either clGrowthBase::PreGrowthCalcs or
+  * clMortalityBase::PreMortCalcs.
+  */
+  virtual void PreCalcs( clTreePopulation *p_oPop ){;};
+
+
+
+  bool DoesRequireTargetDiam() {return m_bRequiresTargetDiam;};
+
+protected:
+
+  /** Whether or not this effect depends on a target diameter being available.*/
+  bool m_bRequiresTargetDiam;
+
+  /**Whether it's a two-value NCI.*/
+  bool m_b2ValNCI;
 };
 
 #endif /* CROWDINGEFFECTBASE_H_ */
