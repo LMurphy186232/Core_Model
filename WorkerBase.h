@@ -63,6 +63,8 @@ public:
    */
   std::string GetName() {return m_sNameString;};
 
+  clSimManager* GetSimManager() {return mp_oSimManager;}
+
   /**
    * Triggers the setup process. This function should not be overridden.
    * @param p_oDoc DOM tree of parsed input file.
@@ -88,7 +90,7 @@ public:
    * @param cCommand Command string.
    * @param cArguments Any arguments passed with the command.
    */
-  virtual void DoCommand(char *cCommand, char *cArguments) {;};
+  //virtual void DoCommand(char *cCommand, char *cArguments) {;};
 
 //
 // For commands that have been registered by objects, this asks for online

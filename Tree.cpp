@@ -131,6 +131,13 @@ void clTree::SetValue(short int iCode, string sValue) {
 // GetValue
 ///////////////////////////////////////////////////////////////////////////*/
 void clTree::GetValue(short int iCode, int *p_iValHolder) {
+  if (iCode < 0 || iCode > mp_oTreePop->mp_iNumTreeIntVals[m_iSpecies] [m_iType]) {
+    modelErr stcErr;
+    stcErr.iErrorCode = BAD_DATA;
+    stcErr.sFunction = "clTree::clTree";
+    stcErr.sMoreInfo = "Bad tree int data code.";
+    throw(stcErr);
+  }
   *p_iValHolder = mp_iIntValues[iCode];
 }
 
