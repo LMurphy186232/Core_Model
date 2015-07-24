@@ -90,12 +90,15 @@ clHarvestInterface::~clHarvestInterface()
   delete[] mp_bUserDefinedColumn;
   delete[] mp_iColumnTranslation;;
 
-  if ( mp_iDenCutCodes )
+  if ( mp_iDenCutCodes ) {
     for ( i = 0; i < m_iNumAllowedCutRanges; i++ )
     {
       delete[] mp_iDenCutCodes[i];
       delete[] mp_iBaCutCodes[i];
     }
+    delete[] mp_iDenCutCodes;
+    delete[] mp_iBaCutCodes;
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -546,6 +549,9 @@ void clHarvestInterface::GetData( xercesc::DOMDocument * p_oDoc )
 //////////////////////////////////////////////////////////////////////////////
 void clHarvestInterface::Action()
 {
+  float *p_fX = NULL, *p_fY = NULL, *p_fDiam = NULL, **p_fNewVals = NULL;
+  int *p_iSp = NULL, *p_iTp = NULL;
+  bool *p_bFound = NULL;
   try
   {
     using namespace std;
@@ -563,12 +569,12 @@ void clHarvestInterface::Action()
     clTreeSearch *p_oHarvestTrees = p_oPop->Find("all");
     clTree *p_oTree = p_oHarvestTrees->NextTree();
     string sSpecies, sType, sTemp;
-    float fVal, fTemp, *p_fX = NULL, *p_fY = NULL, *p_fDiam = NULL, fDiam, fX, fY, fThisBA;
+    float fVal, fTemp, fDiam, fX, fY, fThisBA;
     long int i, j;
-    int iSp, iTp, iTemp, iCount, *p_iSp = NULL, *p_iTp = NULL,
+    int iSp, iTp, iTemp, iCount,
         iVal, iNumLines,
         iNumBaseColumns = 6;
-    bool bVal, *p_bFound = NULL;
+    bool bVal;
 
     //Write all applicable trees out to file
     harvest.open( m_sInputFile.c_str(), ios::out | ios::trunc );
@@ -758,6 +764,8 @@ void clHarvestInterface::Action()
             << ", type = " << p_iTp[i] << ", diam = " << p_fDiam[i] << ".";
           stcErr.sMoreInfo = s.str();
           stcErr.sFunction = "clHarvestInterface::Action" ;
+
+
           throw( stcErr );
         }
       }
@@ -774,11 +782,6 @@ void clHarvestInterface::Action()
     //Update trees
     //**********************************
     if (m_sTreesToUpdateFile.length() == 0) return;
-
-    //Array to hold values of user variables
-    float **p_fNewVals = new float*[m_iNewTreeFloats];
-    for (i = 0; i < m_iNewTreeFloats; i++)
-      p_fNewVals[i] = NULL;
 
     //Test to make sure the update file exists
     if (!DoesFileExist(m_sTreesToUpdateFile)) {
@@ -806,6 +809,8 @@ void clHarvestInterface::Action()
       p_iSp = new int[iNumLines];
       p_iTp = new int[iNumLines];
       p_bFound = new bool[iNumLines];
+      //Array to hold values of user variables
+      p_fNewVals = new float*[m_iNewTreeFloats];
       for (i = 0; i < m_iNewTreeFloats; i++)
         p_fNewVals[i] = new float[iNumLines];
 
@@ -882,12 +887,13 @@ void clHarvestInterface::Action()
       //Make sure all the trees in the list got found
       for (i = 0; i < iNumLines; i++) {
         if (false == p_bFound[i]) {
+
           modelErr stcErr;
           stcErr.iErrorCode = BAD_DATA;
           std::stringstream s;
           s << "Unrecognized tree in update file. X = " << p_fX[i]
             << ", Y = " << p_fY[i] << ", species = " << p_iSp[i]
-            << ", type = " << p_iTp[i] << ", diam = " << p_fDiam[i] << ".";
+                                                                                                                  << ", type = " << p_iTp[i] << ", diam = " << p_fDiam[i] << ".";
           stcErr.sMoreInfo = s.str();
           stcErr.sFunction = "clHarvestInterface::Action" ;
           throw( stcErr );
@@ -901,8 +907,10 @@ void clHarvestInterface::Action()
     delete[] p_iSp;
     delete[] p_iTp;
     delete[] p_bFound;
-    for (i = 0; i < m_iNewTreeFloats; i++) {
-      delete[] p_fNewVals[i];
+    if (p_fNewVals) {
+      for (i = 0; i < m_iNewTreeFloats; i++) {
+        delete[] p_fNewVals[i];
+      }
     }
     delete[] p_fNewVals;
 
@@ -910,6 +918,17 @@ void clHarvestInterface::Action()
   } //end of try block
   catch ( modelErr & err )
   {
+    delete[] p_fDiam; p_fDiam = NULL;
+    delete[] p_fX; p_fX = NULL;
+    delete[] p_fY; p_fY = NULL;
+    delete[] p_iSp; p_iSp = NULL;
+    delete[] p_iTp; p_iTp = NULL;
+    delete[] p_bFound; p_bFound = NULL;
+    if (p_fNewVals) {
+      for (int i = 0; i < m_iNewTreeFloats; i++)
+        delete[] p_fNewVals[i];
+    }
+    delete[] p_fNewVals;
     throw( err );
   }
   catch ( modelMsg & msg )

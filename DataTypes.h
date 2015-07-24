@@ -119,8 +119,8 @@ enum mastEvent {nonmast,     /**<Non-masting event*/
                 numevents /**<Number of event categories*/
 };
 
-/**BBD resistance to infestation status*/
-enum bbdResistanceStatus {
+/**Density dependent infestation resistance to infestation status*/
+enum densDepResistanceStatus {
   resistant = 1, /**<Resistant to infection*/
   cond_susceptible, /**<Conditionally susceptible*/
   susceptible /**<Susceptible*/

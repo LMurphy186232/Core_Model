@@ -98,7 +98,6 @@
 #include "LaggedPostHarvestGrowth.h"
 #include "EpiphyticEstablishment.h"
 #include "DensitySelfThinningGompertz.h"
-#include "WeibullClimateQuadratGrowth.h"
 #include "TempDependentNeighborhoodDisperse.h"
 #include "TempDependentNeighborhoodSurvival.h"
 #include "ClimateChange.h"
@@ -108,7 +107,13 @@
 #include "GeneralizedHarvestRegime.h"
 #include "SuppressionDurationMort.h"
 #include "QualityVigorClassifier.h"
-#include "BBDInfestation.h"
+#include "DensDepInfestation.h"
+#include "ConspecificBANeighborhoodDisperse.h"
+#include "NCIMasterQuadratGrowth.h"
+#include "SeasonalWaterDeficit.h"
+#include "ClimateCompDepNeighborhoodSurvival.h"
+#include "StochDoubleLogTempDepNeighDisperse.h"
+#include "SizeDependentLogisticMortality.h"
 //Test objects
 #include "RandomSeedLogger.h"
 
@@ -471,6 +476,12 @@ void clBehaviorManager::CreateBehavior(behaviorData * p_data)
       mp_oObjectArray[iIndex] = p_oObj;
 
     }
+    else if (p_data->sNameString.compare("SeasonalWaterDeficit") == 0)
+    {
+      clSeasonalWaterDeficit * p_oObj = new clSeasonalWaterDeficit(mp_oSimManager);
+      mp_oObjectArray[iIndex] = p_oObj;
+
+    }
 
     //*************************************************
     // Light Behaviors
@@ -607,6 +618,13 @@ void clBehaviorManager::CreateBehavior(behaviorData * p_data)
       mp_oObjectArray[iIndex] = p_oGrowth;
 
     }
+    else if (p_data->sNameString.compare("NCIMasterQuadratGrowth") == 0 ||
+        p_data->sNameString.compare("NCIMasterQuadratGrowth diam only") == 0)
+    {
+      clNCIMasterQuadratGrowth * p_oGrowth = new clNCIMasterQuadratGrowth(mp_oSimManager);
+      mp_oObjectArray[iIndex] = p_oGrowth;
+
+    }
     else if (p_data->sNameString.compare("ConstRadialGrowth") == 0 ||
         p_data->sNameString.compare("ConstRadialGrowth diam only") == 0)
     {
@@ -676,12 +694,6 @@ void clBehaviorManager::CreateBehavior(behaviorData * p_data)
         p_data->sNameString.compare("LaggedPostHarvestGrowth diam only") == 0)
     {
       clLaggedPostHarvestGrowth * p_oGrowth = new clLaggedPostHarvestGrowth(mp_oSimManager);
-      mp_oObjectArray[iIndex] = p_oGrowth;
-    }
-    else if (p_data->sNameString.compare("WeibullClimateQuadratGrowth") == 0 ||
-        p_data->sNameString.compare("WeibullClimateQuadratGrowth diam only") == 0)
-    {
-      clWeibullClimateQuadratGrowth * p_oGrowth = new clWeibullClimateQuadratGrowth(mp_oSimManager);
       mp_oObjectArray[iIndex] = p_oGrowth;
     }
 
@@ -810,6 +822,12 @@ void clBehaviorManager::CreateBehavior(behaviorData * p_data)
       mp_oObjectArray[iIndex] = p_oMort;
 
     }
+    else if (p_data->sNameString.compare("ClimateCompDepNeighborhoodSurvival") == 0)
+    {
+      clClimateCompDepNeighborhoodSurvival * p_oMort = new clClimateCompDepNeighborhoodSurvival(mp_oSimManager);
+      mp_oObjectArray[iIndex] = p_oMort;
+
+    }
     else if (p_data->sNameString.compare("InsectInfestationMortality") == 0)
     {
       clInsectInfestationMortality * p_oMort = new clInsectInfestationMortality(mp_oSimManager);
@@ -819,6 +837,12 @@ void clBehaviorManager::CreateBehavior(behaviorData * p_data)
     else if (p_data->sNameString.compare("SuppressionDurationMortality") == 0)
     {
       clSuppressionDurationMort * p_oMort = new clSuppressionDurationMort(mp_oSimManager);
+      mp_oObjectArray[iIndex] = p_oMort;
+
+    }
+    else if (p_data->sNameString.compare("SizeDependentLogisticMortality") == 0)
+    {
+      clSizeDependentLogisticMortality * p_oMort = new clSizeDependentLogisticMortality(mp_oSimManager);
       mp_oObjectArray[iIndex] = p_oMort;
 
     }
@@ -880,6 +904,16 @@ void clBehaviorManager::CreateBehavior(behaviorData * p_data)
     else if (p_data->sNameString.compare("TemperatureDependentNeighborhoodDisperse") == 0)
     {
       clTempDependentNeighborhoodDisperse * p_oDisperse = new clTempDependentNeighborhoodDisperse(mp_oSimManager);
+      mp_oObjectArray[iIndex] = p_oDisperse;
+    }
+    else if (p_data->sNameString.compare("StochDoubleLogTempDepNeighDisperse") == 0)
+    {
+      clStochDoubleLogTempDepNeighDisperse * p_oDisperse = new clStochDoubleLogTempDepNeighDisperse(mp_oSimManager);
+      mp_oObjectArray[iIndex] = p_oDisperse;
+    }
+    else if (p_data->sNameString.compare("ConspecificBANeighborhoodDisperse") == 0)
+    {
+      clConspecificBANeighborhoodDisperse * p_oDisperse = new clConspecificBANeighborhoodDisperse(mp_oSimManager);
       mp_oObjectArray[iIndex] = p_oDisperse;
     }
 
@@ -1009,9 +1043,9 @@ void clBehaviorManager::CreateBehavior(behaviorData * p_data)
       clGeneralizedHarvestRegime * p_oObj = new clGeneralizedHarvestRegime(mp_oSimManager);
       mp_oObjectArray[iIndex] = p_oObj;
     }
-    else if (p_data->sNameString.compare("BBDInfestation") == 0)
+    else if (p_data->sNameString.compare("DensDepInfestation") == 0)
     {
-      clBBDInfestation * p_oObj = new clBBDInfestation(mp_oSimManager);
+      clDensDepInfestation * p_oObj = new clDensDepInfestation(mp_oSimManager);
       mp_oObjectArray[iIndex] = p_oObj;
     }
     else if (p_data->sNameString.compare("QualityVigorClassifier") == 0)

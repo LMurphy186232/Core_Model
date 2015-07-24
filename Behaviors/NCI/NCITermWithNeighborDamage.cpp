@@ -23,6 +23,7 @@ clNCITermWithNeighborDamage::clNCITermWithNeighborDamage() {
   m_fDbhDivisor = 0;
   m_iNumTotalSpecies = 0;
   m_fMinSaplingHeight = 0;
+  iNumNCIs = 1;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -41,7 +42,7 @@ clNCITermWithNeighborDamage::~clNCITermWithNeighborDamage() {
 
   if (mp_iDamageCodes)
     for (i = 0; i < m_iNumTotalSpecies; i++)
-      delete[] mp_iDamageCodes;
+      delete[] mp_iDamageCodes[i];
   delete[] mp_iDamageCodes;
 
   delete[] mp_fMinimumNeighborDBH;
@@ -52,29 +53,26 @@ clNCITermWithNeighborDamage::~clNCITermWithNeighborDamage() {
 //////////////////////////////////////////////////////////////////////////////
 // CalculateNCITerm
 //////////////////////////////////////////////////////////////////////////////
-float clNCITermWithNeighborDamage::CalculateNCITerm(clTree * p_oTree, clTreePopulation * p_oPop, clPlot * p_oPlot) {
+clNCITermBase::ncivals clNCITermWithNeighborDamage::CalculateNCITerm(clTree * p_oTree, clTreePopulation * p_oPop, clPlot * p_oPlot, const float &fX, const float &fY, const int &iSpecies) {
   clTreeSearch * p_oAllNeighbors; //neighborhood trees within crowding radius
   clTree * p_oNeighbor; //competing neighbor
+  ncivals toReturn;
   std::stringstream sQuery; //format search strings into this
   float fNCI = 0, //nci - the end result of all this math
       fDistance, //distance between target and neighbor
       fDbh, //neighbor's dbh
       fDamageEffect, //neighbor's damage effect
-      fNeighX, fNeighY, //holders for the neighbor tree's X and Y
-      fTargetX, fTargetY; //holders for the target tree's X and Y location
+      fNeighX, fNeighY; //holders for the neighbor tree's X and Y
   int iDamage, iIsDead; //neighbor's damage value
   short int iNeighSpecies, iNeighType, //species and type for neighbor
-  iTargetSpecies = p_oTree->GetSpecies(), //target tree's species
-  iDeadCode; //neighbor's dead code
+            iDeadCode; //neighbor's dead code
 
   //Format the query to get all competing neighbors
-  p_oTree->GetValue( p_oPop->GetXCode( iTargetSpecies, p_oTree->GetType() ), & fTargetX );
-  p_oTree->GetValue( p_oPop->GetYCode( iTargetSpecies, p_oTree->GetType() ), & fTargetY );
 
   //Get all trees taller than seedlings within the max crowding radius -
   //seedlings don't compete
-  sQuery << "distance=" << mp_fMaxCrowdingRadius[iTargetSpecies] << "FROM x="
-      << fTargetX << "y=" << fTargetY << "::height=" << m_fMinSaplingHeight;
+  sQuery << "distance=" << mp_fMaxCrowdingRadius[iSpecies] << "FROM x="
+      << fX << "y=" << fY << "::height=" << m_fMinSaplingHeight;
   p_oAllNeighbors = p_oPop->Find(sQuery.str());
   sQuery.str("");
 
@@ -109,7 +107,7 @@ float clNCITermWithNeighborDamage::CalculateNCITerm(clTree * p_oTree, clTreePopu
             p_oNeighbor->GetValue( p_oPop->GetYCode( iNeighSpecies, iNeighType ), & fNeighY );
 
             //Get the distance between the two trees
-            fDistance = p_oPlot->GetDistance( fTargetX, fTargetY, fNeighX, fNeighY );
+            fDistance = p_oPlot->GetDistance( fX, fY, fNeighX, fNeighY );
 
             //Get the neighbor's damage effect
             if ( -1 == mp_iDamageCodes[iNeighSpecies][iNeighType]) {
@@ -122,10 +120,10 @@ float clNCITermWithNeighborDamage::CalculateNCITerm(clTree * p_oTree, clTreePopu
                 //What damage category is the neighbor in?
                 if ( iDamage < 2000 ) {
 
-                  fDamageEffect = mp_fMedDamageEta[iTargetSpecies];
+                  fDamageEffect = mp_fMedDamageEta[iSpecies];
                 } else {
 
-                  fDamageEffect = mp_fFullDamageEta[iTargetSpecies];
+                  fDamageEffect = mp_fFullDamageEta[iSpecies];
                 }
               }
             }
@@ -136,9 +134,9 @@ float clNCITermWithNeighborDamage::CalculateNCITerm(clTree * p_oTree, clTreePopu
             if ( 0 != fDistance )
 
               //Add competitive effect to NCI
-              fNCI += fDamageEffect * mp_fLambda[iTargetSpecies][iNeighSpecies]
-                      * ( pow( fDbh / m_fDbhDivisor, mp_fAlpha[iTargetSpecies])
-                     / pow( fDistance, mp_fBeta[iTargetSpecies]));
+              fNCI += fDamageEffect * mp_fLambda[iSpecies][iNeighSpecies]
+                      * ( pow( fDbh / m_fDbhDivisor, mp_fAlpha[iSpecies])
+                     / pow( fDistance, mp_fBeta[iSpecies]));
 
           }
         }
@@ -147,7 +145,8 @@ float clNCITermWithNeighborDamage::CalculateNCITerm(clTree * p_oTree, clTreePopu
     p_oNeighbor = p_oAllNeighbors->NextTree();
   }
 
-  return fNCI;
+  toReturn.fNCI1 = fNCI;
+  return toReturn;
 }
 
 //////////////////////////////////////////////////////////////////////////////

@@ -15,6 +15,7 @@ clGrowthOrg::clGrowthOrg( clGrowthBase * p_oHookedShell )
 {
   try
   {
+
     //Initialize variables to 0, NULL, etc.
     mp_oDiameterGrowthTable = NULL;
     mp_oHeightGrowthTable = NULL;

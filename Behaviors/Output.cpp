@@ -127,6 +127,15 @@ clOutput::~clOutput()
     }
     delete[] mp_masterTreeSettings; mp_masterTreeSettings = NULL;
   }
+  if (mp_subplots) {
+    for (i = 0; i < m_iNumSubplotsToSave; i++) {
+      for (j = 0; j < m_iNumXCells; j++) {
+        delete[] mp_subplots[i].p_bUseCell[j];
+      }
+      delete[] mp_subplots[i].p_bUseCell;
+    }
+    delete[] mp_subplots;
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////

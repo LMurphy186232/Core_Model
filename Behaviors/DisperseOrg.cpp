@@ -192,11 +192,11 @@ void clDisperseOrg::GetParameterFileData(clSimManager * p_oSimManager, xercesc::
     clTreePopulation * p_oPop = (clTreePopulation *) p_oTempPop;
     floatVal * p_fTemp; //for getting values from parameter file
     bool * p_bSpeciesUsed; //for getting values from the parameter file
-    int iTemp;
+    int iTemp = deterministic_pdf;
     short int i, j; //loop counters
 
     //Get the type of seedling adjustment desired
-    FillSingleValue(p_oElement, "di_seedDistributionMethod", & iTemp, true);
+    FillSingleValue(p_oElement, "di_seedDistributionMethod", & iTemp, false);
 
     //Make sure the value is valid
     if (deterministic_pdf == iTemp)

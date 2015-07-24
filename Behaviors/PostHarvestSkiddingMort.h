@@ -119,6 +119,8 @@ class clPostHarvestSkiddingMort : virtual public clMortalityBase {
   int m_iNumXCells;
   /**Number of Y cells in grids.**/
   int m_iNumYCells;
+  /**Number of species. For destructor.*/
+  int m_iNumSpecies;
 
   /**Pointer to Years Since Last Harvest grid.**/
   clGrid *mp_oTimeSinceHarvestGrid;

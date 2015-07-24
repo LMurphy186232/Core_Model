@@ -46,6 +46,7 @@ clMortalityBase(p_oSimManager) {
     m_fNumberYearsPerTimestep = 0;
     m_iNumXCells = 0;
     m_fCrowdingEffectRadius = 0;
+    m_iNumSpecies = 0;
   }
   catch (modelErr&err) {throw(err);}
   catch (modelMsg &msg) {throw(msg);} //non-fatal error
@@ -75,6 +76,13 @@ clPostHarvestSkiddingMort::~clPostHarvestSkiddingMort() {
   delete[] mp_fSnagRecruitHarvestRateParam;
   delete[] mp_fWindthrowBackgroundProb;
   delete[] mp_fSnagRecruitBackgroundProb;
+
+  if (mp_iHarvestIntensityCodes) {
+    for (int i = 0; i < m_iNumSpecies; i++) {
+      delete[] mp_iHarvestIntensityCodes[i];
+    }
+    delete[] mp_iHarvestIntensityCodes;
+  }
 }
 
 
@@ -85,8 +93,9 @@ void clPostHarvestSkiddingMort::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
   clTreePopulation *p_oPop = (clTreePopulation*) mp_oSimManager->GetPopulationObject("treepopulation");
   DOMElement *p_oElement = GetParentParametersElement(p_oDoc);
   floatVal *p_fTempValues;  //for getting species-specific values
-  short int i; //loop counter
-  int iNumSpecies = p_oPop->GetNumberOfSpecies();
+  short int i, j; //loop counter
+
+  m_iNumSpecies = p_oPop->GetNumberOfSpecies();
 
   //Declare the temp array and populate it with the species to which this
   //behavior applies
@@ -374,10 +383,12 @@ void clPostHarvestSkiddingMort::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
   //Gets the codes for the HarvInten float data members
   //that may have been saved by harvest interface
 
-  mp_iHarvestIntensityCodes = new int * [iNumSpecies];
-
-  for (i = 0; i < iNumSpecies; i++) {
+  mp_iHarvestIntensityCodes = new int * [m_iNumSpecies];
+  for (i = 0; i < m_iNumSpecies; i++) {
     mp_iHarvestIntensityCodes[i] = new int [clTreePopulation::adult + 1];
+    for (j = 0; j < (clTreePopulation::adult + 1); j++) {
+      mp_iHarvestIntensityCodes[i][j] = -1;
+    }
   }
 
   for ( i = 0; i < m_iNumSpeciesTypeCombos; i++ )
@@ -427,7 +438,11 @@ deadCode clPostHarvestSkiddingMort::DoMort(clTree *p_oTree, const float &fDbh, c
 
   if (iTimeSinceHarvest < 1000) { //there has been harvesting in this grid cell to date
 
-    p_oTree->GetValue(mp_iHarvestIntensityCodes[iSpecies][iType], &fHarvestIntensity);
+    if (mp_iHarvestIntensityCodes[iSpecies][iType] > -1) {
+      p_oTree->GetValue(mp_iHarvestIntensityCodes[iSpecies][iType], &fHarvestIntensity);
+    } else {
+      fHarvestIntensity = 0;
+    }
 
     fLocalBasalArea = LocalBasalAreaAroundTree(p_oTree);
 
@@ -457,14 +472,14 @@ deadCode clPostHarvestSkiddingMort::DoMort(clTree *p_oTree, const float &fDbh, c
       fRandom -= fAnnualWindthrowRisk;
       if (fRandom < 0.0) {
         iDead = natural;
-    //    bFallen = true;
+        //    bFallen = true;
         break;
       }
 
       fRandom -= fAnnualSnagRecruitRisk;
       if (fRandom < 0.0) {
         iDead = natural;
-     //   bFallen = false;
+        //   bFallen = false;
         break;
       }
 
@@ -485,7 +500,6 @@ deadCode clPostHarvestSkiddingMort::DoMort(clTree *p_oTree, const float &fDbh, c
       iDead = notdead;
     //what about bFallen? -- is unknown whether tree fell or not
   }
-
   return iDead;
 }
 

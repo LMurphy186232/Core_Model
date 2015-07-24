@@ -158,7 +158,7 @@ void clSuppressionDurationMort::DoShellSetup( xercesc::DOMDocument * p_oDoc )
         s << "Type/species combo species="
           << mp_whatSpeciesTypeCombos[i].iSpecies << " type="
           << mp_whatSpeciesTypeCombos[i].iType
-          << " does not have the insect infestation behavior.";
+          << " does not have the tree age behavior.";
         stcErr.sMoreInfo = s.str();
         stcErr.iErrorCode = BAD_DATA;
         throw( stcErr );

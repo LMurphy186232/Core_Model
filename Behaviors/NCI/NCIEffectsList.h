@@ -16,7 +16,11 @@ enum size_effect {
   no_size_effect, /**<No size effect (class clNoSizeEffect) */
   default_size_effect, /**<Default size effect (class clDefaultSizeEffect) */
   size_effect_bounded, /**<Size effect with minimum DBH (class clSizeEffectLowerBounded) */
-  size_effect_power_function /**<Power function size effect (class clSizeEffectPowerFunction) */
+  size_effect_power_function, /**<Power function size effect (class clSizeEffectPowerFunction) */
+  size_effect_shifted_lognormal, /**<Shifted lognormal size effect (class clShiftedLognormalSizeEffect) */
+  size_effect_compound_exp, /**<Compound exponential size effect (class clSizeEffectCompoundExponential) */
+  size_effect_shifted_log_inf, /**<Shifted lognormal w/ infection size effect (class clSizeEffectShiftedLogInf) */
+  size_effect_compound_exp_inf /**<Compound exponential w/ infection size effect (class clSizeEffectCompoundExpInf) */
 };
 
 /**
@@ -36,7 +40,13 @@ enum nci_term {
   nci_with_neighbor_damage, /**<NCI term with neighbor damage (class clNCITermWithNeighborDamage)*/
   larger_neighbors, /**<Count of larger neighbors (class clNCILargerNeighbors)*/
   neighbor_ba, /**<Neighbor BA (class clNCINeighborBA)*/
-  nci_with_seedlings /**<NCI with seedling competition (class clNCIWithSeedlings)*/
+  nci_with_seedlings, /**<NCI with seedling competition (class clNCIWithSeedlings)*/
+  nci_ba_ratio, /**<NCI with ba ratio (class clNCITermBARatio)*/
+  nci_ba_ratio_dbh_default, /**<NCI with ba ratio (class clNCITermBARatioDBHDefault)*/
+  nci_nci_ba_ratio, /**<NCI with temp dependent lambda (class clNCITermNCIBARatio) */
+  nci_nci_ba_ratio_ba_default, /**<NCI with temp dependent lambda (class clNCITermNCIBARatio) */
+  nci_nci_temp_dep_ba_ratio, /**<NCI with temp dependent lambda (class clNCITermNCITempDepBARatio) */
+  nci_nci_temp_dep_ba_ratio_ba_default /**<NCI with temp dependent lambda (class clNCITermNCITempDepBARatio) */
 };
 
 /**
@@ -46,7 +56,8 @@ enum crowding_effect {
   no_crowding_effect, /**<No crowding effect (class clNoCrowdingEffect) */
   default_crowding_effect, /**<Default crowding effect (class clDefaultCrowdingEffect) */
   crowding_effect_two, /**<Crowding effect 2 (class clCrowdingEffectTwo)*/
-  crowding_effect_no_size /**<Crowding effect with no DBH term (class clCrowdingEffectNoSize) */
+  crowding_effect_no_size, /**<Crowding effect with no DBH term (class clCrowdingEffectNoSize) */
+  crowding_effect_temp_dep /**<Crowding effect with temperature dependence (class clCrowdingEffectTempDep) */
 };
 
 /**
@@ -54,7 +65,8 @@ enum crowding_effect {
  */
 enum temperature_effect {
   no_temp_effect, /**<No temperature effect (class clNoTemperatureEffect) */
-  weibull_temp_effect /**<Weibull temperature effect (class clWeibullTemperatureEffect)*/
+  weibull_temp_effect, /**<Weibull temperature effect (class clTemperatureEffectWeibull)*/
+  double_logistic_temp_effect /**<Double logistic temperature effect (class clTemperatureEffectDoubleLogistic)*/
 };
 
 /**
@@ -62,7 +74,8 @@ enum temperature_effect {
  */
 enum precipitation_effect {
   no_precip_effect, /**<No precip effect (class clNoPrecipitationEffect) */
-  weibull_precip_effect /**<Weibull precipitation effect (class clWeibullPrecipitationEffect)*/
+  weibull_precip_effect, /**<Weibull precipitation effect (class clPrecipitationEffectWeibull)*/
+  double_logistic_precip_effect /**<Double logistic precipitation effect (class clPrecipitationEffectDoubleLogistic)*/
 };
 
 /**
@@ -73,5 +86,13 @@ enum nitrogen_effect {
   gauss_nitrogen_effect /**<Gaussian nitrogen effect (class clGaussianNitrogenEffect)*/
 };
 
+/**
+ * Flag values for which infection effect term is desired.
+ */
+enum infection_effect {
+  no_infection_effect, /**<No effect (class clNoInfectionEffect) */
+  infection_effect, /**<Infection effect non-size dependent (class clInfectionEffect)*/
+  infection_effect_size_dep, /**<Infection effect size dependent (class clInfectionEffectSizeDependent)*/
+};
 
 #endif /* NCIEFFECTSLIST_H_ */

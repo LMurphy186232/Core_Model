@@ -193,6 +193,8 @@ void clSnagDecomp::GetData(xercesc::DOMDocument * p_oDoc) {
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
     mp_fSnagfallBeta[mp_iIndexes[p_fTempValues[i].code]] = p_fTempValues[i].val;
 
+    mp_fSnagfallGamma[0] = 0;
+    mp_fSnagfallGamma[1] = 0;
     FillSingleValue( p_oElement, "sd_snagDecompSnagfallGamma2", & mp_fSnagfallGamma[2], true );
     FillSingleValue( p_oElement, "sd_snagDecompSnagfallGamma3", & mp_fSnagfallGamma[3], true );
     FillSingleValue( p_oElement, "sd_snagDecompSnagfallGamma4", & mp_fSnagfallGamma[4], true );
@@ -625,7 +627,11 @@ void clSnagDecomp::Action() {
       }
 
       else { //tree was already a snag, apply snag fall model
-        fFallProb = m_fSnagfallAlpha + mp_fSnagfallBeta[mp_iIndexes[iSp]] + mp_fSnagfallGamma[iInitCondition] + m_fSnagfallZeta*log(fDBH) + m_fSnagfallEta*pow(log(fDBH),2) + m_fSnagfallKappa*fCutBasalArea;
+        fFallProb = m_fSnagfallAlpha + mp_fSnagfallBeta[mp_iIndexes[iSp]] +
+                    mp_fSnagfallGamma[iInitCondition] +
+                    m_fSnagfallZeta*log(fDBH) +
+                    m_fSnagfallEta*pow(log(fDBH),2) +
+                    m_fSnagfallKappa*fCutBasalArea;
         //values to be used later
         iFallDataCode = mp_iDeadCodes[iSp][iTp];
         p_oTree->SetValue(mp_iOldBreakCode[iSp], fNegOne);

@@ -16,7 +16,7 @@
   <li>we're summing over k = 0 to N neighbors greater than the minimum
   neighbor DBH</li>
   <li><i>&eta;</i> is the storm damage parameter of the target,
-  depending on the damage status.  It’s 1 if the neighbor is undamaged.</li>
+  depending on the damage status.  It's 1 if the neighbor is undamaged.</li>
   <li><i>&alpha;</i> is the neighbor DBH effect parameter</li>
   <li><i>&beta;</i> is the neighbor distance effect parameter</li>
   <li><i>q</i> is the DBH divisor parameter</li>
@@ -35,6 +35,8 @@
  * current timestep and they should still be considered as live neighbors.
  *
  * Seedlings do not compete.
+ *
+ * This returns 1 value for NCI.
  */
 class clNCITermWithNeighborDamage: virtual public clNCITermBase {
 public:
@@ -54,8 +56,11 @@ public:
    * @param p_oTree Tree for which to calculate NCI.
    * @param p_oPop Tree population.
    * @param p_oPlot Plot object.
+   * @param fX X coordinate for which to calculate NCI.
+   * @param fY Y coordinate for which to calculate NCI.
+   * @param iSpecies Species for which to calculate NCI.
    */
-  float CalculateNCITerm(clTree * p_oTree, clTreePopulation * p_oPop, clPlot * p_oPlot);
+  ncivals CalculateNCITerm(clTree * p_oTree, clTreePopulation * p_oPop, clPlot * p_oPlot, const float &fX, const float &fY, const int &iSpecies);
 
   /**
    * Does setup.
