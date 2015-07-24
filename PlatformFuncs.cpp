@@ -277,7 +277,8 @@ void LaunchProcess(string sFile, string sArgs, string sDir) {
     //DWORD dw = GetLastError();
     //force the process to complete before moving on
     WaitForSingleObject(params->hProcess, INFINITE);
-  } 
+  }
+  delete params;
 }   
 #endif
 

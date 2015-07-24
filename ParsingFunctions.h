@@ -265,6 +265,51 @@ void FillSpeciesSpecificValue(xercesc::DOMElement *p_oParent, std::string sTagNa
     bool bRequired);
 
 /**
+ * Fills species-specific double values from a DOM tree.
+ * For those values which are species-specific and have the following structure
+ * in the XML document:
+ *
+ * <!--<parent_tag>
+ *       <child_tag species = "sp1-name">val1</child_tag>
+ *       <child_tag species = "sp2-name">val2</child_tag>
+ * </parent_tag>-->
+ @htmlonly &lt;parent_tag&gt;<br>
+       &lt;child_tag species = "sp1-name"&gt;val1&lt;/child_tag&gt;<br>
+       &lt;child_tag species = "sp2-name"&gt;val2&lt;/child_tag&gt;<br>
+  &lt;/parent_tag&gt;<br>
+ @endhtmlonly
+ *
+ * This function will extract the values and place them in a given array. If the
+ * data isn't present in the document, the action taken depends on the value of
+ * the flag bRequired. If bRequired is false, and the data isn't there, the
+ * function simply exits. If bRequired is true, the function throws an error.
+ * In either case, if a value is not found for all species indicated, an error
+ * is thrown.
+ *
+ * This function provides a shortcut if you need values for every species and
+ * don't need to bother with the floatVal array type.
+ *
+ * This function is currently not protected against overflow. I could not
+ * successfully trap for the error codes the documentation says are supposed to
+ * be set.
+ *
+ * @param p_oParent Pointer to the parent element of the element to extract. If
+ * this is a top-level element, the parent will be the XML document root element
+ * (at the time of this writing, named paramFile).
+ * @param sTagName Tag name of the parent node (parent_tag).
+ * @param sSubTagName Tag name of the child node (child_tag).
+ * @param p_fArray Pointer to the array to put the extracted values in.
+ * @param p_oPop Pointer to the tree population. This is necessary for
+ * translating species names into codes
+ * @param bRequired Whether or not this value is required.
+ * @throw Error if the value is required and it is not found, or if it is found
+ * and not all species are present (whether or not it is required).
+ */
+void FillSpeciesSpecificValue(xercesc::DOMElement *p_oParent, std::string sTagName,
+    std::string sSubTagName, double *p_fArray, clTreePopulation *p_oPop,
+    bool bRequired);
+
+/**
  * Fills species-specific integer values from a DOM tree.
  * For those values which are species-specific and have the following structure
  * in the XML document:
@@ -366,6 +411,31 @@ void FillSingleValue(xercesc::DOMElement *p_oParent, std::string sTagName,
  */
 void FillSingleValue(xercesc::DOMElement *p_oParent, std::string sTagName,
     float *p_fValToFill, bool bRequired);
+
+/**
+ * Extracts a single double value from a parsed XML file.
+ * For those values which are not species-specific and have the following
+ * structure:
+ *
+ @htmlonly &lt;tag&gt;value&lt;/tag&gt; @endhtmlonly
+ * <!-- <tag>value</tag>-->
+ *
+ * this function will extract the value and place it in a given variable. The
+ * element can be the child of another tag.
+ *
+ * This is currently not protected against overflow. I could not successfully
+ * trap for the error codes the documentation says are supposed to be set.
+ *
+ * @param p_oParent Pointer to the parent element of the element to extract. If
+ * this is a top-level element, the parent will be the XML document root
+ * element (at the time of this writing, named paramFile).
+ * @param sTagName The tag name of the node.
+ * @param p_fValToFill Pointer to the variable to put the extracted value in.
+ * @param bRequired Whether or not this value is required.
+ * @throw Error if the value is required and it is not found.
+ */
+void FillSingleValue(xercesc::DOMElement *p_oParent, std::string sTagName,
+    double *p_fValToFill, bool bRequired);
 
 /**
  * Extracts a single string value from a parsed XML file.

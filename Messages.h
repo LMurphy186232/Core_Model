@@ -37,7 +37,7 @@ struct modelErr {
   int iErrorCode;               /**<Error code.  See constants.*/
   std::string sMoreInfo, /**<String to hold additional information, if
                                 needed, according to the error code*/
-              sFunction; /**<Fnction in which the error occurred -
+              sFunction; /**<Function in which the error occurred -
                                 probably not for user consumption*/
 };
 
