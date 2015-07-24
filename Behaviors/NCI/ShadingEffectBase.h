@@ -32,6 +32,13 @@ public:
    * Destructor
    */
   virtual ~clShadingEffectBase(){};
+
+  /**
+  * Performs calculations like either clGrowthBase::PreGrowthCalcs or
+  * clMortalityBase::PreMortCalcs.
+  */
+  virtual void PreCalcs( clTreePopulation *p_oPop ){;};
+
 };
 
 

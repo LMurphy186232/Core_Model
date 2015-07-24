@@ -7,30 +7,15 @@
 #include "GrowthOrg.h"
 #include "Allometry.h"
 
-#include "NCI/DefaultCrowdingEffect.h"
-#include "NCI/CrowdingEffect2.h"
-#include "NCI/CrowdingEffectNoSize.h"
-#include "NCI/DefaultDamageEffect.h"
-#include "NCI/DefaultNCITerm.h"
-#include "NCI/DefaultShadingEffect.h"
-#include "NCI/DefaultSizeEffect.h"
-#include "NCI/NCITermWithNeighborDamage.h"
-#include "NCI/NCILargerNeighbors.h"
-#include "NCI/NCINeighborBA.h"
-#include "NCI/NCIWithSeedlings.h"
-#include "NCI/NoCrowdingEffect.h"
-#include "NCI/NoDamageEffect.h"
-#include "NCI/NoNCITerm.h"
-#include "NCI/NoShadingEffect.h"
-#include "NCI/NoSizeEffect.h"
-#include "NCI/NoTemperatureEffect.h"
-#include "NCI/WeibullTemperatureEffect.h"
-#include "NCI/NoPrecipitationEffect.h"
-#include "NCI/WeibullPrecipitationEffect.h"
-#include "NCI/SizeEffectLowerBounded.h"
-#include "NCI/SizeEffectPowerFunction.h"
-#include "NCI/NoNitrogenEffect.h"
-#include "NCI/GaussianNitrogenEffect.h"
+#include "NCI/CrowdingEffectBase.h"
+#include "NCI/DamageEffectBase.h"
+#include "NCI/NCITermBase.h"
+#include "NCI/ShadingEffectBase.h"
+#include "NCI/SizeEffectBase.h"
+#include "NCI/TemperatureEffectBase.h"
+#include "NCI/PrecipitationEffectBase.h"
+#include "NCI/InfectionEffectBase.h"
+#include "NCI/NitrogenEffectBase.h"
 
 #include <stdio.h>
 #include <sstream>
@@ -40,246 +25,44 @@
 //////////////////////////////////////////////////////////////////////////////
 clNCIMasterGrowth::clNCIMasterGrowth(clSimManager * p_oSimManager) :
   clWorkerBase(p_oSimManager), clBehaviorBase(p_oSimManager),
-      clGrowthBase(p_oSimManager) {
-  try
-  {
-    //Set namestring
-    m_sNameString = "ncigrowthshell";
-    m_sXMLRoot = "NCIMasterGrowth";
+      clGrowthBase(p_oSimManager), clNCIBehaviorBase() {
 
-    //Null out our pointers
-    mp_iGrowthCodes = NULL;
+  //Set namestring
+  m_sNameString = "ncigrowthshell";
+  m_sXMLRoot = "NCIMasterGrowth";
 
-    mp_fMaxPotentialValue = NULL;
+  //Version 3
+  m_fVersionNumber = 3.0;
+  m_fMinimumVersionNumber = 3.0;
 
-    mp_oCrowdingEffect = NULL;
-    mp_oDamageEffect = NULL;
-    mp_oNCITerm = NULL;
-    mp_oShadingEffect = NULL;
-    mp_oSizeEffect = NULL;
-    mp_oPrecipEffect = NULL;
-    mp_oTempEffect = NULL;
-    mp_oNEffect = NULL;
+  //Null out our pointers
+  mp_iGrowthCodes = NULL;
+  mp_fMaxPotentialValue = NULL;
+  mp_fRandParameter = NULL;
 
-    m_iNumTotalSpecies = 0;
+  m_iStochasticGrowthMethod = deterministic_pdf;
+  Adjust = NULL;
 
-    //Version 3
-    m_fVersionNumber = 3.0;
-    m_fMinimumVersionNumber = 3.0;
-  }
-  catch ( modelErr & err )
-  {
-    throw( err );
-  }
-  catch ( modelMsg & msg )
-  {
-    throw( msg );
-  } //non-fatal error
-  catch ( ... )
-  {
-    modelErr stcErr;
-    stcErr.iErrorCode = UNKNOWN;
-    stcErr.sFunction = "clNCIMasterGrowth::clNCIMasterGrowth" ;
-    throw( stcErr );
-  }
+  m_iNumTotalSpecies = 0;
+
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // Destructor
 ////////////////////////////////////////////////////////////////////////////
 clNCIMasterGrowth::~clNCIMasterGrowth() {
+
+  int i;
   if (mp_iGrowthCodes) {
-    for (int i = 0; i < m_iNumTotalSpecies; i++) {
+    for (i = 0; i < m_iNumTotalSpecies; i++) {
       delete[] mp_iGrowthCodes[i];
     }
     delete[] mp_iGrowthCodes;
   }
   delete[] mp_fMaxPotentialValue;
-
-  delete mp_oCrowdingEffect;
-  delete mp_oDamageEffect;
-  delete mp_oNCITerm;
-  delete mp_oShadingEffect;
-  delete mp_oSizeEffect;
-  delete mp_oPrecipEffect;
-  delete mp_oTempEffect;
-  delete mp_oNEffect;
+  delete[] mp_fRandParameter;
 }
 
-////////////////////////////////////////////////////////////////////////////
-// ReadParameterFile()
-////////////////////////////////////////////////////////////////////////////
-void clNCIMasterGrowth::ReadParameterFile(xercesc::DOMDocument * p_oDoc) {
-  clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
-  DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
-  floatVal * p_fTempValues; //for getting species-specific values
-  int iVal;
-  short int i; //loop counters
-
-  //Set up our floatVal array that will extract values only for the species
-  //assigned to this behavior
-  p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
-  for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
-    p_fTempValues[i].code = mp_iWhatSpecies[i];
-
-  //Maximum potential growth
-  mp_fMaxPotentialValue = new float[p_oPop->GetNumberOfSpecies()];
-  FillSpeciesSpecificValue( p_oElement, "gr_nciMaxPotentialGrowth", "gr_nmpgVal", p_fTempValues,
-      m_iNumBehaviorSpecies, p_oPop, true );
-  //Transfer to the appropriate array buckets
-  for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
-    mp_fMaxPotentialValue[p_fTempValues[i].code] = p_fTempValues[i].val;
-
-  delete[] p_fTempValues;
-
-  for (i = 0; i < m_iNumBehaviorSpecies; i++) {
-    //Make sure that the maximum growth for each species is > 0
-    if (mp_fMaxPotentialValue[mp_iWhatSpecies[i]] <= 0) {
-      modelErr err;
-      err.sFunction = "clNCIMasterGrowth::ValidateData";
-      err.iErrorCode = BAD_DATA;
-      err.sMoreInfo = "All values for max potential growth must be greater than 0.";
-      throw(err);
-    }
-  }
-
-  //Which shading term?
-  FillSingleValue(p_oElement, "nciWhichShadingEffect", &iVal, true);
-  if (iVal == no_shading) {
-    mp_oShadingEffect = new clNoShadingEffect();
-  } else if (iVal == default_shading) {
-    mp_oShadingEffect = new clDefaultShadingEffect();
-  } else {
-    modelErr err;
-    err.sFunction = "clNCIMasterGrowth::ReadParameterFile";
-    err.iErrorCode = BAD_DATA;
-    err.sMoreInfo = "Unrecognized shading term.";
-    throw(err);
-  }
-
-  //Which crowding term?
-  FillSingleValue(p_oElement, "nciWhichCrowdingEffect", &iVal, true);
-  if (iVal == no_crowding_effect) {
-    mp_oCrowdingEffect = new clNoCrowdingEffect();
-  } else if (iVal == default_crowding_effect) {
-    mp_oCrowdingEffect = new clDefaultCrowdingEffect();
-  } else if (iVal == crowding_effect_two) {
-    mp_oCrowdingEffect = new clCrowdingEffectTwo();
-  } else if (iVal == crowding_effect_no_size) {
-    mp_oCrowdingEffect = new clCrowdingEffectNoSize();
-  } else {
-    modelErr err;
-    err.sFunction = "clNCIMasterGrowth::ReadParameterFile";
-    err.iErrorCode = BAD_DATA;
-    err.sMoreInfo = "Unrecognized crowding term.";
-    throw(err);
-  }
-
-  //Which NCI term?
-  FillSingleValue(p_oElement, "nciWhichNCITerm", &iVal, true);
-  if (iVal == no_nci_term) {
-    mp_oNCITerm = new clNoNCITerm();
-  } else if (iVal == default_nci_term) {
-    mp_oNCITerm = new clDefaultNCITerm();
-  } else if (iVal == nci_with_neighbor_damage) {
-    mp_oNCITerm = new clNCITermWithNeighborDamage();
-  } else if (iVal == larger_neighbors) {
-    mp_oNCITerm = new clNCILargerNeighbors();
-  } else if (iVal == neighbor_ba) {
-    mp_oNCITerm = new clNCINeighborBA();
-  } else if (iVal == nci_with_seedlings) {
-    mp_oNCITerm = new clNCIWithSeedlings();
-  } else {
-    modelErr err;
-    err.sFunction = "clNCIMasterGrowth::ReadParameterFile";
-    err.iErrorCode = BAD_DATA;
-    err.sMoreInfo = "Unrecognized NCI term.";
-    throw(err);
-  }
-
-  //Which size effect term?
-  FillSingleValue(p_oElement, "nciWhichSizeEffect", &iVal, true);
-  if (iVal == no_size_effect) {
-    mp_oSizeEffect = new clNoSizeEffect();
-  } else if (iVal == default_size_effect) {
-    mp_oSizeEffect = new clDefaultSizeEffect();
-  } else if (iVal == size_effect_bounded) {
-    mp_oSizeEffect = new clSizeEffectLowerBounded();
-  } else if (iVal == size_effect_power_function) {
-    mp_oSizeEffect = new clSizeEffectPowerFunction();
-  } else {
-    modelErr err;
-    err.sFunction = "clNCIMasterGrowth::ReadParameterFile";
-    err.iErrorCode = BAD_DATA;
-    err.sMoreInfo = "Unrecognized size effect term.";
-    throw(err);
-  }
-
-  //Which damage effect term?
-  FillSingleValue(p_oElement, "nciWhichDamageEffect", &iVal, true);
-  if (iVal == no_damage_effect) {
-    mp_oDamageEffect = new clNoDamageEffect();
-  } else if (iVal == default_damage_effect) {
-    mp_oDamageEffect = new clDefaultDamageEffect();
-  } else {
-    modelErr err;
-    err.sFunction = "clNCIMasterGrowth::ReadParameterFile";
-    err.iErrorCode = BAD_DATA;
-    err.sMoreInfo = "Unrecognized damage effect term.";
-    throw(err);
-  }
-
-  //Which precipitation effect term?
-  FillSingleValue(p_oElement, "nciWhichPrecipitationEffect", &iVal, true);
-  if (iVal == no_precip_effect) {
-    mp_oPrecipEffect = new clNoPrecipitationEffect();
-  } else if (iVal == weibull_precip_effect) {
-    mp_oPrecipEffect = new clWeibullPrecipitationEffect();
-  } else {
-    modelErr err;
-    err.sFunction = "clNCIMasterGrowth::ReadParameterFile";
-    err.iErrorCode = BAD_DATA;
-    err.sMoreInfo = "Unrecognized precipitation effect term.";
-    throw(err);
-  }
-
-  //Which temperature effect term?
-  FillSingleValue(p_oElement, "nciWhichTemperatureEffect", &iVal, true);
-  if (iVal == no_temp_effect) {
-    mp_oTempEffect = new clNoTemperatureEffect();
-  } else if (iVal == weibull_temp_effect) {
-    mp_oTempEffect = new clWeibullTemperatureEffect();
-  } else {
-    modelErr err;
-    err.sFunction = "clNCIMasterGrowth::ReadParameterFile";
-    err.iErrorCode = BAD_DATA;
-    err.sMoreInfo = "Unrecognized temperature effect term.";
-    throw(err);
-  }
-
-  //Which nitrogen effect term?
-  FillSingleValue(p_oElement, "nciWhichNitrogenEffect", &iVal, true);
-  if (iVal == no_nitrogen_effect) {
-    mp_oNEffect = new clNoNitrogenEffect();
-  } else if (iVal == gauss_nitrogen_effect) {
-    mp_oNEffect = new clGaussianNitrogenEffect();
-  } else {
-    modelErr err;
-    err.sFunction = "clNCIMasterGrowth::ReadParameterFile";
-    err.iErrorCode = BAD_DATA;
-    err.sMoreInfo = "Unrecognized nitrogen effect term.";
-    throw(err);
-  }
-
-  mp_oCrowdingEffect->DoSetup(p_oPop, this, p_oElement);
-  mp_oDamageEffect->DoSetup(p_oPop, this, p_oElement);
-  mp_oNCITerm->DoSetup(p_oPop, this, p_oElement);
-  mp_oShadingEffect->DoSetup(p_oPop, this, p_oElement);
-  mp_oSizeEffect->DoSetup(p_oPop, this, p_oElement);
-  mp_oPrecipEffect->DoSetup(p_oPop, this, p_oElement);
-  mp_oTempEffect->DoSetup(p_oPop, this, p_oElement);
-  mp_oNEffect->DoSetup(p_oPop, this, p_oElement);
-}
 
 ////////////////////////////////////////////////////////////////////////////
 // GetTreeMemberCodes()
@@ -314,55 +97,86 @@ void clNCIMasterGrowth::DoShellSetup(xercesc::DOMDocument * p_oDoc) {
 
   m_iNumTotalSpecies = p_oPop->GetNumberOfSpecies();
 
-  FormatQueryString();
-  ReadParameterFile( p_oDoc );
+  DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
+  floatVal * p_fTempValues; //for getting species-specific values
+  int iTemp;
+  short int i; //loop counters
+
+  //Set up our floatVal array that will extract values only for the species
+  //assigned to this behavior
+  p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+  for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
+    p_fTempValues[i].code = mp_iWhatSpecies[i];
+
+  //Maximum potential growth
+  mp_fMaxPotentialValue = new float[m_iNumTotalSpecies];
+  FillSpeciesSpecificValue( p_oElement, "gr_nciMaxPotentialGrowth", "gr_nmpgVal", p_fTempValues,
+      m_iNumBehaviorSpecies, p_oPop, true );
+  //Transfer to the appropriate array buckets
+  for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
+    mp_fMaxPotentialValue[p_fTempValues[i].code] = p_fTempValues[i].val;
+
+  //Get the type of growth stochasticity desired
+  FillSingleValue(p_oElement, "gr_stochGrowthMethod", &iTemp, true);
+
+  //Make sure the value is valid
+  if (deterministic_pdf == iTemp) {
+
+    m_iStochasticGrowthMethod = deterministic_pdf;
+    Adjust = & clNCIMasterGrowth::DeterministicAdjust;
+
+  } else if (lognormal_pdf == iTemp) {
+
+    m_iStochasticGrowthMethod = lognormal_pdf;
+    Adjust = & clNCIMasterGrowth::LognormalAdjust;
+
+  } else if (normal_pdf == iTemp) {
+
+    m_iStochasticGrowthMethod = normal_pdf;
+    Adjust = & clNCIMasterGrowth::NormalAdjust;
+
+  } else {
+    modelErr stcErr;
+    stcErr.sFunction = "clNCIMasterGrowth::DoShellSetup";
+    std::stringstream s;
+    s << "Unrecognized value for gr_stochGrowthMethod: " << iTemp;
+    stcErr.sMoreInfo = s.str();
+    stcErr.iErrorCode = BAD_DATA;
+    throw(stcErr);
+  }
+
+  //If lognormal or normal, populate the parameters array
+  if (lognormal_pdf == m_iStochasticGrowthMethod ||
+      normal_pdf == m_iStochasticGrowthMethod) {
+
+    mp_fRandParameter = new float[m_iNumTotalSpecies];
+    FillSpeciesSpecificValue(p_oElement, "gr_standardDeviation", "gr_sdVal",
+          p_fTempValues, m_iNumBehaviorSpecies, p_oPop, true);
+
+    //Transfer to the appropriate array buckets
+    for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
+      mp_fRandParameter[p_fTempValues[i].code] = p_fTempValues[i].val;
+
+  }
+
+  delete[] p_fTempValues;
+
+  for (i = 0; i < m_iNumBehaviorSpecies; i++) {
+    //Make sure that the maximum growth for each species is > 0
+    if (mp_fMaxPotentialValue[mp_iWhatSpecies[i]] <= 0) {
+      modelErr err;
+      err.sFunction = "clNCIMasterGrowth::ValidateData";
+      err.iErrorCode = BAD_DATA;
+      err.sMoreInfo = "All values for max potential growth must be greater than 0.";
+      throw(err);
+    }
+  }
+
+  m_sQuery = FormatSpeciesTypeQueryString();
+  ReadParameterFile(p_oElement, p_oPop, this, true);
   GetTreeMemberCodes();
 
 }
-
-////////////////////////////////////////////////////////////////////////////
-// FormatQueryString()
-////////////////////////////////////////////////////////////////////////////
-void clNCIMasterGrowth::FormatQueryString()
-{
-  std::stringstream sQueryTemp;
-  int i;
-  bool bSeedling = false, bSapling = false, bAdult = false, bSnag = false;
-
-  //Do a type/species search on all the types and species
-  sQueryTemp << "species=";
-  for (i = 0; i < m_iNumBehaviorSpecies - 1; i++) {
-    sQueryTemp << mp_iWhatSpecies[i] << ",";
-  }
-  sQueryTemp << mp_iWhatSpecies[m_iNumBehaviorSpecies - 1];
-
-  //Find all the types
-  for (i = 0; i < m_iNumSpeciesTypeCombos; i++) {
-    if ( clTreePopulation::seedling == mp_whatSpeciesTypeCombos[i].iType ) {
-      bSeedling = true;
-    } else if ( clTreePopulation::sapling == mp_whatSpeciesTypeCombos[i].iType ) {
-      bSapling = true;
-    } else if ( clTreePopulation::adult == mp_whatSpeciesTypeCombos[i].iType ) {
-      bAdult = true;
-    } else if ( clTreePopulation::snag == mp_whatSpeciesTypeCombos[i].iType ) {
-      bSnag = true;
-    }
-  }
-  sQueryTemp << "::type=";
-  if (bSeedling) {
-    sQueryTemp << clTreePopulation::seedling << ",";
-  } if (bSapling) {
-    sQueryTemp << clTreePopulation::sapling << ",";
-  } if (bAdult) {
-    sQueryTemp << clTreePopulation::adult << ",";
-  } if (bSnag) {
-    sQueryTemp << clTreePopulation::snag << ",";
-  }
-
-  //Remove the last comma and put it in m_sQuery
-  m_sQuery = sQueryTemp.str().substr(0, sQueryTemp.str().length() - 1);
-}
-
 
 //////////////////////////////////////////////////////////////////////////////
 // SetNameData()
@@ -445,12 +259,14 @@ void clNCIMasterGrowth::PreGrowthCalcs(clTreePopulation * p_oPop) {
     clAllometry * p_oAllom = p_oPop->GetAllometryObject();
     clPlot * p_oPlot = mp_oSimManager->GetPlotObject();
     clTree * p_oTree; //a single tree we're working with
+    clNCITermBase::ncivals nci;
     float fDamageEffect, //this tree's damage effect
     fCrowdingEffect, //tree's crowding effect
-    fNCI, //the NCI
     fSizeEffect, //tree's size effect
     fShadingEffect, //tree's shading effect
+    fInfectionEffect, //tree's infection effect
     fDiam, //tree's diameter
+    fX, fY,
     fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep(), fAmountDiamIncrease, //amount diameter increase
     fTempDiamIncrease; //amount diameter increase - intermediate
     int iIsDead;
@@ -467,6 +283,14 @@ void clNCIMasterGrowth::PreGrowthCalcs(clTreePopulation * p_oPop) {
       p_fTempEffect[mp_iWhatSpecies[i]] = mp_oTempEffect->CalculateTemperatureEffect(p_oPlot, mp_iWhatSpecies[i]);
       p_fNEffect[mp_iWhatSpecies[i]] = mp_oNEffect->CalculateNitrogenEffect(p_oPlot, mp_iWhatSpecies[i]);
     }
+
+    //Pre-calcs for other effects
+    mp_oCrowdingEffect->PreCalcs(p_oPop);
+    mp_oDamageEffect->PreCalcs(p_oPop);
+    mp_oNCITerm->PreCalcs(p_oPop);
+    mp_oShadingEffect->PreCalcs(p_oPop);
+    mp_oSizeEffect->PreCalcs(p_oPop);
+    mp_oInfectionEffect->PreCalcs(p_oPop);
 
     p_oNCITrees = p_oPop->Find( m_sQuery );
 
@@ -502,7 +326,9 @@ void clNCIMasterGrowth::PreGrowthCalcs(clTreePopulation * p_oPop) {
           //not change in our loop
 
           //Get NCI
-          fNCI = mp_oNCITerm->CalculateNCITerm(p_oTree, p_oPop, p_oPlot);
+          p_oTree->GetValue( p_oPop->GetXCode( iSpecies, iType ), & fX );
+          p_oTree->GetValue( p_oPop->GetYCode( iSpecies, iType ), & fY );
+          nci = mp_oNCITerm->CalculateNCITerm(p_oTree, p_oPop, p_oPlot, fX, fY, iSpecies);
 
           //Get the tree's damage effect
           fDamageEffect = mp_oDamageEffect->CalculateDamageEffect(p_oTree);
@@ -510,21 +336,25 @@ void clNCIMasterGrowth::PreGrowthCalcs(clTreePopulation * p_oPop) {
           //Get the tree's shading effect
           fShadingEffect = mp_oShadingEffect->CalculateShadingEffect(p_oTree);
 
+          //Get the tree's infection effect
+          fInfectionEffect = mp_oInfectionEffect->CalculateInfectionEffect(p_oTree);
+
           //To correctly compound growth over the number of years per timestep,
           //we have to loop over the number of years, re-calculating the parts
           //with DBH and incrementing the DBH each time
           fAmountDiamIncrease = 0;
           for ( i = 0; i < fNumberYearsPerTimestep; i++ ) {
 
-            fCrowdingEffect = mp_oCrowdingEffect->CalculateCrowdingEffect(p_oTree, fDiam, fNCI);
+            fCrowdingEffect = mp_oCrowdingEffect->CalculateCrowdingEffect(p_oTree, fDiam, nci, iSpecies);
 
             //Get the tree's size effect
-            fSizeEffect = mp_oSizeEffect->CalculateSizeEffect(iSpecies, fDiam);
+            fSizeEffect = mp_oSizeEffect->CalculateSizeEffect(p_oTree, fDiam);
 
             //Calculate actual growth in cm/yr
             fTempDiamIncrease = mp_fMaxPotentialValue[iSpecies] * fSizeEffect *
                 fCrowdingEffect * fShadingEffect * fDamageEffect *
-                p_fPrecipEffect[iSpecies] * p_fTempEffect[iSpecies] * p_fNEffect[iSpecies];
+                p_fPrecipEffect[iSpecies] * p_fTempEffect[iSpecies] *
+                p_fNEffect[iSpecies] * fInfectionEffect;
 
             //Add it to the running total of diameter increase
             fAmountDiamIncrease += fTempDiamIncrease;
@@ -540,6 +370,10 @@ void clNCIMasterGrowth::PreGrowthCalcs(clTreePopulation * p_oPop) {
               fDiam += fTempDiamIncrease;
             }
           }
+
+          //Adjust stochastically (if deterministic, we'll get the same
+          //number back
+          fAmountDiamIncrease = (*this.*Adjust) (fAmountDiamIncrease, iSpecies);
 
           //Assign the growth back to "Growth" and hold it
           p_oTree->SetValue( mp_iGrowthCodes[iSpecies][iType], fAmountDiamIncrease );
@@ -585,3 +419,28 @@ void clNCIMasterGrowth::PreGrowthCalcs(clTreePopulation * p_oPop) {
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////
+// DeterministicAdjust()
+/////////////////////////////////////////////////////////////////////////////
+float clNCIMasterGrowth::DeterministicAdjust(float fNumber, int iSpecies) {
+  return fNumber;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// NormalAdjust()
+/////////////////////////////////////////////////////////////////////////////
+float clNCIMasterGrowth::NormalAdjust(float fNumber, int iSpecies) {
+  float fReturn = fNumber + clModelMath::NormalRandomDraw(mp_fRandParameter[iSpecies]);
+  if (fReturn < 0) fReturn = 0;
+  return fReturn;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// LognormalAdjust()
+/////////////////////////////////////////////////////////////////////////////
+float clNCIMasterGrowth::LognormalAdjust(float fNumber, int iSpecies) {
+  float fReturn = clModelMath::LognormalRandomDraw(fNumber, mp_fRandParameter[iSpecies]);
+  if (fReturn < 0) fReturn = 0;
+  return fReturn;
+}

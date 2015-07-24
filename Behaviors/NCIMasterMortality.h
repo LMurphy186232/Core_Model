@@ -1,24 +1,13 @@
 //---------------------------------------------------------------------------
-// NCIMasterMortality
-//---------------------------------------------------------------------------
 #if !defined(NCIMasterMortality_H)
-  #define NCIMasterMortality_H
-
+#define NCIMasterMortality_H
+//---------------------------------------------------------------------------
 #include "MortalityBase.h"
-#include "NCIEffectsList.h"
-
+#include "NCI/NCIBehaviorBase.h"
 
 class clTree;
 class clTreePopulation;
 class clPlot;
-class clShadingEffectBase;
-class clDamageEffectBase;
-class clSizeEffectBase;
-class clNCITermBase;
-class clCrowdingEffectBase;
-class clPrecipitationEffectBase;
-class clTemperatureEffectBase;
-class clNitrogenEffectBase;
 
 /**
 * NCI Mortality - Version 3.0
@@ -36,14 +25,15 @@ class clNitrogenEffectBase;
 *
 * This behavior can only be applied to saplings and adults.
 *
-* Copyright 2011 Charles D. Canham.
+* Copyright 2012 Charles D. Canham.
 * @author Lora E. Murphy
 *
 * <br>Edit history:
 * <br>-----------------
 * <br>June 28, 2013 - Created (LEM)
+* <br>November 1, 2013: Added infection effect (LEM)
 */
-class clNCIMasterMortality : virtual public clMortalityBase {
+class clNCIMasterMortality : virtual public clMortalityBase, clNCIBehaviorBase {
 //note: need the virtual keyword to avoid base class ambiguity.
 
   public:
@@ -70,9 +60,12 @@ class clNCIMasterMortality : virtual public clMortalityBase {
   deadCode DoMort (clTree *p_oTree, const float &fDbh, const short int &iSpecies);
 
   /**
-  * Performs behavior setup.  First, ReadParameterFile() is called to read
-  * the parameter file's data.  Then ValidateData() is called to validate the
-  * data. Then GetTreeMemberCodes() is called to get tree data return codes.
+  * Does setup.
+  * <ol>
+  * <li>ReadParameterFile() is called to read the parameter file's data.</li>
+  * <li>GetTreeMemberCodes() is called to get tree data return codes.</li>
+  * <li>FormatQueryString() is called.</li>
+  * </ol>
   *
   * @param p_oDoc DOM tree of parsed input tree.
   */
@@ -91,43 +84,26 @@ class clNCIMasterMortality : virtual public clMortalityBase {
 
   protected:
 
-  clShadingEffectBase *mp_oShadingEffect;
-  clDamageEffectBase *mp_oDamageEffect;
-  clSizeEffectBase *mp_oSizeEffect;
-  clCrowdingEffectBase *mp_oCrowdingEffect;
-  clNCITermBase *mp_oNCITerm;
-  clPrecipitationEffectBase *mp_oPrecipEffect;
-  clTemperatureEffectBase *mp_oTempEffect;
-  clNitrogenEffectBase *mp_oNEffect;
+  /**Maximum survival value. Array sized number of species.*/
+  float *mp_fMaxPotentialValue;
+
+  /** The length of the time period of the max survival, if needed for
+   * adjustment of survival rates. For instance, if the max survival is for
+   * a 5-year time period, then this value is 5, and the 5th root is taken
+   * of the final survival rate to arrive at the yearly value. 1 indicates
+   * that the max rate is yearly already.*/
+  float m_fMaxSurvivalPeriod;
 
   /**Return codes for the "dead" tree int data member variable.  Array size
    * is number of species by number of tree types (even if not every species
    * and type is represented).*/
   short int **mp_iDeadCodes;
 
-  float m_fNumberYearsPerTimestep; /**<Number of years per timestep. From sim
-       manager*/
+  /**Total number of species - for the destructor */
+  short int m_iNumTotalSpecies;
 
-  char *m_cQuery; /**<Query string to get NCI trees*/
-
-  /**Maximum survival value. Array sized number of species.*/
-  float *mp_fMaxPotentialValue;
-
-  /**
-  * Makes sure all input data is valid. Max probability of survival for each
-  * species must be 0-1.
-  * @throws modelErr if max probability of survival for any species is not
-  * between 0 and 1.
-  */
-  void ValidateData();
-
-  /**
-  * Reads data from the parameter file.
-  * @param p_oDoc DOM tree of parsed input tree.
-  * @throws modelErr if this behavior has been applied to any types except
-  * sapling and adult.
-  */
-  void ReadParameterFile( xercesc::DOMDocument *p_oDoc );
+  /**For finding trees*/
+  std::string m_sQuery;
 
   /**
   * Gets the return codes for needed tree data members.
@@ -136,11 +112,6 @@ class clNCIMasterMortality : virtual public clMortalityBase {
   */
   void GetTreeMemberCodes();
 
-  /**
-  * Populates m_cQuery with the query for getting NCI trees.
-  */
-  void FormatQuery();
-
 };
 //---------------------------------------------------------------------------
-#endif // NCIMasterMortality_H
+#endif

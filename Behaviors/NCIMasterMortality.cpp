@@ -1,6 +1,4 @@
 //---------------------------------------------------------------------------
-// NCIMort.cpp
-//---------------------------------------------------------------------------
 #include "NCIMasterMortality.h"
 #include "TreePopulation.h"
 #include "SimManager.h"
@@ -8,36 +6,25 @@
 #include "Plot.h"
 #include "GrowthOrg.h"
 #include "Allometry.h"
+
+#include "NCI/CrowdingEffectBase.h"
+#include "NCI/DamageEffectBase.h"
+#include "NCI/NCITermBase.h"
+#include "NCI/ShadingEffectBase.h"
+#include "NCI/SizeEffectBase.h"
+#include "NCI/TemperatureEffectBase.h"
+#include "NCI/PrecipitationEffectBase.h"
+#include "NCI/InfectionEffectBase.h"
+#include "NCI/NitrogenEffectBase.h"
+
 #include <stdio.h>
 #include <sstream>
-
-#include "NCI/DefaultCrowdingEffect.h"
-#include "NCI/CrowdingEffect2.h"
-#include "NCI/DefaultDamageEffect.h"
-#include "NCI/DefaultNCITerm.h"
-#include "NCI/DefaultShadingEffect.h"
-#include "NCI/DefaultSizeEffect.h"
-#include "NCI/NCITermWithNeighborDamage.h"
-#include "NCI/NCILargerNeighbors.h"
-#include "NCI/NCINeighborBA.h"
-#include "NCI/NoCrowdingEffect.h"
-#include "NCI/NoDamageEffect.h"
-#include "NCI/NoNCITerm.h"
-#include "NCI/NoShadingEffect.h"
-#include "NCI/NoSizeEffect.h"
-#include "NCI/NoTemperatureEffect.h"
-#include "NCI/WeibullTemperatureEffect.h"
-#include "NCI/NoPrecipitationEffect.h"
-#include "NCI/WeibullPrecipitationEffect.h"
-#include "NCI/SizeEffectLowerBounded.h"
-#include "NCI/NoNitrogenEffect.h"
-#include "NCI/GaussianNitrogenEffect.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // Constructor
 //////////////////////////////////////////////////////////////////////////////
 clNCIMasterMortality::clNCIMasterMortality( clSimManager * p_oSimManager ) :
-clWorkerBase( p_oSimManager ), clBehaviorBase( p_oSimManager ), clMortalityBase( p_oSimManager )
+clWorkerBase( p_oSimManager ), clBehaviorBase( p_oSimManager ), clMortalityBase( p_oSimManager ), clNCIBehaviorBase()
 {
   try
   {
@@ -48,21 +35,13 @@ clWorkerBase( p_oSimManager ), clBehaviorBase( p_oSimManager ), clMortalityBase(
     //Version 3
     m_fVersionNumber = 3.0;
     m_fMinimumVersionNumber = 3.0;
+    m_fMaxSurvivalPeriod = 1;
 
+    //Null out our pointers
     mp_iDeadCodes = NULL;
-    m_cQuery = NULL;
-    m_fNumberYearsPerTimestep = 0;
-
     mp_fMaxPotentialValue = NULL;
 
-    mp_oCrowdingEffect = NULL;
-    mp_oDamageEffect = NULL;
-    mp_oNCITerm = NULL;
-    mp_oShadingEffect = NULL;
-    mp_oSizeEffect = NULL;
-    mp_oPrecipEffect = NULL;
-    mp_oTempEffect = NULL;
-    mp_oNEffect = NULL;
+    m_iNumTotalSpecies = 0;
 
   }
   catch ( modelErr & err )
@@ -83,295 +62,28 @@ clWorkerBase( p_oSimManager ), clBehaviorBase( p_oSimManager ), clMortalityBase(
 }
 
 ////////////////////////////////////////////////////////////////////////////
-// Destructor()
+// Destructor
 ////////////////////////////////////////////////////////////////////////////
-clNCIMasterMortality::~clNCIMasterMortality()
-{
+clNCIMasterMortality::~clNCIMasterMortality() {
+
   int i;
-  if ( mp_iDeadCodes )
-  {
-    for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
-    {
+  if (mp_iDeadCodes) {
+    for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
       delete[] mp_iDeadCodes[i];
     }
+    delete[] mp_iDeadCodes;
   }
-  delete[] mp_iDeadCodes;
-  delete[] m_cQuery;
-
-  delete mp_oCrowdingEffect;
-  delete mp_oDamageEffect;
-  delete mp_oNCITerm;
-  delete mp_oShadingEffect;
-  delete mp_oSizeEffect;
-  delete mp_oPrecipEffect;
-  delete mp_oTempEffect;
-  delete mp_oNEffect;
+  delete[] mp_fMaxPotentialValue;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-// FormatQuery()
-//////////////////////////////////////////////////////////////////////////////
-void clNCIMasterMortality::FormatQuery()
-{
-  clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
-  char * cQuery = new char[(p_oPop->GetNumberOfSpecies() * 4) + 50],
-      cQueryPiece[5]; //for assembling the search query
-  int i;
-  bool bSapling = false, bAdult = false;
-
-  for (i = 0; i < m_iNumSpeciesTypeCombos; i++) {
-    if (mp_whatSpeciesTypeCombos[i].iType == clTreePopulation::sapling)
-      bSapling = true;
-    else if (mp_whatSpeciesTypeCombos[i].iType == clTreePopulation::adult)
-      bAdult = true;
-  }
-
-  //Do a type/species search on all the types and species
-  strcpy( cQuery, "species=" );
-  for ( i = 0; i < m_iNumBehaviorSpecies - 1; i++ )
-  {
-    sprintf( cQueryPiece, "%d%s", mp_iWhatSpecies[i], "," );
-    strcat( cQuery, cQueryPiece );
-  }
-  sprintf( cQueryPiece, "%d", mp_iWhatSpecies[m_iNumBehaviorSpecies - 1] );
-  strcat( cQuery, cQueryPiece );
-
-  //Now type
-  strcat( cQuery, "::type=" );
-  if ( bSapling )
-  {
-    sprintf( cQueryPiece, "%d%s", clTreePopulation::sapling, "," );
-    strcat( cQuery, cQueryPiece );
-  }
-  if ( bAdult )
-  {
-    sprintf( cQueryPiece, "%d%s", clTreePopulation::adult, "," );
-    strcat( cQuery, cQueryPiece );
-  }
-
-  //Remove the last comma
-  cQuery[strlen( cQuery ) - 1] = '\0';
-
-  //Now put it in m_cQuery, sized correctly
-  m_cQuery = new char[strlen( cQuery ) + 1];
-  strcpy( m_cQuery, cQuery );
-  delete[] cQuery;
-}
-
-////////////////////////////////////////////////////////////////////////////
-// DoShellSetup()
-////////////////////////////////////////////////////////////////////////////
-void clNCIMasterMortality::DoShellSetup( xercesc::DOMDocument * p_oDoc )
-{
-  try
-  {
-    m_fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
-
-    ReadParameterFile( p_oDoc );
-    ValidateData();
-    GetTreeMemberCodes();
-    FormatQuery();
-
-  }
-  catch ( modelErr & err )
-  {
-    throw( err );
-  }
-  catch ( modelMsg & msg )
-  {
-    throw( msg );
-  } //non-fatal error
-  catch ( ... )
-  {
-    modelErr stcErr;
-    stcErr.iErrorCode = UNKNOWN;
-    stcErr.sFunction = "clNCIMasterMortality::DoShellSetup" ;
-    throw( stcErr );
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////
-// ReadParameterFile()
-////////////////////////////////////////////////////////////////////////////
-void clNCIMasterMortality::ReadParameterFile( xercesc::DOMDocument * p_oDoc )
-{
-  clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
-  DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
-  floatVal * p_fTempValues; //for getting species-specific values
-  std::stringstream sLabel;
-  int iVal;
-  short int i; //loop counters
-
-  mp_fMaxPotentialValue = new float[p_oPop->GetNumberOfSpecies()];
-
-  //If any of the types is seedling, error out
-  for ( i = 0; i < m_iNumSpeciesTypeCombos; i++ )
-    if ( clTreePopulation::sapling != mp_whatSpeciesTypeCombos[i].iType
-        && clTreePopulation::adult != mp_whatSpeciesTypeCombos[i].iType )
-    {
-      modelErr stcErr;
-      stcErr.iErrorCode = BAD_DATA;
-      stcErr.sFunction = "clNCIMasterMortality::ReadParameterFile" ;
-      stcErr.sMoreInfo = "This behavior can only be applied to saplings and adults.";
-      throw( stcErr );
-    }
-
-  //Set up our floatVal array that will extract values only for the species
-  //assigned to this behavior
-  p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
-  for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
-    p_fTempValues[i].code = mp_iWhatSpecies[i];
-
-  //Fill the variables
-
-  //Maximum survival probability
-  FillSpeciesSpecificValue( p_oElement, "mo_nciMaxPotentialSurvival",
-      "mo_nmpsVal", p_fTempValues, m_iNumBehaviorSpecies, p_oPop, true );
-  //Transfer to the appropriate array buckets
-  for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
-    mp_fMaxPotentialValue[p_fTempValues[i].code] = p_fTempValues[i].val;
-
-  delete[] p_fTempValues;
-
-  //Which shading term?
-  FillSingleValue(p_oElement, "nciWhichShadingEffect", &iVal, true);
-  if (iVal == no_shading) {
-    mp_oShadingEffect = new clNoShadingEffect();
-  } else if (iVal == default_shading) {
-    mp_oShadingEffect = new clDefaultShadingEffect();
-  } else {
-    modelErr err;
-    err.sFunction = "clNCIMasterMortality::ReadParameterFile";
-    err.iErrorCode = BAD_DATA;
-    err.sMoreInfo = "Unrecognized shading term.";
-    throw(err);
-  }
-
-  //Which crowding term?
-  FillSingleValue(p_oElement, "nciWhichCrowdingEffect", &iVal, true);
-  if (iVal == no_crowding_effect) {
-    mp_oCrowdingEffect = new clNoCrowdingEffect();
-  } else if (iVal == default_crowding_effect) {
-    mp_oCrowdingEffect = new clDefaultCrowdingEffect();
-  } else if (iVal == crowding_effect_two) {
-    mp_oCrowdingEffect = new clCrowdingEffectTwo();
-  } else {
-    modelErr err;
-    err.sFunction = "clNCIMasterMortality::ReadParameterFile";
-    err.iErrorCode = BAD_DATA;
-    err.sMoreInfo = "Unrecognized crowding term.";
-    throw(err);
-  }
-
-  //Which NCI term?
-  FillSingleValue(p_oElement, "nciWhichNCITerm", &iVal, true);
-  if (iVal == no_nci_term) {
-    mp_oNCITerm = new clNoNCITerm();
-  } else if (iVal == default_nci_term) {
-    mp_oNCITerm = new clDefaultNCITerm();
-  } else if (iVal == nci_with_neighbor_damage) {
-    mp_oNCITerm = new clNCITermWithNeighborDamage();
-  } else if (iVal == larger_neighbors) {
-    mp_oNCITerm = new clNCILargerNeighbors();
-  } else if (iVal == neighbor_ba) {
-    mp_oNCITerm = new clNCINeighborBA();
-  } else {
-    modelErr err;
-    err.sFunction = "clNCIMasterMortality::ReadParameterFile";
-    err.iErrorCode = BAD_DATA;
-    err.sMoreInfo = "Unrecognized NCI term.";
-    throw(err);
-  }
-
-  //Which size effect term?
-  FillSingleValue(p_oElement, "nciWhichSizeEffect", &iVal, true);
-  if (iVal == no_size_effect) {
-    mp_oSizeEffect = new clNoSizeEffect();
-  } else if (iVal == default_size_effect) {
-    mp_oSizeEffect = new clDefaultSizeEffect();
-  } else if (iVal == size_effect_bounded) {
-    mp_oSizeEffect = new clSizeEffectLowerBounded();
-  } else {
-    modelErr err;
-    err.sFunction = "clNCIMasterMortality::ReadParameterFile";
-    err.iErrorCode = BAD_DATA;
-    err.sMoreInfo = "Unrecognized size effect term.";
-    throw(err);
-  }
-
-  //Which damage effect term?
-  FillSingleValue(p_oElement, "nciWhichDamageEffect", &iVal, true);
-  if (iVal == no_damage_effect) {
-    mp_oDamageEffect = new clNoDamageEffect();
-  } else if (iVal == default_damage_effect) {
-    mp_oDamageEffect = new clDefaultDamageEffect();
-  } else {
-    modelErr err;
-    err.sFunction = "clNCIMasterMortality::ReadParameterFile";
-    err.iErrorCode = BAD_DATA;
-    err.sMoreInfo = "Unrecognized damage effect term.";
-    throw(err);
-  }
-
-  //Which precipitation effect term?
-  FillSingleValue(p_oElement, "nciWhichPrecipitationEffect", &iVal, true);
-  if (iVal == no_precip_effect) {
-    mp_oPrecipEffect = new clNoPrecipitationEffect();
-  } else if (iVal == weibull_precip_effect) {
-    mp_oPrecipEffect = new clWeibullPrecipitationEffect();
-  } else {
-    modelErr err;
-    err.sFunction = "clNCIMasterMortality::ReadParameterFile";
-    err.iErrorCode = BAD_DATA;
-    err.sMoreInfo = "Unrecognized precipitation effect term.";
-    throw(err);
-  }
-
-  //Which temperature effect term?
-  FillSingleValue(p_oElement, "nciWhichTemperatureEffect", &iVal, true);
-  if (iVal == no_temp_effect) {
-    mp_oTempEffect = new clNoTemperatureEffect();
-  } else if (iVal == weibull_temp_effect) {
-    mp_oTempEffect = new clWeibullTemperatureEffect();
-  } else {
-    modelErr err;
-    err.sFunction = "clNCIMasterMortality::ReadParameterFile";
-    err.iErrorCode = BAD_DATA;
-    err.sMoreInfo = "Unrecognized temperature effect term.";
-    throw(err);
-  }
-
-  //Which nitrogen effect term?
-  FillSingleValue(p_oElement, "nciWhichNitrogenEffect", &iVal, true);
-  if (iVal == no_nitrogen_effect) {
-    mp_oNEffect = new clNoNitrogenEffect();
-  } else if (iVal == gauss_nitrogen_effect) {
-    mp_oNEffect = new clGaussianNitrogenEffect();
-  } else {
-    modelErr err;
-    err.sFunction = "clNCIMasterMortality::ReadParameterFile";
-    err.iErrorCode = BAD_DATA;
-    err.sMoreInfo = "Unrecognized nitrogen effect term.";
-    throw(err);
-  }
-
-  mp_oCrowdingEffect->DoSetup(p_oPop, this, p_oElement);
-  mp_oDamageEffect->DoSetup(p_oPop, this, p_oElement);
-  mp_oNCITerm->DoSetup(p_oPop, this, p_oElement);
-  mp_oShadingEffect->DoSetup(p_oPop, this, p_oElement);
-  mp_oSizeEffect->DoSetup(p_oPop, this, p_oElement);
-  mp_oPrecipEffect->DoSetup(p_oPop, this, p_oElement);
-  mp_oTempEffect->DoSetup(p_oPop, this, p_oElement);
-  mp_oNEffect->DoSetup(p_oPop, this, p_oElement);
-}
 
 ////////////////////////////////////////////////////////////////////////////
 // GetTreeMemberCodes()
 ////////////////////////////////////////////////////////////////////////////
-void clNCIMasterMortality::GetTreeMemberCodes()
-{
-  clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
-  int i, j, iNumTypes = p_oPop->GetNumberOfTypes();
+void clNCIMasterMortality::GetTreeMemberCodes() {
+  clTreePopulation *p_oPop = (clTreePopulation*) mp_oSimManager->GetPopulationObject("treepopulation");
+  int iNumTypes = p_oPop->GetNumberOfTypes(),
+      i, j;
 
   //Declare the dead codes array
   mp_iDeadCodes = new short int * [m_iNumTotalSpecies];
@@ -398,23 +110,72 @@ void clNCIMasterMortality::GetTreeMemberCodes()
 }
 
 ////////////////////////////////////////////////////////////////////////////
-// ValidateData
+// DoShellSetup()
 ////////////////////////////////////////////////////////////////////////////
-void clNCIMasterMortality::ValidateData()
-{
-  int i;
-  for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
-  {
+void clNCIMasterMortality::DoShellSetup(xercesc::DOMDocument * p_oDoc) {
+  clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
 
-    //Make sure that the maximum survival for each species is between 0 and 1
-    if ( mp_fMaxPotentialValue[mp_iWhatSpecies[i]] < 0 || mp_fMaxPotentialValue[mp_iWhatSpecies[i]] > 1 )
+  m_iNumTotalSpecies = p_oPop->GetNumberOfSpecies();
+
+  DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
+  floatVal * p_fTempValues; //for getting species-specific values
+  short int i; //loop counters
+
+
+  //If any of the types is seedling, error out
+  for ( i = 0; i < m_iNumSpeciesTypeCombos; i++ )
+    if ( clTreePopulation::sapling != mp_whatSpeciesTypeCombos[i].iType
+        && clTreePopulation::adult != mp_whatSpeciesTypeCombos[i].iType )
     {
       modelErr stcErr;
-      stcErr.sFunction = "clNCIMasterMortality::ValidateData";
+      stcErr.iErrorCode = BAD_DATA;
+      stcErr.sFunction = "clNCIMasterMortality::DoShellSetup" ;
+      stcErr.sMoreInfo = "This behavior can only be applied to saplings and adults.";
+      throw( stcErr );
+    }
+
+  //Set up our floatVal array that will extract values only for the species
+  //assigned to this behavior
+  p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+  for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
+    p_fTempValues[i].code = mp_iWhatSpecies[i];
+
+  //Maximum survival probability
+  mp_fMaxPotentialValue = new float[p_oPop->GetNumberOfSpecies()];
+  FillSpeciesSpecificValue( p_oElement, "mo_nciMaxPotentialSurvival",
+      "mo_nmpsVal", p_fTempValues, m_iNumBehaviorSpecies, p_oPop, true );
+  //Transfer to the appropriate array buckets
+  for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
+    mp_fMaxPotentialValue[p_fTempValues[i].code] = p_fTempValues[i].val;
+
+  delete[] p_fTempValues;
+
+  //Make sure that the maximum survival for each species is between 0 and 1
+  for (i = 0; i < m_iNumBehaviorSpecies; i++) {
+  if ( mp_fMaxPotentialValue[mp_iWhatSpecies[i]] < 0 ||
+      mp_fMaxPotentialValue[mp_iWhatSpecies[i]] > 1 ) {
+      modelErr stcErr;
+      stcErr.sFunction = "clNCIMasterMortality::DoShellSetup";
       stcErr.sMoreInfo = "All values for max survival probability must be between 0 and 1.";
       throw( stcErr );
     }
   }
+
+  //Get survival period length
+  FillSingleValue(p_oElement, "mo_nciMortSurvPeriod", &m_fMaxSurvivalPeriod, true);
+
+  //Make sure the value is positive
+  if (m_fMaxSurvivalPeriod <= 0) {
+    modelErr stcErr;
+    stcErr.sFunction = "clNCIMasterMortality::DoShellSetup";
+    stcErr.sMoreInfo = "Survival period must be greater than 0.";
+    throw( stcErr );
+  }
+
+  m_sQuery = FormatSpeciesTypeQueryString();
+  ReadParameterFile(p_oElement, p_oPop, this, true);
+  GetTreeMemberCodes();
+
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -451,12 +212,15 @@ void clNCIMasterMortality::PreMortCalcs( clTreePopulation * p_oPop )
     clTreeSearch * p_oNCITrees; //trees that this growth behavior applies to
     clPlot * p_oPlot = mp_oSimManager->GetPlotObject();
     clTree * p_oTree; //a single tree we're working with
+    clNCITermBase::ncivals nci;
     float fDamageEffect, //this tree's damage effect
     fCrowdingEffect, //tree's crowding effect
-    fNCI, //the NCI
     fSizeEffect, //tree's size effect
     fShadingEffect, //tree's shading effect
+    fInfectionEffect, //tree's infection effect
     fDbh, //tree's dbh
+    fX, fY,
+    fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep(),
     fSurvivalProb; //amount diameter increase - intermediate
     int iDead;
     short int iSpecies, iType, //type and species of a tree
@@ -473,7 +237,15 @@ void clNCIMasterMortality::PreMortCalcs( clTreePopulation * p_oPop )
       p_fNEffect[mp_iWhatSpecies[i]] = mp_oNEffect->CalculateNitrogenEffect(p_oPlot, mp_iWhatSpecies[i]);
     }
 
-    p_oNCITrees = p_oPop->Find( m_cQuery );
+    //Pre-calcs for other effects
+    mp_oCrowdingEffect->PreCalcs(p_oPop);
+    mp_oDamageEffect->PreCalcs(p_oPop);
+    mp_oNCITerm->PreCalcs(p_oPop);
+    mp_oShadingEffect->PreCalcs(p_oPop);
+    mp_oSizeEffect->PreCalcs(p_oPop);
+    mp_oInfectionEffect->PreCalcs(p_oPop);
+
+    p_oNCITrees = p_oPop->Find( m_sQuery );
     p_oTree = p_oNCITrees->NextTree();
     while ( p_oTree )
     {
@@ -492,10 +264,12 @@ void clNCIMasterMortality::PreMortCalcs( clTreePopulation * p_oPop )
           p_oTree->GetValue( p_oPop->GetDbhCode( iSpecies, iType ), & fDbh );
 
           //Get NCI
-          fNCI = mp_oNCITerm->CalculateNCITerm(p_oTree, p_oPop, p_oPlot);
+          p_oTree->GetValue( p_oPop->GetXCode( iSpecies, iType ), & fX );
+          p_oTree->GetValue( p_oPop->GetYCode( iSpecies, iType ), & fY );
+          nci = mp_oNCITerm->CalculateNCITerm(p_oTree, p_oPop, p_oPlot, fX, fY, iSpecies);
 
           //Get crowding effect
-          fCrowdingEffect = mp_oCrowdingEffect->CalculateCrowdingEffect(p_oTree, fDbh, fNCI);
+          fCrowdingEffect = mp_oCrowdingEffect->CalculateCrowdingEffect(p_oTree, fDbh, nci, iSpecies);
 
           //Get the tree's damage effect
           fDamageEffect = mp_oDamageEffect->CalculateDamageEffect(p_oTree);
@@ -504,14 +278,20 @@ void clNCIMasterMortality::PreMortCalcs( clTreePopulation * p_oPop )
           fShadingEffect = mp_oShadingEffect->CalculateShadingEffect(p_oTree);
 
           //Get the tree's size effect
-          fSizeEffect = mp_oSizeEffect->CalculateSizeEffect(iSpecies, fDbh);
+          fSizeEffect = mp_oSizeEffect->CalculateSizeEffect(p_oTree, fDbh);
+
+          //Get the tree's infection effect
+          fInfectionEffect = mp_oInfectionEffect->CalculateInfectionEffect(p_oTree);
 
           //Determine whether tree survives
           fSurvivalProb = mp_fMaxPotentialValue[iSpecies] * fSizeEffect *
                 fCrowdingEffect * fShadingEffect * fDamageEffect *
                 p_fPrecipEffect[iSpecies] * p_fTempEffect[iSpecies] *
-                p_fNEffect[iSpecies];
-          fSurvivalProb = pow( fSurvivalProb, m_fNumberYearsPerTimestep );
+                p_fNEffect[iSpecies] * fInfectionEffect;
+          //Get annual survival
+          fSurvivalProb = pow( fSurvivalProb, 1/m_fMaxSurvivalPeriod);
+          //Get timestep survival
+          fSurvivalProb = pow( fSurvivalProb, fNumberYearsPerTimestep );
 
           bIsDead = clModelMath::GetRand() >= fSurvivalProb;
 
@@ -539,9 +319,15 @@ void clNCIMasterMortality::PreMortCalcs( clTreePopulation * p_oPop )
     out.close();
 #endif
 
+    delete[] p_fTempEffect;
+    delete[] p_fPrecipEffect;
+    delete[] p_fNEffect;
   }
   catch ( modelErr & err )
   {
+    delete[] p_fTempEffect;
+    delete[] p_fPrecipEffect;
+    delete[] p_fNEffect;
     throw( err );
   }
   catch ( modelMsg & msg )

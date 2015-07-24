@@ -1,21 +1,12 @@
 //---------------------------------------------------------------------------
-
 #ifndef NCIMasterGrowthH
 #define NCIMasterGrowthH
 //---------------------------------------------------------------------------
 #include "GrowthBase.h"
-#include "NCIEffectsList.h"
+#include "NCI/NCIBehaviorBase.h"
 
 class clTree;
 class clTreePopulation;
-class clShadingEffectBase;
-class clDamageEffectBase;
-class clSizeEffectBase;
-class clNCITermBase;
-class clCrowdingEffectBase;
-class clPrecipitationEffectBase;
-class clTemperatureEffectBase;
-class clNitrogenEffectBase;
 
 /**
 * NCI growth - Version 3.0
@@ -31,6 +22,8 @@ class clNitrogenEffectBase;
 * year's new DBH value. All values for each year of growth are summed to get
 * the growth for the timestep.
 *
+* The final growth rate can be used as-is or as a mean to a random draw.
+*
 * The parameter file call string for this to be diameter-incrementing with
 * auto-height updating is "NCIMasterGrowth"; for diameter-only incrementing, use
 * "NCIMasterGrowth diam only". The namestring for this behavior is
@@ -43,11 +36,14 @@ class clNitrogenEffectBase;
 * Copyright 2012 Charles D. Canham.
 * @author Lora E. Murphy
 *
-* <br>Edit history:
-* <br>-----------------
-* <br>November 27, 2012: Created (LEM)
+  <br>Edit history:
+  <br>-----------------
+  <br>November 27, 2012: Created (LEM)
+  <br>November 1, 2013: Added infection effect (LEM)
+  <br>December 23, 2013: Made child of clNCIBehaviorBase; added stochasticity
+  (LEM)
 */
-class clNCIMasterGrowth : virtual public clGrowthBase {
+class clNCIMasterGrowth : virtual public clGrowthBase, clNCIBehaviorBase {
 //note: need the virtual keyword to avoid base class ambiguity.
 
   public:
@@ -59,7 +55,7 @@ class clNCIMasterGrowth : virtual public clGrowthBase {
    clNCIMasterGrowth(clSimManager *p_oSimManager);
 
   /**
-  * Destructor.
+  * Destructor.  Frees memory.
   */
   ~clNCIMasterGrowth();
 
@@ -95,14 +91,13 @@ class clNCIMasterGrowth : virtual public clGrowthBase {
   /**
   * Does setup.
   * <ol>
-  * <li>AssembleUniqueTypes() is called to create a list of unique behavior
-  * types.</li>
   * <li>ReadParameterFile() is called to read the parameter file's data.</li>
-  * <li>ValidateData() is called to validate the data.</li>
   * <li>GetTreeMemberCodes() is called to get tree data return codes.</li>
+  * <li>FormatQueryString() is called.</li>
   * </ol>
   *
   * @param p_oDoc DOM tree of parsed input tree.
+  * @throws modelErr if all values of max growth are not greater than 0.
   */
   void DoShellSetup(xercesc::DOMDocument *p_oDoc);
 
@@ -118,35 +113,12 @@ class clNCIMasterGrowth : virtual public clGrowthBase {
 
   protected:
 
-  /** The shading effect object. */
-  clShadingEffectBase *mp_oShadingEffect;
-
-  /** The damage effect object. */
-  clDamageEffectBase *mp_oDamageEffect;
-
-  /** The size effect object. */
-  clSizeEffectBase *mp_oSizeEffect;
-
-  /** The crowding effect object. */
-  clCrowdingEffectBase *mp_oCrowdingEffect;
-
-  /** The NCI term object. */
-  clNCITermBase *mp_oNCITerm;
-
-  /** The precipitation effect object. */
-  clPrecipitationEffectBase *mp_oPrecipEffect;
-
-  /** The temperature effect object. */
-  clTemperatureEffectBase *mp_oTempEffect;
-
-  /** The nitrogen effect object. */
-  clNitrogenEffectBase *mp_oNEffect;
-
-  /**Search query for behavior trees.*/
-  std::string m_sQuery;
-
   /**Maximum growth value. Array sized number of species.*/
   float *mp_fMaxPotentialValue;
+
+  /**Standard deviation if normal or lognormal distribution is desired. One for
+   * each species.*/
+  float *mp_fRandParameter;
 
   /**Holds return data codes for the "Growth" tree data member. Array size is
    * number of species by number of types.*/
@@ -154,6 +126,12 @@ class clNCIMasterGrowth : virtual public clGrowthBase {
 
   /**Total number of species - for the destructor */
   short int m_iNumTotalSpecies;
+
+  /**For finding trees*/
+  std::string m_sQuery;
+
+  /**What stochastic growth distribution applies to this run*/
+  pdf m_iStochasticGrowthMethod;
 
   /**
   * Gets the return codes for needed tree data members.
@@ -163,18 +141,40 @@ class clNCIMasterGrowth : virtual public clGrowthBase {
   void GetTreeMemberCodes();
 
   /**
-  * Reads data from the parameter file.
-  * @param p_oDoc DOM tree of parsed input tree.
-  * @throws modelErr if max growth for any species is < 0, or any of the
-  * effects terms is unrecognized.
+  * Performs a deterministic adjustment of growth.
+  * @param fNumber Growth to adjust.
+  * @param iSpecies Species.
+  * @return Final growth.
   */
-  void ReadParameterFile( xercesc::DOMDocument *p_oDoc );
+  float DeterministicAdjust(float fNumber, int iSpecies);
 
   /**
-   * Formats the string in m_sQuery.  This value will be used in Action() to
-   * pass to clTreePopulation::Find() in order to get the trees to act on.
-   */
-  void FormatQueryString();
+  * Performs a stochastic adjustment of growth according to a normal
+  * distribution.
+  * @param fNumber Growth to adjust.
+  * @param iSpecies Species.
+  * @return Final growth.
+  */
+  float NormalAdjust(float fNumber, int iSpecies);
+
+  /**
+  * Performs a stochastic adjustment of growth according to a lognormal
+  * distribution.
+  * @param fNumber Growth to adjust.
+  * @param iSpecies Species.
+  * @return Final growth.
+  */
+  float LognormalAdjust(float fNumber, int iSpecies);
+
+  /**
+  * Sets the Adjust function pointer according to the value of
+  * m_iStochasticGrowthMethod.
+  */
+  void SetFunctionPointer();
+
+  /**Function pointer for the appropriate Adjust function*/
+  float (clNCIMasterGrowth::*Adjust)(float fNumber, int iSpecies);
+
 };
 //---------------------------------------------------------------------------
 #endif

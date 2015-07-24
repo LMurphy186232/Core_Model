@@ -12,7 +12,6 @@ class clTree;
  */
 class clDamageEffectBase {
 
-
 public:
 
   /**
@@ -30,9 +29,16 @@ public:
   virtual void DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) = 0;
 
   /**
+  * Performs calculations like either clGrowthBase::PreGrowthCalcs or
+  * clMortalityBase::PreMortCalcs.
+  */
+  virtual void PreCalcs( clTreePopulation *p_oPop ){;};
+
+  /**
    * Destructor
    */
   virtual ~clDamageEffectBase(){};
+
 };
 
 #endif /* DAMAGEEFFECTBASE_H_ */
