@@ -41,6 +41,8 @@ clPlot::clPlot(clSimManager * p_oSimManager) : clWorkerBase(p_oSimManager)
     m_fNDep = 0;
     m_fMaxX = 0;
     m_fMaxY = 0;
+    m_fWaterDeficit = 0;
+    m_fSeasonalPrecipitation = 0;
 
     //Allowed file types
     m_iNumAllowedTypes = 2;
@@ -106,6 +108,10 @@ void clPlot::GetData(DOMDocument * p_oDoc)
     FillSingleValue(p_oElement, "plot_temp_C", & m_fMeanTempC, true);
     //plot annual N deposition, not required
     FillSingleValue(p_oElement, "plot_n_dep", & m_fNDep, false);
+    //seasonal precipitation, not required
+    FillSingleValue(p_oElement, "plot_seasonal_precipitation", & m_fSeasonalPrecipitation, false);
+    //water deficit, not required
+    FillSingleValue(p_oElement, "plot_water_deficit", & m_fWaterDeficit, false);
     //plot title - not required
     sTag = XMLString::transcode("plot_title");
     p_oNodeList = p_oElement->getElementsByTagName(sTag);

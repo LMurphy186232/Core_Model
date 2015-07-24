@@ -30,6 +30,7 @@
 * <br>-----------------
 * <br>October 20, 2011 - Wiped the slate clean for SORTIE 7.0 (LEM)
 * <br>June 27, 2013 - Added N deposition value (LEM)
+* <br>October 31, 2013 - Added water deficit and seasonal precipitation
 */
 class clPlot : virtual public clWorkerBase {
 
@@ -285,7 +286,23 @@ class clPlot : virtual public clWorkerBase {
     else fTemp2 = fToY - (fFromY + m_fPlotLenY);
     if (fabs(fTemp1) < fabs(fTemp2)) return fTemp1;
     else return fTemp2;
-  };
+  }
+
+  float GetSeasonalPrecipitation() {
+    return m_fSeasonalPrecipitation;
+  }
+
+  void SetSeasonalPrecipitation(float fSeasonalPrecipitation) {
+    m_fSeasonalPrecipitation = fSeasonalPrecipitation;
+  }
+
+  float GetWaterDeficit() {
+    return m_fWaterDeficit;
+  }
+
+  void SetWaterDeficit(float fWaterDeficit) {
+    m_fWaterDeficit = fWaterDeficit;
+  }
 
  protected:
 
@@ -334,6 +351,12 @@ class clPlot : virtual public clWorkerBase {
 
   /**Mean annual precipitation, mm.*/
   float m_fMeanAnnualPrecipMm;
+
+  /**Water deficit*/
+  float m_fWaterDeficit;
+
+  /** Seasonal precipitation */
+  float m_fSeasonalPrecipitation;
 
   /**Mean annual temperature, degrees Celsius.*/
   float m_fMeanTempC;
