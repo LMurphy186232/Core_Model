@@ -30,6 +30,8 @@ clStateReporter::clStateReporter( clSimManager * p_oSimManager ) : clWorkerBase(
     mp_oGrid = NULL;
     m_iPrecipGridCode = -1;
     m_iTempGridCode = -1;
+    m_iWDGridCode = -1;
+    m_iSeasonalPrecipGridCode = -1;
 
   }
   catch ( modelErr & err )
@@ -59,7 +61,7 @@ void clStateReporter::SetupGrid()
   //Create the grid
   mp_oGrid = mp_oSimManager->CreateGrid( "State Variables",
                         0,                      //number of ints
-                        2, //number of floats
+                        4,                      //number of floats
                         0,                      //number of chars
                         0,                      //number of bools
                         p_oPlot->GetXPlotLength(),  //X cell length
@@ -67,6 +69,8 @@ void clStateReporter::SetupGrid()
 
   m_iTempGridCode = mp_oGrid->RegisterFloat("Temp.C");
   m_iPrecipGridCode = mp_oGrid->RegisterFloat("Precip.mm");
+  m_iWDGridCode = mp_oGrid->RegisterFloat("WaterDeficit");
+  m_iSeasonalPrecipGridCode = mp_oGrid->RegisterFloat("SeasonalPrecip");
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -82,5 +86,11 @@ void clStateReporter::Action()
 
   fValue = p_oPlot->GetMeanAnnualTemp();
   mp_oGrid->SetValueOfCell(0, 0, m_iTempGridCode, fValue);
+
+  fValue = p_oPlot->GetWaterDeficit();
+  mp_oGrid->SetValueOfCell(0, 0, m_iWDGridCode, fValue);
+
+  fValue = p_oPlot->GetSeasonalPrecipitation();
+  mp_oGrid->SetValueOfCell(0, 0, m_iSeasonalPrecipGridCode, fValue);
 
 }

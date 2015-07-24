@@ -58,8 +58,15 @@ class clStateReporter : virtual public clBehaviorBase {
   void SetupGrid();
 
   /** Grid holding state variables, named "State Variables". One cell grid for
-   * the plot. Two float members: "Temp.C" holds temperature, and "Precip.mm"
-   * holds precipitation.*/
+   * the plot.
+   * Data members (all floats):
+   * <ul>
+   * <li>"Temp.C" holds mean annual temperature</li>
+   * <li>"Precip.mm" holds mean annual precipitation</li>
+   * <li>"WaterDeficit" holds water deficit</li>
+   * <li>"SeasonalPrecip" holds seasonal precipitation</li>
+   * </ul>
+   */
   clGrid* mp_oGrid;
 
 
@@ -70,6 +77,14 @@ class clStateReporter : virtual public clBehaviorBase {
   /** Holds the code for the "Precip.mm" data member of the "State Variables"
    * grid.*/
   short int m_iPrecipGridCode;
+
+  /** Holds the code for the "WaterDeficit" data member of the "State Variables"
+   * grid.*/
+  short int m_iWDGridCode;
+
+  /** Holds the code for the "SeasonalPrecip" data member of the "State
+   * Variables" grid.*/
+  short int m_iSeasonalPrecipGridCode;
 };
 //---------------------------------------------------------------------------
 #endif //StateReporter_H
