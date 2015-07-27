@@ -29,7 +29,8 @@
 * </ul>
 *
 * Infestation begins at a time step chosen by the user.  Infestation continues
-* until there are no more infested trees in the plot.
+* until there are no more infested trees in the plot, or the ending timestep
+* if the user indicates one.
 *
 * The proportion of trees infested at time T does not depend on additions to or
 * subtractions from the tree population.  The number of trees of a species at
@@ -59,6 +60,7 @@
 * <br>Edit history:
 * <br>-----------------
 * <br>October 20, 2011 - Wiped the slate clean for SORTIE 7.0 (LEM)
+* <br>July 24, 2015 - Added infection end date (LEM)
 */
 class clInsectInfestation : virtual public clBehaviorBase {
 
@@ -140,6 +142,9 @@ class clInsectInfestation : virtual public clBehaviorBase {
   /** Timestep to begin infestation */
   int m_iFirstTimestep;
 
+  /** Timestep to end infestation */
+  int m_iLastTimestep;
+
   /** Years since infestation began - 0 if there is no current infestation */
   int m_iYearsOfInfestation;
 
@@ -179,6 +184,12 @@ class clInsectInfestation : virtual public clBehaviorBase {
    * which to put the infested number of trees found of each species.
    */
   void GetInfestationRate(long *p_iTotalTrees, long *p_iInfTrees);
+
+  /**
+   * Ends infestation. All flags are reset to 0 and m_iYearsOfInfestation is
+   * set to 0 which will make sure no trees are infected in the future.
+   */
+  void EndInfestation();
 
 };
 //---------------------------------------------------------------------------

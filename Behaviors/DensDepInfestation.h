@@ -8,7 +8,7 @@
 
 
 /**
-* Density Dependent Infestation version 1.0.
+* Density Dependent Infestation
 *
 * This behavior simulates the spread of a disease or infestation throughout a
 * tree population.
@@ -85,6 +85,7 @@
 * <br>Edit history:
 * <br>-----------------
 * <br>August 5, 2013 - Created (LEM)
+* <br>July 27, 2015 - Added infection end date (LEM)
 */
 class clDensDepInfestation : virtual public clBehaviorBase {
 
@@ -209,6 +210,9 @@ class clDensDepInfestation : virtual public clBehaviorBase {
   /** Timestep to begin infestation */
   int m_iFirstTimestep;
 
+  /** Timestep to end infestation */
+  int m_iLastTimestep;
+
   /** Years since infestation began - 0 if there is no current infestation */
   int m_iYearsOfInfestation;
 
@@ -287,6 +291,12 @@ class clDensDepInfestation : virtual public clBehaviorBase {
    * @param fTargetRate Total current proportion of trees to be infested.
    */
   void DetermineCohortInfestationProbability(double fTargetRate);
+
+  /**
+   * Ends infestation. All flags are reset to 0 and m_iYearsOfInfestation is
+   * set to 0 which will make sure no trees are infected in the future.
+   */
+  void EndInfestation();
 
 };
 //---------------------------------------------------------------------------

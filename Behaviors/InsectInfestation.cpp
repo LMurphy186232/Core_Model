@@ -38,6 +38,7 @@ clInsectInfestation::clInsectInfestation( clSimManager * p_oSimManager ) : clWor
     m_cQuery = NULL;
     m_iYearsOfInfestation = 0;
     m_iFirstTimestep = 0;
+    m_iLastTimestep = 10000000;
     m_iTotalNumSpecies = 0;
 
     m_iNewTreeInts = 1;
@@ -217,6 +218,12 @@ void clInsectInfestation::ReadParFile( xercesc::DOMDocument * p_oDoc, clTreePopu
       throw( stcErr );
     }
 
+    //Timestep to end infestation - for backwards compatibility, not required
+    FillSingleValue( p_oElement, "di_insectEndTimestep", &m_iLastTimestep, false );
+    if (m_iLastTimestep <= 0) {
+      m_iLastTimestep = 10000000;
+    }
+
     delete[] p_fTempValues;
   }
   catch ( modelErr & err )
@@ -263,6 +270,12 @@ void clInsectInfestation::Action()
     long iTot = 0;
     int i, iSp, iTp, iInf,
           iNumYrsTimestep = (int)mp_oSimManager->GetNumberOfYearsPerTimestep();
+
+    // If we are after the end timestep, clear all the infection flags and set it to quit
+    if (mp_oSimManager->GetCurrentTimestep() == m_iLastTimestep) {
+      EndInfestation();
+      return;
+    } else if (mp_oSimManager->GetCurrentTimestep() > m_iLastTimestep) return;
 
     if (m_iFirstTimestep < mp_oSimManager->GetCurrentTimestep()) {
 
@@ -487,4 +500,27 @@ void clInsectInfestation::GetInfestationRate(long *p_iTotalTrees, long *p_iInfTr
     }
     p_oTree = p_oBehaviorTrees->NextTree();
   }
+}
+
+////////////////////////////////////////////////////////////////////////////
+// EndInfestation()
+////////////////////////////////////////////////////////////////////////////
+void clInsectInfestation::EndInfestation() {
+  clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
+    clTreeSearch *p_oBehaviorTrees = p_oPop->Find( m_cQuery );
+    clTree * p_oTree = p_oBehaviorTrees->NextTree();
+    int iSp, iTp, iInf = 0;
+
+
+    while (p_oTree) {
+      iSp = p_oTree->GetSpecies();
+      iTp = p_oTree->GetType();
+
+      if (-1 < mp_iDataCodes[iSp][iTp]) {
+        p_oTree->SetValue(mp_iDataCodes[iSp][iTp], iInf);
+      }
+      p_oTree = p_oBehaviorTrees->NextTree();
+    }
+
+    m_iYearsOfInfestation = 0;
 }

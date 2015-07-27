@@ -51,6 +51,7 @@ clDensDepInfestation::clDensDepInfestation( clSimManager * p_oSimManager ) : clW
     m_iNumSmallInfestibleTrees = 0;
     m_iNumLargeInfestibleTrees = 0;
     m_iFirstTimestep = 0;
+    m_iLastTimestep = 10000000;
     m_iYearsOfInfestation = 0;
     m_fSmallCohortProb = 0;
     m_fLargeCohortProb = 0;
@@ -231,6 +232,14 @@ void clDensDepInfestation::ReadParFile( xercesc::DOMDocument * p_oDoc, clTreePop
     //Transform to timestep
     m_iFirstTimestep /= mp_oSimManager->GetNumberOfYearsPerTimestep();
 
+    //Year to end infestation - don't require, for backwards compatibility
+    FillSingleValue( p_oElement, "di_densDepInfEndYear", &m_iLastTimestep, false );
+    //Transform to timestep
+    m_iLastTimestep /= mp_oSimManager->GetNumberOfYearsPerTimestep();
+    if (m_iLastTimestep <= 0) {
+      m_iLastTimestep = 10000000;
+    }
+
     delete[] p_fTempValues;
   }
   catch ( modelErr & err )
@@ -268,6 +277,12 @@ void clDensDepInfestation::Action()
 
   //If we haven't reached the first timestep of infestation, exit
   if (m_iFirstTimestep > mp_oSimManager->GetCurrentTimestep()) return;
+
+  // If we are after the end timestep, clear all the infection flags and set it to quit
+  if (mp_oSimManager->GetCurrentTimestep() == m_iLastTimestep) {
+    EndInfestation();
+    return;
+  } else if (mp_oSimManager->GetCurrentTimestep() > m_iLastTimestep) return;
 
   //Do current inventory
   TreeInventory();
@@ -684,3 +699,26 @@ void clDensDepInfestation::DetermineCohortInfestationProbability(double fTargetR
 
 
 }
+
+////////////////////////////////////////////////////////////////////////////
+// EndInfestation()
+////////////////////////////////////////////////////////////////////////////
+void clDensDepInfestation::EndInfestation() {
+  clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
+    clTreeSearch *p_oBehaviorTrees = p_oPop->Find( m_cQuery );
+    clTree * p_oTree = p_oBehaviorTrees->NextTree();
+    int iSp, iTp, iInf = 0;
+
+
+    while (p_oTree) {
+      iSp = p_oTree->GetSpecies();
+      iTp = p_oTree->GetType();
+
+      if (-1 < mp_iYearsInfestedCodes[iSp][iTp]) {
+        p_oTree->SetValue(mp_iYearsInfestedCodes[iSp][iTp], iInf);
+      }
+      p_oTree = p_oBehaviorTrees->NextTree();
+    }
+    m_iYearsOfInfestation = 0;
+}
+
