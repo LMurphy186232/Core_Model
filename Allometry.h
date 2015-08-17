@@ -268,11 +268,22 @@ protected:
    * Values are required for all species.*/
   float *mp_fMaxTreeHeight;
 
+  //-----------------------------------------------------------------------//
+  // Parameters for standard crown radius
+  //-----------------------------------------------------------------------//
+
   /**Asymptotic crown radius.  Array size is total # species.*/
   float *mp_fAsympCrownRad;
 
   /**Crown radius exponent.  Array size is total # species.*/
   float *mp_fCrownRadExp;
+
+  /**Max crown radius, in m.  Array size is total # species.*/
+  float *mp_fMaxCrownRad;
+
+  //-----------------------------------------------------------------------//
+  // Parameters DBH - d10 relationship
+  //-----------------------------------------------------------------------//
 
   /**Slope of DBH to diameter at 10 cm.  For converting from one to the other.
    * Array size is total # species.*/
@@ -282,18 +293,34 @@ protected:
    * other. Array size is total # species.*/
   float *mp_fDbhToDiam10Intercept;
 
+  //-----------------------------------------------------------------------//
+  // Parameters for standard crown depth
+  //-----------------------------------------------------------------------//
+
   /**Asymptotic crown depth.  Array size is total # species.*/
   float *mp_fAsympCrownDepth;
 
   /**Crown depth exponent.  Array size is total # species.*/
   float *mp_fCrownDepthExp;
 
+  //-----------------------------------------------------------------------//
+  // Parameters for height - d10 relationship
+  //-----------------------------------------------------------------------//
+
   /**Slope of the height-diameter at 10 cm conversion relationship.  Array size
    * is total # species.*/
   float *mp_fSlopeHeightDiam10;
 
+  //-----------------------------------------------------------------------//
+  // Parameters for standard DBH - height relationship
+  //-----------------------------------------------------------------------//
+
   /**Slope of asymptotic height.  Array size is total # species.*/
   float *mp_fSlopeAsympHeight;
+
+  //-----------------------------------------------------------------------//
+  // Parameters for adult linear DBH - height relationship
+  //-----------------------------------------------------------------------//
 
   /**Slope of adult linear height-dbh equation.  Array size is total #
    * species.*/
@@ -303,6 +330,10 @@ protected:
    * species.*/
   float *mp_fAdultLinearIntercept;
 
+  //-----------------------------------------------------------------------//
+  // Parameters for adult reverse linear DBH - height relationship
+  //-----------------------------------------------------------------------//
+
   /**Slope of adult reverse linear height-dbh equation.  Array size is total #
    * species.*/
   float *mp_fAdultReverseLinearSlope;
@@ -310,6 +341,10 @@ protected:
   /**Intercept of adult reverse linear height-dbh equation.  Array size is
    * total # species.*/
   float *mp_fAdultReverseLinearIntercept;
+
+  //-----------------------------------------------------------------------//
+  // Parameters for sapling linear DBH - height relationship
+  //-----------------------------------------------------------------------//
 
   /**Slope of sapling linear height-dbh equation.  Array size is total #
    * species.*/
@@ -319,6 +354,10 @@ protected:
    * species.*/
   float *mp_fSaplingLinearIntercept;
 
+  //-----------------------------------------------------------------------//
+  // Parameters for sapling reverse linear DBH - height relationship
+  //-----------------------------------------------------------------------//
+
   /**Slope of sapling reverse linear height-dbh equation.  Array size is total #
    * species.*/
   float *mp_fSaplingReverseLinearSlope;
@@ -326,6 +365,10 @@ protected:
   /**Intercept of sapling reverse linear height-dbh equation.  Array size is
    * total # species.*/
   float *mp_fSaplingReverseLinearIntercept;
+
+  //-----------------------------------------------------------------------//
+  // Parameters for seedling linear DBH - height relationship
+  //-----------------------------------------------------------------------//
 
   /**Slope of seedling linear height-dbh equation.  Array size is total #
    * species.*/
@@ -335,6 +378,10 @@ protected:
    * species.*/
   float *mp_fSeedlingLinearIntercept;
 
+  //-----------------------------------------------------------------------//
+  // Parameters for seedling reverse linear DBH - height relationship
+  //-----------------------------------------------------------------------//
+
   /**Slope of seedling reverse linear height-dbh equation.  Array size is total #
    * species.*/
   float *mp_fSeedlingReverseLinearSlope;
@@ -342,6 +389,10 @@ protected:
   /**Intercept of seedling reverse linear height-dbh equation.  Array size is
    * total # species.*/
   float *mp_fSeedlingReverseLinearIntercept;
+
+  //-----------------------------------------------------------------------//
+  // Parameters for Chapman-Richards crown radius
+  //-----------------------------------------------------------------------//
 
   /**Crown radius intercept for the Chapman-Richards equation.  Array size is
    * total # species.*/
@@ -358,6 +409,10 @@ protected:
   /**Chapman-Richards crown radius equation shape parameter 2.  Array size is
    * total # species.*/
   float *mp_fCRCrownRadShape2;
+
+  //-----------------------------------------------------------------------//
+  // Parameters for Chapman-Richards crown depth
+  //-----------------------------------------------------------------------//
 
   /**Crown depth intercept for the Chapman-Richards equation.  Array size is
    * total # species.*/
@@ -576,9 +631,6 @@ protected:
   /**The minimum DBH, in cm, of neighbors to be included in NCI calculations.
   * Array is sized total number of species.*/
   float *mp_fNCICDMinNeighborDBH;
-
-  /**Max crown radius for standard equation*/
-  float m_fMaxStdCrownRad;
 
   /**Maximum possible crown radius*/
   float m_fMaxCrownRad;

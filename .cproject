@@ -31,8 +31,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Behaviors}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Behaviors/NCI}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Code\libs\gsl-1.11&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Code\libs\xerces-c-3.1.1\src&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Code\libs\gsl-1.16&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Code\libs\xerces-c-3.1.2\src&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Code\Interface_DLL&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.81085487" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -m32" valueType="string"/>
@@ -46,7 +46,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.debug.530696688" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.debug"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.debug.1256302031" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.debug">
 								<option id="gnu.cpp.link.option.libs.461075539" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="libxerces-c"/>
+									<listOptionValue builtIn="false" value="libxerces-c-3-1-2"/>
 									<listOptionValue builtIn="false" value="libgsl-0"/>
 									<listOptionValue builtIn="false" value="libinterface"/>
 								</option>

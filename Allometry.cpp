@@ -14,8 +14,6 @@ using namespace std;
 ////////////////////////////////////////////////////////////////////////////
 clAllometry::clAllometry(clTreePopulation *p_oPop) {
 
-  m_fMaxStdCrownRad = 10;
-
   m_oPop = p_oPop;
 
   mp_AdultHeight = NULL;
@@ -31,6 +29,7 @@ clAllometry::clAllometry(clTreePopulation *p_oPop) {
   mp_fMaxTreeHeight = NULL;
   mp_fAsympCrownRad = NULL;
   mp_fCrownRadExp = NULL;
+  mp_fMaxCrownRad = NULL;
   mp_fDbhToDiam10Slope = NULL;
   mp_fDbhToDiam10Intercept = NULL;
   mp_fAsympCrownDepth = NULL;
@@ -137,6 +136,7 @@ clAllometry::~clAllometry() {
   delete[] mp_fMaxTreeHeight;
   delete[] mp_fAsympCrownRad;
   delete[] mp_fCrownRadExp;
+  delete[] mp_fMaxCrownRad;
   delete[] mp_fDbhToDiam10Slope;
   delete[] mp_fDbhToDiam10Intercept;
   delete[] mp_fAsympCrownDepth;
@@ -275,19 +275,28 @@ void clAllometry::GetData(DOMDocument * p_oDoc, clTreePopulation * p_oPop) {
   m_fMaxCrownRad = 0;
   float fTempRad = 0;
   for (i = 0; i < m_iNumSpecies; i++) {
-    if (&clAllometry::CalcStandardSapAdultCrownRad == mp_AdultCrownRad[i])
-      fTempRad = m_fMaxStdCrownRad;
-    else if (&clAllometry::CalcChapRichSapAdultCrownRad == mp_AdultCrownRad[i])
+    if (&clAllometry::CalcStandardSapAdultCrownRad == mp_AdultCrownRad[i]) {
+      fTempRad = mp_fMaxCrownRad[i];
+    } else if (&clAllometry::CalcChapRichSapAdultCrownRad == mp_AdultCrownRad[i]) {
       fTempRad = mp_fCRAsympCrownRad[i] + mp_fCRCrownRadIntercept[i];
+    } else if (&clAllometry::CalcNonSpatDensDepExpAdultCrownRad == mp_AdultCrownRad[i]) {
+      fTempRad = 1000;
+    } else if (&clAllometry::CalcNCICrownRad == mp_AdultCrownRad[i]) {
+      fTempRad = mp_fNCIMaxCrownRadius[i];
+    }
+
     if (m_fMaxCrownRad < fTempRad)
       m_fMaxCrownRad = fTempRad;
   }
   for (i = 0; i < m_iNumSpecies; i++) {
-    if (&clAllometry::CalcStandardSapAdultCrownRad == mp_SaplingCrownRad[i])
-      fTempRad = m_fMaxStdCrownRad;
-    else if (&clAllometry::CalcChapRichSapAdultCrownRad
-        == mp_SaplingCrownRad[i])
+    if (&clAllometry::CalcStandardSapAdultCrownRad == mp_SaplingCrownRad[i]) {
+      fTempRad = mp_fMaxCrownRad[i];
+    } else if (&clAllometry::CalcChapRichSapAdultCrownRad == mp_SaplingCrownRad[i]) {
       fTempRad = mp_fCRAsympCrownRad[i] + mp_fCRCrownRadIntercept[i];
+    } else if (&clAllometry::CalcNCICrownRad == mp_SaplingCrownRad[i]) {
+      fTempRad = mp_fNCIMaxCrownRadius[i];
+    }
+
     if (m_fMaxCrownRad < fTempRad)
       m_fMaxCrownRad = fTempRad;
   }
@@ -716,7 +725,7 @@ float clAllometry::CalcStandardSapAdultCrownRad(clTree *p_oTree) {
   p_oTree->GetValue(m_oPop->GetDbhCode(iSpecies, p_oTree->GetType()), &fDbh);
   float fRad = mp_fAsympCrownRad[iSpecies] * pow(fDbh,
       mp_fCrownRadExp[iSpecies]);
-  return fRad > m_fMaxStdCrownRad ? m_fMaxStdCrownRad : fRad;
+  return fRad > mp_fMaxCrownRad[iSpecies] ? mp_fMaxCrownRad[iSpecies] : fRad;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1208,6 +1217,8 @@ void clAllometry::SetupAdultCrownRadius(xercesc::DOMElement * p_oElement) {
         mp_fAsympCrownRad = new float[m_iNumSpecies];
       if (!mp_fCrownRadExp)
         mp_fCrownRadExp = new float[m_iNumSpecies];
+      if (!mp_fMaxCrownRad)
+        mp_fMaxCrownRad = new float[m_iNumSpecies];
 
       FillSpeciesSpecificValue(p_oElement, "tr_stdAsympCrownRad", "tr_sacrVal",
           p_fTemp, iHowMany, m_oPop, true);
@@ -1219,6 +1230,12 @@ void clAllometry::SetupAdultCrownRadius(xercesc::DOMElement * p_oElement) {
           p_fTemp, iHowMany, m_oPop, true);
       for (i = 0; i < iHowMany; i++) {
         mp_fCrownRadExp[p_fTemp[i].code] = p_fTemp[i].val;
+      }
+
+      FillSpeciesSpecificValue(p_oElement, "tr_stdMaxCrownRad", "tr_smcrVal",
+          p_fTemp, iHowMany, m_oPop, true);
+      for (i = 0; i < iHowMany; i++) {
+        mp_fMaxCrownRad[p_fTemp[i].code] = p_fTemp[i].val;
       }
     }
 
@@ -1807,6 +1824,8 @@ void clAllometry::SetupSaplingCrownRadius(xercesc::DOMElement * p_oElement) {
         mp_fAsympCrownRad = new float[m_iNumSpecies];
       if (!mp_fCrownRadExp)
         mp_fCrownRadExp = new float[m_iNumSpecies];
+      if (!mp_fMaxCrownRad)
+        mp_fMaxCrownRad = new float[m_iNumSpecies];
 
       FillSpeciesSpecificValue(p_oElement, "tr_stdAsympCrownRad", "tr_sacrVal",
           p_fTemp, iHowMany, m_oPop, true);
@@ -1818,6 +1837,12 @@ void clAllometry::SetupSaplingCrownRadius(xercesc::DOMElement * p_oElement) {
           p_fTemp, iHowMany, m_oPop, true);
       for (i = 0; i < iHowMany; i++) {
         mp_fCrownRadExp[p_fTemp[i].code] = p_fTemp[i].val;
+      }
+
+      FillSpeciesSpecificValue(p_oElement, "tr_stdMaxCrownRad", "tr_smcrVal",
+          p_fTemp, iHowMany, m_oPop, true);
+      for (i = 0; i < iHowMany; i++) {
+        mp_fMaxCrownRad[p_fTemp[i].code] = p_fTemp[i].val;
       }
     }
 
