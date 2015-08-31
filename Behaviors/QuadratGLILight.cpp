@@ -55,6 +55,8 @@ void clQuadratGLILight::DoShellSetup(xercesc::DOMDocument * p_oDoc) {
     FillSingleValue( p_oElement, "li_numAziGrids", & m_iNumAziAng, true );
     //Minimum sun angle
     FillSingleValue( p_oElement, "li_minSunAngle", & m_fMinSunAngle, true );
+    //Azimuth of north - not required for backwards compatibility
+    FillSingleValue( p_oElement, "li_AziOfNorth", & m_fAzimuthOfNorth, false );
     //Height of quadrat light
     FillSingleValue( p_oElement, "li_quadratLightHeight", & m_fLightHeight, true );
     //Whether to calculate all values
@@ -79,11 +81,19 @@ void clQuadratGLILight::DoShellSetup(xercesc::DOMDocument * p_oDoc) {
       throw( stcErr );
     }
 
+    if (0 > m_fAzimuthOfNorth || (2.0 * M_PI) < m_fAzimuthOfNorth) {
+      modelErr stcErr;
+      stcErr.iErrorCode = BAD_DATA;
+      stcErr.sFunction = "clQuadratGLILight::DoShellSetup";
+      stcErr.sMoreInfo = "Azimuth of north must be between 0 and 2PI.";
+      throw( stcErr );
+    }
+
     if ( 0 > m_fLightHeight )
     {
       modelErr stcErr;
       stcErr.iErrorCode = BAD_DATA;
-      stcErr.sFunction = "clQuadratGLILight::DoShellSetup" ;
+      stcErr.sFunction = "clQuadratGLILight::DoShellSetup";
       stcErr.sMoreInfo = "The height of the GLI point for the GLI map cannot be less than 0.";
       throw( stcErr );
     }

@@ -45,6 +45,7 @@ clLightBase::clLightBase( clSimManager * p_oSimManager ) : clWorkerBase( p_oSimM
     m_iNumAziAng = 0;
     m_fMinSunAngle = 0;
     m_iMinAngRow = 0;
+    m_fAzimuthOfNorth = 0;
 
     mp_fBrightness = NULL;
     mp_fPhoto = NULL;
@@ -284,8 +285,8 @@ void clLightBase::PopulateGLIBrightnessArray()
       //eastern half of the sky into the western half because they're
       //symmetrical
       //*****************************************
-      while ( fTimeNow >= 0.0 ) //while still morning and not yet noon (noon is 0
-      { //in solar time
+      while ( fTimeNow >= 0.0 ) //while still morning and not yet noon (noon is 0 in solar time)
+      {
 
         //Find the position of the sun at the current time as the angle from
         //the zenith
@@ -357,8 +358,46 @@ void clLightBase::PopulateGLIBrightnessArray()
           mp_fBrightness[i] [j] = 0.0;
       }
 
+    //*****************************************
+    //Rotate brightness array if azimuth > 0
+    //*****************************************
+    if (m_fAzimuthOfNorth > 0) {
+      //Copy the brightness array
+      float **p_fBrightCopy = new float * [m_iNumAltAng];
+      for ( i = 0; i < m_iNumAltAng; i++) {
+        p_fBrightCopy[i] = new float[m_iNumAziAng];
+        for ( j = 0; j < m_iNumAziAng; j++ ) {
+          p_fBrightCopy[i] [j] = mp_fBrightness[i] [j];
+        }
+      }
+
+      //Calculate size of azimuth chunks, in radians
+      float fChunkSize = ( 2.0 * M_PI ) / m_iNumAziAng;
+
+      //Calculate how many columns of offset are required for the azimuth
+      int iOffset = round(m_fAzimuthOfNorth / fChunkSize);
+      int iNewCol;
+
+      //Offset by that many columns
+      for ( j = 0; j < m_iNumAziAng; j++) {
+        iNewCol = j + iOffset;
+        if (iNewCol >= m_iNumAziAng) iNewCol -= m_iNumAziAng;
+        for ( i = 0; i < m_iNumAltAng; i++) {
+          mp_fBrightness[i] [j] = p_fBrightCopy[i] [iNewCol];
+        }
+      }
+
+      // Delete the copy of the brightness arrayj
+      for ( int i = 0; i < m_iNumAltAng; i++ ) {
+        delete[] p_fBrightCopy[i];
+      }
+
+      delete[] p_fBrightCopy;
+    }
+
     //Write brightness array
-/*        fstream brightness("GLI Brightness array.xls", ios::trunc | ios::out); brightness << "Segment";
+   /* using namespace std;
+        fstream brightness("GLI Brightness array.txt", ios::trunc | ios::out); brightness << "Segment";
     for (i = 0; i < m_iNumAziAng; i++) brightness << "\t" << i; for (i = 0; i < m_iNumAltAng; i++) {
     brightness << "\n" << i; for (j = 0; j < m_iNumAziAng; j++) brightness << "\t" << mp_fBrightness[i][j];
     } brightness.close();*/

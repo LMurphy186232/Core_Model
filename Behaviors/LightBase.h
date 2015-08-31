@@ -16,7 +16,7 @@ class clAllometry;
 class clQuadratGLILight;
 
 /**
-* Light base - Version 1.0
+* Light base - Version 1.1
 *
 * This is the base class for light behavior shell classes. These shells
 * implement a common set of functions in different ways which are specific
@@ -43,6 +43,7 @@ class clQuadratGLILight;
 * <br>Edit history:
 * <br>-----------------
 * <br>October 20, 2011 - Wiped the slate clean for SORTIE 7.0 (LEM)
+* <tr>August 19, 2015 - Added sky rotation (LEM)
 */
 class clLightBase : virtual public clBehaviorBase {
 //note: need the virtual keyword to avoid base class ambiguity.
@@ -145,24 +146,38 @@ class clLightBase : virtual public clBehaviorBase {
   it should fill these values.*/
 
   //Variables that all light objects need but will keep their own copies of
-  float **mp_fBrightness; /**<Sky brightness array. Array size is # altitude
-  angles by # azimuth angles. The altitude index increases from horizon to
-  zenith, and the azimuth index increases from 0 to 2PI. Each child object
-  needs its own copy of this.*/
-  float **mp_fPhoto;      /**<Simulated fisheye photo array. Array size is
-  # altitude angles by # azimuth angles. The altitude index increases from
-  horizon to zenith, and the azimuth index increases from 0 to 2PI. Each child
-  object needs its own copy of this.*/
-  float m_fMinSunAngle;   /**<The altitude angle below which the sky is assumed
-  to be dark. Could be in degrees or radians. Each child
-  object needs its own copy of this.*/
-  int m_iNumAziAng;  /**<Number of azimuth angles into which the sky
-  hemisphere is divided. Each child object needs its own copy of this.*/
-  int m_iNumAltAng; /**<Number of altitude angles into which the sky
-  hemisphere is divided. Each child object needs its own copy of this.*/
-  int m_iMinAngRow; /**<Row in the brightness array corresponding to the minimum
-  solar angle. Used to compare calculated object positions. Each child object
-  needs its own copy of this.*/
+
+  /**Sky brightness array. Array size is # altitude angles by # azimuth angles.
+   * The altitude index increases from horizon to zenith, and the azimuth index
+   * increases from north clockwise. Each child object needs its own copy of this.*/
+  float **mp_fBrightness;
+
+  /**Simulated fisheye photo array. Array size is # altitude angles by # azimuth
+   * angles. The altitude index increases from horizon to zenith, and the azimuth
+   * index increases from 0 to 2PI. Each child object needs its own copy of this.*/
+  float **mp_fPhoto;
+
+  /**The altitude angle below which the sky is assumed to be dark. Could be in
+   * degrees or radians, depending on what the child object is working in. Each
+   * child object needs its own copy of this.*/
+  float m_fMinSunAngle;
+
+  /**The azimuth angle of north. Not required; will default to 0. Setting this
+   * to non-zero allows the user to rotate the sky relative to the plot.*/
+  float m_fAzimuthOfNorth;
+
+  /**Number of azimuth angles into which the sky hemisphere is divided. Each
+   * child object needs its own copy of this.*/
+  int m_iNumAziAng;
+
+  /**Number of altitude angles into which the sky hemisphere is divided. Each
+   * child object needs its own copy of this.*/
+  int m_iNumAltAng;
+
+  /**Row in the brightness array corresponding to the minimum solar angle. Used
+   * to compare calculated object positions. Each child object needs its own
+   * copy of this.*/
+  int m_iMinAngRow;
 
   /**
   * Triggers all light setup. This will be the same for all descendent classes.

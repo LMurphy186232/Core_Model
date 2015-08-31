@@ -126,8 +126,10 @@ void clGLIPoints::SetUpBrightnessArray()
 
     p_oGli = dynamic_cast < clLightBase * > ( p_oTemp );
 
-    if ( p_oGli->m_iNumAltAng == m_iNumAltAng && p_oGli->m_iNumAziAng == m_iNumAziAng && p_oGli->m_iMinAngRow == m_iMinAngRow )
-    {
+    if ( p_oGli->m_iNumAltAng == m_iNumAltAng &&
+         p_oGli->m_iNumAziAng == m_iNumAziAng &&
+         p_oGli->m_iMinAngRow == m_iMinAngRow &&
+         fabs(p_oGli->m_fAzimuthOfNorth - m_fAzimuthOfNorth) < 0.001) {
 
       //Good!  We can assume that their photo brightness array is done, and
       //copy (if it wasn't done the sky resolution data wouldn't match)
@@ -269,6 +271,8 @@ void clGLIPoints::ReadParameterFileData( xercesc::DOMDocument * p_oDoc )
   FillSingleValue( p_oElement, "li_numAziGrids", & m_iNumAziAng, true );
   //Minimum sun angle
   FillSingleValue( p_oElement, "li_minSunAngle", & m_fMinSunAngle, true );
+  //Azimuth of north - not required for backwards compatibility
+  FillSingleValue( p_oElement, "li_AziOfNorth", & m_fAzimuthOfNorth, false );
 
   //Validate the data
   if ( 0 >= m_iNumAltAng )
@@ -286,6 +290,14 @@ void clGLIPoints::ReadParameterFileData( xercesc::DOMDocument * p_oDoc )
     stcErr.iErrorCode = BAD_DATA;
     stcErr.sFunction = "clGLIPoints::ReadParameterFileData" ;
     stcErr.sMoreInfo = "The number of sky azimuth divisions must be greater than 0.";
+    throw( stcErr );
+  }
+
+  if (0 > m_fAzimuthOfNorth || (2.0 * M_PI) < m_fAzimuthOfNorth) {
+    modelErr stcErr;
+    stcErr.iErrorCode = BAD_DATA;
+    stcErr.sFunction = "clGLIPoints::ReadParameterFileData" ;
+    stcErr.sMoreInfo = "Azimuth of north must be between 0 and 2PI.";
     throw( stcErr );
   }
 }

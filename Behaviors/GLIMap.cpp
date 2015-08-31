@@ -163,7 +163,10 @@ void clGLIMap::SetUpBrightnessArray()
 
     p_oGli = dynamic_cast < clLightBase * > ( p_oTemp );
 
-    if ( p_oGli->m_iNumAltAng == m_iNumAltAng && p_oGli->m_iNumAziAng == m_iNumAziAng && p_oGli->m_iMinAngRow == m_iMinAngRow )
+    if ( p_oGli->m_iNumAltAng == m_iNumAltAng &&
+        p_oGli->m_iNumAziAng == m_iNumAziAng &&
+        p_oGli->m_iMinAngRow == m_iMinAngRow &&
+        fabs(p_oGli->m_fAzimuthOfNorth == m_fAzimuthOfNorth) < 0.001)
     {
 
       //Good!  We can assume that their photo brightness array is done, and
@@ -210,42 +213,6 @@ void clGLIMap::SetUpBrightnessArray()
   }
 }
 
-
-
-////////////////////////////////////////////////////////////////////////////
-// SetUpLightOrg()
-////////////////////////////////////////////////////////////////////////////
-/*void clGLIMap::SetUpLightOrg( xercesc::DOMDocument * p_oDoc )
-{
-
-  clBehaviorBase * p_oTempBehavior; //for looking for light shells
-  char cShellMarker[] = "lightshell"; //string we're looking for
-  int iNumBehaviors, i; //total number of behaviors
-  bool bOtherLightObjs = false; //flag for whether we found a light shell
-
-  //Go through all the behaviors to pick out the light shells - should have
-  //the string "lightshell" in their namestrings
-  iNumBehaviors = mp_oSimManager->GetNumberOfBehaviors();
-  for ( i = 0; i < iNumBehaviors; i++ )
-  {
-    p_oTempBehavior = mp_oSimManager->GetBehaviorObject( i );
-    if ( NULL != strstr( p_oTempBehavior->GetName(), cShellMarker ) )
-    {
-      bOtherLightObjs = true;
-      break;
-    } //end of if (NULL != strstr(cBehaviorName, cShellMarker))
-  } //end of for (i = 0; i < iNumBehaviors; i++)
-
-  //If there are other light behaviors, the mp_oLightOrg pointer will already
-  //be valid and this function does nothing
-  if ( true == bOtherLightObjs ) return;
-
-  //There are no other light objects; cause mp_oLightOrg to do its setup
-  mp_oLightOrg->DoSetup( mp_oSimManager, p_oDoc );
-} */
-
-
-
 ////////////////////////////////////////////////////////////////////////////
 // ReadParameterFileData()
 ////////////////////////////////////////////////////////////////////////////
@@ -260,13 +227,15 @@ void clGLIMap::ReadParameterFileData( xercesc::DOMDocument * p_oDoc )
   //Get the photo height value - required
   FillSingleValue( p_oElement, "li_mapLightHeight", & m_fLightHeight, true );
 
-  //Get our values - none required because they might be in another light tag
+  //Get our values
   //Number of alitude angles
   FillSingleValue( p_oElement, "li_numAltGrids", & m_iNumAltAng, true );
   //Number of azimuth angles
   FillSingleValue( p_oElement, "li_numAziGrids", & m_iNumAziAng, true );
   //Minimum sun angle
   FillSingleValue( p_oElement, "li_minSunAngle", & m_fMinSunAngle, true );
+  //Azimuth of north - not required for backwards compatibility
+  FillSingleValue( p_oElement, "li_AziOfNorth", & m_fAzimuthOfNorth, false );
 
   //Validate the data
   if ( 0 >= m_iNumAltAng )
@@ -293,6 +262,15 @@ void clGLIMap::ReadParameterFileData( xercesc::DOMDocument * p_oDoc )
     stcErr.iErrorCode = BAD_DATA;
     stcErr.sFunction = "clGLIMap::ReadParameterFileData" ;
     stcErr.sMoreInfo = "The height of the GLI point for the GLI map cannot be less than 0.";
+    throw( stcErr );
+  }
+
+  //Make sure azimuth of north is between 0 and 2PI
+  if (0 > m_fAzimuthOfNorth || (2.0 * M_PI) < m_fAzimuthOfNorth) {
+    modelErr stcErr;
+    stcErr.iErrorCode = BAD_DATA;
+    stcErr.sFunction = "clGLIMap::ReadParameterFileData" ;
+    stcErr.sMoreInfo = "Azimuth of north must be between 0 and 2PI.";
     throw( stcErr );
   }
 }

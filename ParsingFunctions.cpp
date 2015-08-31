@@ -32,6 +32,14 @@ void FillSpeciesSpecificValue( xercesc::DOMElement *p_oParent, string sTagName,
     i, j, k = 0;     //loop counters
     bool bDuplOrBad = false;   //for screening out duplicate and bad values
 
+    if (p_oParent == NULL) {
+      modelErr stcErr;
+      stcErr.sFunction = "FillSpeciesSpecificValue";
+      stcErr.iErrorCode = DATA_MISSING;
+      stcErr.sMoreInfo = "Parent tag";
+      throw(stcErr);
+    }
+
     //Get the parent node with tag name "strElementName" - there should only be
     //one so only take the first returned
     sTag = XMLString::transcode(sTagName.c_str());
@@ -153,6 +161,14 @@ void FillSpeciesSpecificValue( xercesc::DOMElement *p_oParent, string sTagName,
     //already read
     i, j, k = 0;     //loop counters
     bool bDuplOrBad = false;   //for screening out duplicate and bad values
+
+    if (p_oParent == NULL) {
+      modelErr stcErr;
+      stcErr.sFunction = "FillSpeciesSpecificValue";
+      stcErr.iErrorCode = DATA_MISSING;
+      stcErr.sMoreInfo = "Parent tag";
+      throw(stcErr);
+    }
 
     //Get the parent node with tag name "strElementName" - there should only be
     //one so only take the first returned
@@ -277,6 +293,14 @@ void FillSpeciesSpecificValue(xercesc::DOMElement *p_oParent, string sTagName,
     i, j, k = 0;     //loop counters
     bool bDuplOrBad = false;   //for screening out duplicate and bad values
 
+    if (p_oParent == NULL) {
+      modelErr stcErr;
+      stcErr.sFunction = "FillSpeciesSpecificValue";
+      stcErr.iErrorCode = DATA_MISSING;
+      stcErr.sMoreInfo = "Parent tag";
+      throw(stcErr);
+    }
+
     //Get the parent node with tag name "strElementName" - there should only be
     //one so only take the first returned
     sTag = XMLString::transcode(sTagName.c_str());
@@ -399,6 +423,14 @@ void FillSpeciesSpecificValue( xercesc::DOMElement *p_oParent, string sTagName,
     //already read
     i, j, k = 0;     //loop counters
     bool bDuplOrBad = false;   //for screening out duplicate and bad values
+
+    if (p_oParent == NULL) {
+      modelErr stcErr;
+      stcErr.sFunction = "FillSpeciesSpecificValue";
+      stcErr.iErrorCode = DATA_MISSING;
+      stcErr.sMoreInfo = "Parent tag";
+      throw(stcErr);
+    }
 
     //Get the parent node with tag name "strElementName" - there should only be
     //one so only take the first returned
@@ -536,6 +568,14 @@ void FillSpeciesSpecificValue(xercesc::DOMElement *p_oParent, string sTagName,
     i;               //loop counter
     bool bDuplOrBad = false;   //for screening out duplicate and bad values
 
+    if (p_oParent == NULL) {
+      modelErr stcErr;
+      stcErr.sFunction = "FillSpeciesSpecificValue";
+      stcErr.iErrorCode = DATA_MISSING;
+      stcErr.sMoreInfo = "Parent tag";
+      throw(stcErr);
+    }
+
     iNumSpecies = p_oPop->GetNumberOfSpecies();
 
     //Get the parent node with tag name "strElementName" - there should only be
@@ -653,6 +693,14 @@ void FillSpeciesSpecificValue(xercesc::DOMElement *p_oParent, string sTagName,
     i;               //loop counter
     bool bDuplOrBad = false;   //for screening out duplicate and bad values
 
+    if (p_oParent == NULL) {
+      modelErr stcErr;
+      stcErr.sFunction = "FillSpeciesSpecificValue";
+      stcErr.iErrorCode = DATA_MISSING;
+      stcErr.sMoreInfo = "Parent tag";
+      throw(stcErr);
+    }
+
     iNumSpecies = p_oPop->GetNumberOfSpecies();
 
     //Get the parent node with tag name "strElementName" - there should only be
@@ -769,6 +817,14 @@ void FillSpeciesSpecificValue(xercesc::DOMElement *p_oParent, string sTagName,
     //already read
     i;               //loop counter
     bool bDuplOrBad = false;   //for screening out duplicate and bad values
+
+    if (p_oParent == NULL) {
+      modelErr stcErr;
+      stcErr.sFunction = "FillSpeciesSpecificValue";
+      stcErr.iErrorCode = DATA_MISSING;
+      stcErr.sMoreInfo = "Parent tag";
+      throw(stcErr);
+    }
 
     iNumSpecies = p_oPop->GetNumberOfSpecies();
 

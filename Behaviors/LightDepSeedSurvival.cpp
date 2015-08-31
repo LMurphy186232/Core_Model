@@ -173,6 +173,8 @@ void clLightDepSeedSurvival::GetParameterFileData( xercesc::DOMDocument * p_oDoc
     FillSingleValue( p_oElement, "li_numAziGrids", & m_iNumAziAng, true );
     //Minimum sun angle
     FillSingleValue( p_oElement, "li_minSunAngle", & m_fMinSunAngle, true );
+    //Azimuth of north - not required for backwards compatibility
+    FillSingleValue( p_oElement, "li_AziOfNorth", & m_fAzimuthOfNorth, false );
 
     //Light extinction coefficient for undamaged trees
     //Use the standard light extinction coefficient tags - this lets clLightOrg
@@ -245,6 +247,15 @@ void clLightDepSeedSurvival::GetParameterFileData( xercesc::DOMDocument * p_oDoc
       stcErr.sMoreInfo = "Number of altitude and azimuth sky divisions must be at least 1.";
       throw( stcErr );
 
+    }
+
+    //Make sure azimuth of north is between 0 and 2PI
+    if (0 > m_fAzimuthOfNorth || (2.0 * M_PI) < m_fAzimuthOfNorth) {
+      modelErr stcErr;
+      stcErr.iErrorCode = BAD_DATA;
+      stcErr.sFunction = "clLightDepSeedSurvival::GetParameterFileData" ;
+      stcErr.sMoreInfo = "Azimuth of north must be between 0 and 2PI.";
+      throw( stcErr );
     }
 
     delete[] p_fTempAll;
