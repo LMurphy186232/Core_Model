@@ -30,7 +30,7 @@
  * <li><i>X0</i> is a parameter</li>
  * <li><i>Xb</i> is a parameter</li>
  * <li><i>T</i> is temperature in K</li>
- * </ul
+ * </ul>
  *
  * Alternately, this can use NCI behaviors returning 2 values, in which case
  * the format is
@@ -55,7 +55,7 @@ public:
    * Calculates crowding effect.
    * @param p_oTree Tree for which to calculate crowding effect.
    * @param fDiam Diameter of tree.
-   * @param fNCI NCI term.
+   * @param nci NCI term.
    * @param iSpecies Species for which to calculate effect.
    */
   float CalculateCrowdingEffect(clTree *p_oTree, const float &fDiam, const clNCITermBase::ncivals nci, const int &iSpecies);
@@ -64,6 +64,7 @@ public:
    * Does setup.
    * @param p_oPop Tree population.
    * @param p_oNCI NCI behavior object.
+   * @param p_oNCIBase NCI parent behavior object.
    * @param p_oElement Root element of the behavior.
    */
   void DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, clNCIBehaviorBase *p_oNCIBase, xercesc::DOMElement *p_oElement);

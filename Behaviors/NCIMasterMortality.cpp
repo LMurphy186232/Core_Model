@@ -68,7 +68,7 @@ clNCIMasterMortality::~clNCIMasterMortality() {
 
   int i;
   if (mp_iDeadCodes) {
-    for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
+    for ( i = 0; i < m_iNumTotalSpecies; i++ ) {
       delete[] mp_iDeadCodes[i];
     }
     delete[] mp_iDeadCodes;

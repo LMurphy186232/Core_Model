@@ -274,8 +274,18 @@ void clInsectInfestation::Action()
     // If we are after the end timestep, clear all the infection flags and set it to quit
     if (mp_oSimManager->GetCurrentTimestep() == m_iLastTimestep) {
       EndInfestation();
+      delete[] p_iInfTrees;
+      delete[] p_iTotalTrees;
+      delete[] p_fTargetRate;
+      delete[] p_fNewProb;
       return;
-    } else if (mp_oSimManager->GetCurrentTimestep() > m_iLastTimestep) return;
+    } else if (mp_oSimManager->GetCurrentTimestep() > m_iLastTimestep) {
+      delete[] p_iInfTrees;
+      delete[] p_iTotalTrees;
+      delete[] p_fTargetRate;
+      delete[] p_fNewProb;
+      return;
+    }
 
     if (m_iFirstTimestep < mp_oSimManager->GetCurrentTimestep()) {
 

@@ -30,6 +30,7 @@ bool TarballSetup(string sAppPath) {
 //Windows version
 bool TarballSetup(string sAppPath) {
   string sPath = sAppPath + "gzip.exe";
+
   int iAvailable = access(sPath.c_str(), 0); //0 signifies checking for existence
   if (0 == iAvailable) {
     sPath = sAppPath + "tar.exe";
@@ -276,8 +277,10 @@ void LaunchProcess(string sFile, string sArgs, string sDir) {
     
     //DWORD dw = GetLastError();
     //force the process to complete before moving on
+
     WaitForSingleObject(params->hProcess, INFINITE);
   }
+
   delete params;
 }   
 #endif

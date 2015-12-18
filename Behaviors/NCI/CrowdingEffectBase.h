@@ -31,7 +31,7 @@ public:
    * bRequiresTargetDiam is false, be prepared for this to be NULL.
    * @param fDiam Diameter of tree. May not be the same as the one recorded in
    * the tree record if it is being updated for consecutive years in a timestep.
-   * @param fNCI NCI term. May be 0 if NCI not used.
+   * @param nci NCI term. May be 0 if NCI not used.
    * @param iSpecies Species for which to calculate effect. This is separate
    * in case p_oTree is NULL because there is no target.
    */
@@ -41,6 +41,7 @@ public:
    * Does any desired setup.
    * @param p_oPop Tree population.
    * @param p_oNCI NCI behavior object.
+   * @param p_oNCIBase NCI parent behavior object.
    * @param p_oElement Root element of the behavior.
    */
   virtual void DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, clNCIBehaviorBase *p_oNCIBase, xercesc::DOMElement *p_oElement) = 0;

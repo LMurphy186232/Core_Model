@@ -64,9 +64,17 @@ int main( int argc, char * argv[] )
   //for (int i = 0; i < argc; i++)
   //cout << "Argument " << (i+1) << ": " << argv[i] << "\n";
 
-  if (sPath.find("coremodel.exe") != string::npos) {
-    sPath = sPath.substr(0, sPath.find("coremodel.exe"));
+  //if (sPath.find("coremodel.exe") != string::npos) {
+  //  sPath = sPath.substr(0, sPath.find("coremodel.exe"));
+  //}
+  //The above won't work if launched with just the string "coremodel"
+
+  if (sPath.find("coremodel") != string::npos) {
+    sPath = sPath.substr(0, sPath.find("coremodel"));
   }
+  //if (sPath.find("condor") != string::npos) {
+  //  sPath = "c:\\program files (x86)\\sortie\\bin\\";
+  //}
 
   //***************************************
   // Version numbers
