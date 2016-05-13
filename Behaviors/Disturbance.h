@@ -409,13 +409,18 @@ class clDisturbance : virtual public clBehaviorBase {
 
   /**Holds a linked list of grid cells.*/
   struct stcGridList {
-     clTree *p_oTree;    /**<Tallest tree of a particular species in the cell*/
      stcGridList *next;  /**<Next grid cell in the list*/
+     short int iDistX;   /**<Disturbance grids cell X number*/
+     short int iDistY;   /**<Disturbance grids cell Y number*/
+  };
+
+  /**Holds a linked list of tree grid cells that correspond to the harvest area.*/
+  struct stcTreeGridList {
+     clTree *p_oTree;    /**<Tallest tree of a particular species in the cell*/
+     stcTreeGridList *next;  /**<Next grid cell in the list*/
      float fDbh;         /**<DBH of the tallest tree in the cell*/
      short int iTreeX;   /**<Tree population grid cell X number*/
      short int iTreeY;   /**<Tree population grid cell Y number*/
-     short int iDistX;   /**<Disturbance grids cell X number*/
-     short int iDistY;   /**<Disturbance grids cell Y number*/
   };
 
   /**
@@ -481,20 +486,22 @@ class clDisturbance : virtual public clBehaviorBase {
   /**
    * Cut trees for a species - absolute density.
    * @param iSp Species
-   * @param p_cutArea Cut area
+   * @param p_cutArea Pointer to the linked list of cut grid cells.
+   * @param p_treeArea Pointer to the linked list of tree grid cells.
    * @param p_fLoDbh Array of the low dbhs of the package's cut ranges.
    * @param p_fHiDbh Array of the high dbhs of the package's cut ranges.
    * @param p_fAmountToRemove Amount to remove in each cut range.
    * @param p_fAmountRemoved Amount already removed.
    */
-  void CutSpeciesAbsDen(int iSp, stcGridList * & p_cutArea,
+  void CutSpeciesAbsDen(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
     float *p_fAmountRemoved);
 
   /**
    * Cut trees for a species with a priority - absolute density.
    * @param iSp Species
-   * @param p_cutArea Cut area
+   * @param p_cutArea Pointer to the linked list of cut grid cells.
+   * @param p_treeArea Pointer to the linked list of tree grid cells.
    * @param p_fLoDbh Array of the low dbhs of the package's cut ranges.
    * @param p_fHiDbh Array of the high dbhs of the package's cut ranges.
    * @param p_fAmountToRemove Amount to remove in each cut range.
@@ -504,7 +511,7 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param fPriorityMin Priority minimum value.
    * @param fPriorityMax Priority maximum value.
    */
-  void CutSpeciesAbsDenPriority(int iSp, stcGridList * & p_cutArea,
+  void CutSpeciesAbsDenPriority(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
     float *p_fAmountRemoved, std::string sPriorityName, int &iPriorityType,
     float &fPriorityMin, float &fPriorityMax);
@@ -512,20 +519,22 @@ class clDisturbance : virtual public clBehaviorBase {
   /**
    * Cut trees for a species - absolute basal area.
    * @param iSp Species
-   * @param p_cutArea Cut area
+   * @param p_cutArea Pointer to the linked list of cut grid cells.
+   * @param p_treeArea Pointer to the linked list of tree grid cells.
    * @param p_fLoDbh Array of the low dbhs of the package's cut ranges.
    * @param p_fHiDbh Array of the high dbhs of the package's cut ranges.
    * @param p_fAmountToRemove Amount to remove in each cut range.
    * @param p_fAmountRemoved Amount already removed.
    */
-  void CutSpeciesAbsBA(int iSp, stcGridList * & p_cutArea,
+  void CutSpeciesAbsBA(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
     float *p_fAmountRemoved);
 
   /**
    * Cut trees for a species with a priority - absolute basal area.
    * @param iSp Species
-   * @param p_cutArea Cut area
+   * @param p_cutArea Pointer to the linked list of cut grid cells.
+   * @param p_treeArea Pointer to the linked list of tree grid cells.
    * @param p_fLoDbh Array of the low dbhs of the package's cut ranges.
    * @param p_fHiDbh Array of the high dbhs of the package's cut ranges.
    * @param p_fAmountToRemove Amount to remove in each cut range.
@@ -535,7 +544,7 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param fPriorityMin Priority minimum value.
    * @param fPriorityMax Priority maximum value.
    */
-  void CutSpeciesAbsBAPriority(int iSp, stcGridList * & p_cutArea,
+  void CutSpeciesAbsBAPriority(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
     float *p_fAmountRemoved, std::string sPriorityName, int &iPriorityType,
     float &fPriorityMin, float &fPriorityMax);
@@ -543,34 +552,37 @@ class clDisturbance : virtual public clBehaviorBase {
   /**
    * Cut trees for a species - percent density.
    * @param iSp Species
-   * @param p_cutArea Cut area
+   * @param p_cutArea Pointer to the linked list of cut grid cells.
+   * @param p_treeArea Pointer to the linked list of tree grid cells.
    * @param p_fLoDbh Array of the low dbhs of the package's cut ranges.
    * @param p_fHiDbh Array of the high dbhs of the package's cut ranges.
    * @param p_fAmountToRemove Amount to remove in each cut range.
    * @param p_fAmountRemoved Amount already removed.
    */
-  void CutSpeciesPercentDen(int iSp, stcGridList * & p_cutArea,
+  void CutSpeciesPercentDen(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
     float *p_fAmountRemoved);
 
   /**
    * Cut trees for a species - percent basal area.
    * @param iSp Species
-   * @param p_cutArea Cut area
+   * @param p_cutArea Pointer to the linked list of cut grid cells.
+   * @param p_treeArea Pointer to the linked list of tree grid cells.
    * @param p_fLoDbh Array of the low dbhs of the package's cut ranges.
    * @param p_fHiDbh Array of the high dbhs of the package's cut ranges.
    * @param p_fAmountToRemove Amount to remove in each cut range.
    * @param p_fAmountRemoved Amount already removed.
    * @param p_fTotalBasalArea Total basal area.
    */
-  void CutSpeciesPercentBA(int iSp, stcGridList * & p_cutArea,
+  void CutSpeciesPercentBA(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
     float *p_fAmountRemoved, float *p_fTotalBasalArea);
 
   /**
    * Cut trees for a species with a priority - percent basal area.
    * @param iSp Species
-   * @param p_cutArea Cut area
+   * @param p_cutArea Pointer to the linked list of cut grid cells.
+   * @param p_treeArea Pointer to the linked list of tree grid cells.
    * @param p_fLoDbh Array of the low dbhs of the package's cut ranges.
    * @param p_fHiDbh Array of the high dbhs of the package's cut ranges.
    * @param p_fAmountToRemove Amount to remove in each cut range.
@@ -581,7 +593,7 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param fPriorityMin Priority minimum value.
    * @param fPriorityMax Priority maximum value.
    */
-  void CutSpeciesPercentBAPriority(int iSp, stcGridList * & p_cutArea,
+  void CutSpeciesPercentBAPriority(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
     float *p_fAmountRemoved, float *p_fTotalBasalArea, std::string sPriorityName,
     int &iPriorityType, float &fPriorityMin, float &fPriorityMax);
@@ -623,8 +635,8 @@ class clDisturbance : virtual public clBehaviorBase {
    * @return The number of the cells in the cut area.
    */
   int AssembleCutArea(clPackage *p_oMasterPackage, const int &iNumXCells,
-   const int &iNumYCells, stcGridList *&p_cutArea, float *p_fLoDbh, float
-   *p_fHiDbh, float *p_fAmountToRemove, bool *p_bSpeciesCut);
+   const int &iNumYCells, stcGridList *&p_cutArea, stcTreeGridList * &p_treeArea,
+   float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove, bool *p_bSpeciesCut);
 
   /**
    * Gets the basal area in a cut area for a single species.  The cut area is
@@ -632,6 +644,7 @@ class clDisturbance : virtual public clBehaviorBase {
    * cut range and puts it in an array whose pointer was passed.
    *
    * @param p_cutArea Pointer to the linked list.
+   * @param p_treeArea Pointer to the linked list of tree grid cells.
    * @param iSpecies Species of tree for which to calculate basal area.
    * @param p_fTotalBasalArea Array (size m_iNumAllowedCutRanges) in which to
    * put the total basal area calculation.
@@ -640,7 +653,7 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param p_fHiDbh Array (size m_iNumAllowedCutRanges) of upper-limit dbhs for
    * the cut ranges that have been defined.
    */
-  void GetBasalArea(stcGridList *p_cutArea, const short int &iSpecies,
+  void GetBasalArea(stcGridList *p_cutArea, stcTreeGridList * & p_treeArea, const short int &iSpecies,
      float *p_fTotalBasalArea, float *p_fLoDbh, float *p_fHiDbh);
 
   /**
@@ -648,23 +661,25 @@ class clDisturbance : virtual public clBehaviorBase {
    * larger trees, all species are done at the same time. Each seedling found
    * within the affected area gets a random number comparison to the kill
    * probability for its species.
-   * @param p_cutArea Pointer to the linked list.
+   * @param p_cutArea Pointer to the linked list of cut grid cells.
+   * @param p_treeArea Pointer to the linked list of tree grid cells.
    * @param p_fKillProb Kill probability for each species.
    */
-  void KillSeedlings(stcGridList *p_cutArea, float *p_fKillProb);
+  void KillSeedlings(stcGridList *p_cutAreap_cutArea, stcTreeGridList * & p_treeArea, float *p_fKillProb);
 
  /**
   * Finds the tallest tree of a species within a cut area.  The cut area is
   * defined by a linked list of grid cells.  This assumes that the tallest tree
   * pointers for each grid cell in the linked list is not populated.  This will
-  * populate and sort them.  Which means that the pointer p_cutArea could be
+  * populate and sort them.  Which means that the pointer p_treeArea could be
   * changed.
-  * @param p_cutArea Pointer to the linked list.
+  * @param p_cutArea Pointer to the linked list of cut grid cells.
+  * @param p_treeArea Pointer to the linked list of tree grid cells.
   * @param iSpecies Species of tree to populate.
   * @return Tallest tree in the area, or NULL if there are no trees of the
   * desired species.
   */
-  clTree* GetTallestTreeInCutArea(stcGridList *&p_cutArea,
+  clTree* GetTallestTreeInCutArea(stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
    const short int &iSpecies);
 
   /**
@@ -674,12 +689,13 @@ class clDisturbance : virtual public clBehaviorBase {
    * tallest tree is no longer wanted (although if it is to be killed it hasn't
    * been killed yet).  The current tallest tree could still be alive; but it
    * will be ignored for further consideration.
-   * @param p_cutArea Pointer to the linked list.
+   * @param p_cutArea Pointer to the linked list of cut grid cells.
+   * @param p_treeArea Pointer to the linked list of tree grid cells.
    * @param iSpecies Species being cut.
    * @return Next tallest tree in the area, or NULL if there are no trees of the
    * desired species.
    */
-  clTree* GetNextTreeInCutArea(stcGridList *&p_cutArea,
+  clTree* GetNextTreeInCutArea(stcGridList *&p_cutArea, stcTreeGridList * & p_treeArea,
       const short int &iSpecies);
 
   /**
@@ -692,13 +708,12 @@ class clDisturbance : virtual public clBehaviorBase {
   void SetCutFlags(stcGridList *p_cutArea, const int &iCutType);
 
   /**
-   * Figures out whether or not a tree falls in a disturbance grid cell.
+   * Figures out whether or not a tree falls in a disturbance cut area.
    * @param p_oTree Tree to check
-   * @param iX Grid cell X number
-   * @param iY Grid cell Y number
-   * @return True if the tree falls in the cell, false if not
+   * @param p_cutArea Cut area to check
+   * @return True if the tree falls in the cut area, false if not
    */
-  bool IsTreeInCell(clTree *p_oTree, int iX, int iY);
+  bool IsTreeInCutArea(clTree *p_oTree, stcGridList *p_cutArea);
 
 };
 //---------------------------------------------------------------------------
