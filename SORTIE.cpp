@@ -72,14 +72,11 @@ int main( int argc, char * argv[] )
   if (sPath.find("coremodel") != string::npos) {
     sPath = sPath.substr(0, sPath.find("coremodel"));
   }
-  //if (sPath.find("condor") != string::npos) {
-  //  sPath = "c:\\program files (x86)\\sortie\\bin\\";
-  //}
 
   //***************************************
   // Version numbers
   //***************************************
-  int iMajorVersion = 7, iMinorVersion = 2;
+  int iMajorVersion = 7, iMinorVersion = 3;
   clSimManager p_oSimManager( iMajorVersion, iMinorVersion, sPath);
 
   //***************************************

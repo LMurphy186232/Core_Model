@@ -509,8 +509,9 @@ unsigned long clSimManager::RunSim( int iNumStepsToRun )
         iNumPopulations = 0, //number of populations
         iTimestep = 0, //current timestep - loop counter
         iStartTimestep = 0, //the timestep to start on this time
-        iEndTimestep = 0; //the timestep to end on this time
-    clock_t startRun, endRun;
+        iEndTimestep = 0, //the timestep to end on this time
+        iHrs,iMin;
+    clock_t startRun, endRun, now;
     unsigned long iRunTime;
 
     m_bUserQuit = false;
@@ -590,10 +591,20 @@ unsigned long clSimManager::RunSim( int iNumStepsToRun )
     for ( iTimestep = iStartTimestep; iTimestep < iEndTimestep; iTimestep++ )
     {
 
-      //Pass a message indicating the timestep we just started
+      //Pass a message indicating the timestep we just started, and the elapsed time
+      now = clock();
+      iRunTime = (now - startRun) / CLOCKS_PER_SEC;
+      iHrs = (int)floor( iRunTime / 3600 );
+      iRunTime -= ( iHrs * 3600 );
+
+      //Calc number of minutes
+      iMin = (int)floor( iRunTime / 60 );
+      iRunTime -= ( iMin * 60 );
+
       stcMsg.iMessageCode = INFO;
       stringstream msg;
-      msg << "Starting timestep " << iTimestep << " of " << m_iNumTimesteps;
+      msg << "Starting timestep " << iTimestep << " of " << m_iNumTimesteps
+          << ". Elapsed time: " << iHrs << ":" << iMin << ":" << iRunTime;
       stcMsg.sMoreInfo = msg.str();
       SendMessage( stcMsg );
 
