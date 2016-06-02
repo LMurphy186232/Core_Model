@@ -25,7 +25,7 @@ clSizeDepLogisticGrowth::clSizeDepLogisticGrowth( clSimManager * p_oSimManager )
     mp_iIndexes = NULL;
 
     m_fConversionFactor = 0;
-    m_fNumberOfYearsPerTimestep = 0;
+    m_iNumberOfYearsPerTimestep = 0;
 
     m_sNameString = "sizedeplogisticgrowthshell";
     m_sXMLRoot = "SizeDependentLogisticGrowth";
@@ -72,7 +72,7 @@ void clSizeDepLogisticGrowth::DoShellSetup( DOMDocument * p_oDoc )
   {
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
-    floatVal * p_fTempValues; //for getting species-specific values
+    doubleVal * p_fTempValues; //for getting species-specific values
     short int iNumSpecies = p_oPop->GetNumberOfSpecies(), i;
 
     //Conversion factor
@@ -85,7 +85,7 @@ void clSizeDepLogisticGrowth::DoShellSetup( DOMDocument * p_oDoc )
       m_fConversionFactor = 0.2;
     }
 
-    m_fNumberOfYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_iNumberOfYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
     //Make the list of indexes
     mp_iIndexes = new short int[iNumSpecies];
@@ -93,14 +93,14 @@ void clSizeDepLogisticGrowth::DoShellSetup( DOMDocument * p_oDoc )
       mp_iIndexes[mp_iWhatSpecies[i]] = i;
 
     //Declare the arrays we'd like read
-    mp_fSlope = new float[m_iNumBehaviorSpecies];
-    mp_fIntercept = new float[m_iNumBehaviorSpecies];
-    mp_fShape1 = new float[m_iNumBehaviorSpecies];
-    mp_fShape2 = new float[m_iNumBehaviorSpecies];
+    mp_fSlope = new double[m_iNumBehaviorSpecies];
+    mp_fIntercept = new double[m_iNumBehaviorSpecies];
+    mp_fShape1 = new double[m_iNumBehaviorSpecies];
+    mp_fShape2 = new double[m_iNumBehaviorSpecies];
 
     //Declare the species-specific temp array and pre-load with the species that
     //this behavior affects
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -280,10 +280,10 @@ float clSizeDepLogisticGrowth::CalcHeightGrowthValue(clTree *p_oTree, clTreePopu
   p_oTree->GetValue(iDiamCode, &fDiam);
 
   //Calculate the diameter increment
-  fDiamIncrement = fDiameterGrowth / m_fNumberOfYearsPerTimestep;
+  fDiamIncrement = fDiameterGrowth / m_iNumberOfYearsPerTimestep;
 
   //Increment the height
-  for (i = 0; i < m_fNumberOfYearsPerTimestep; i++) {
+  for (i = 0; i < m_iNumberOfYearsPerTimestep; i++) {
     fHeightIncrement += CalculateFunctionValue(iSpecies, fGLI, fDiam);
     fDiam += fDiamIncrement;
   }
@@ -310,7 +310,7 @@ float clSizeDepLogisticGrowth::CalcDiameterGrowthValue(clTree *p_oTree, clTreePo
   p_oTree->GetValue(iDiamCode, &fDiam);
 
   //Increment the height
-  for (i = 0; i < m_fNumberOfYearsPerTimestep; i++) {
+  for (i = 0; i < m_iNumberOfYearsPerTimestep; i++) {
     fDiamIncrement = CalculateFunctionValue(iSpecies, fGLI, fDiam) * m_fConversionFactor;
     fTotalDiamIncrement += fDiamIncrement;
     fDiam += fDiamIncrement;

@@ -112,27 +112,27 @@ class clStormKiller : virtual public clBehaviorBase {
 
   /**The minimum DBH, in cm, for trees that can be damaged by storms.  Array
   * size is total number of species.  From the parameter file.*/
-  float *mp_fMinStormDBH;
+  double *mp_fMinStormDBH;
 
   /**Medium damage a.  Array size is total number of species.  From the
   * parameter file.*/
-  float *mp_fStmDmgMedA;
+  double *mp_fStmDmgMedA;
 
   /**Heavy damage a.  Array size is total number of species.  From the
   * parameter file.*/
-  float *mp_fStmDmgHeavyA;
+  double *mp_fStmDmgHeavyA;
 
   /**Medium damage b.  Array size is total number of species.  From the
   * parameter file.*/
-  float *mp_fStmDmgMedB;
+  double *mp_fStmDmgMedB;
 
   /**Heavy damage b.  Array size is total number of species.  From the
   * parameter file.*/
-  float *mp_fStmDmgHeavyB;
+  double *mp_fStmDmgHeavyB;
 
   /**Proportion of dead heavy-damaged trees that tip-up, between 0 and 1.
   * Array size is total number of species.  From the parameter file.*/
-  float *mp_fPropTipUp;
+  double *mp_fPropTipUp;
 
   /**Return codes for the "stm_dmg" int tree data member.  Array index one is
   * sized m_iNumTypes; array index two is sized total number of species.*/

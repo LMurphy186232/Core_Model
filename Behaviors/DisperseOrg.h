@@ -94,11 +94,10 @@ class clDisperseOrg {
   */
   clDisperseBase **mp_oDispObjects;
 
-  float
-    /**Standard deviation if normal or lognormal distribution is desired, or
+   /**Standard deviation if normal or lognormal distribution is desired, or
     * clumping parameter if lognormal.  One for each species.  Those that don't
     * use disperse won't have a value filled in.*/
-    *mp_fRandParameter;
+  double *mp_fRandParameter;
 
   short int *mp_iCodes; /**<Number of seeds code in the seed grid for each
                         species.*/

@@ -256,8 +256,8 @@ sLabel.str("");
   }
 
   //Set the value for max distance and increment
-  mp_oGrid->SetValueOfCell(0, 0, mp_oGrid->GetFloatDataCode("inc"), m_fIncrement);
-  mp_oGrid->SetValueOfCell(0, 0, mp_oGrid->GetFloatDataCode("dist"), m_fMaxDistance);
+  mp_oGrid->SetValueOfCell(0, 0, mp_oGrid->GetFloatDataCode("inc"), (float)m_fIncrement);
+  mp_oGrid->SetValueOfCell(0, 0, mp_oGrid->GetFloatDataCode("dist"), (float)m_fMaxDistance);
 }
 
 ////////////////////////////////////////////////////////////////////////////

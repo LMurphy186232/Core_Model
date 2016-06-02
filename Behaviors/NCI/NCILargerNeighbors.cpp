@@ -87,16 +87,16 @@ clNCITermBase::ncivals clNCILargerNeighbors::CalculateNCITerm(clTree * p_oTree, 
 // DoSetup
 //////////////////////////////////////////////////////////////////////////////
 void clNCILargerNeighbors::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) {
-  floatVal * p_fTempValues; //for getting species-specific values
+  doubleVal * p_fTempValues; //for getting species-specific values
   int iNumBehaviorSpecies = p_oNCI->GetNumBehaviorSpecies(),
       iNumTotalSpecies = p_oPop->GetNumberOfSpecies(), i;
 
-  mp_fMinimumNeighborDBH = new float[iNumTotalSpecies];
-  mp_fMaxCrowdingRadius = new float[iNumTotalSpecies];
+  mp_fMinimumNeighborDBH = new double[iNumTotalSpecies];
+  mp_fMaxCrowdingRadius = new double[iNumTotalSpecies];
 
   m_fMinSaplingHeight = 50;
 
-  p_fTempValues = new floatVal[iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[iNumBehaviorSpecies];
   for ( i = 0; i < iNumBehaviorSpecies; i++ ) {
     p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
   }

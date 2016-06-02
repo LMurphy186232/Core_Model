@@ -54,7 +54,7 @@ class clConstantGLI : public clLightBase {
   protected:
 
   /** GLI value. */
-  float m_fGLI;
+  double m_fGLI;
 
 };
 //---------------------------------------------------------------------------

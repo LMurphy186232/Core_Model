@@ -644,14 +644,14 @@ class clTreePopulation : public clPopulationBase {
      stcOpenSearches *p_nextSearch; /**<Pointer to the next search on the list*/
    } *mp_openSearches; /**<The linked list of open search requests. The first
    record is always a dummy record.*/
-  float m_fNewSeedlingDiam10; /**<New diameter at 10 cm for seedlings. Actual
+  double m_fNewSeedlingDiam10; /**<New diameter at 10 cm for seedlings. Actual
         values are randomized around this value. From the parameter file.*/
   float m_fMinAdultHeight; /**<Shortest possible adult tree height, in meters.*/
   float m_fMaxSaplingHeight; /**<Maximum possible height a sapling can have, in
         meters. In practice this number is actually a smidge taller than the
         tallest height.*/
-  float *mp_fMaxSeedlingHeight; /**<Maximum possible seedling height, in meters*/
-  float *mp_fMinAdultDbh; /**<Minimum adult DBH, in cm, for each species.
+  double *mp_fMaxSeedlingHeight; /**<Maximum possible seedling height, in meters*/
+  double *mp_fMinAdultDbh; /**<Minimum adult DBH, in cm, for each species.
         From parameter file.*/
   float m_fPlotLengthX;  /**<Plot length in X dimension, in meters.*/
   float m_fPlotLengthY;  /**<Plot length in Y dimension, in meters.*/

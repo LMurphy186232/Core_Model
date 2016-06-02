@@ -22,7 +22,7 @@ clRelativeGrowth::clRelativeGrowth(clSimManager *p_oSimManager) :
     m_fMinimumVersionNumber = 1.1;
     mp_fExp = NULL;
 
-    m_fNumberYearsPerTimestep = 0;
+    m_iNumberYearsPerTimestep = 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -118,36 +118,36 @@ void clRelativeGrowth::DoShellSetup( DOMDocument * p_oDoc )
   {
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
-    floatVal * p_fTempValues; //for getting species-specific values
+    doubleVal * p_fTempValues; //for getting species-specific values
     short int iNumSpecies = mp_oGrowthOrg->GetNumberOfSpecies(), i;
 
-    //Set up our floatVal array that will extract values only for the species
+    //Set up our doubleVal array that will extract values only for the species
     //assigned to this behavior
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
-    m_fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_iNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
     //Declare the arrays we'd like read
     if (diameter_auto == m_iGrowthMethod || diameter_only == m_iGrowthMethod) {
-      mp_fAsympDiamGrowth = new float[iNumSpecies];
-      mp_fSlopeDiamGrowthResponse = new float[iNumSpecies];
+      mp_fAsympDiamGrowth = new double[iNumSpecies];
+      mp_fSlopeDiamGrowthResponse = new double[iNumSpecies];
     } else {
-      mp_fAsympHeightGrowth = new float[iNumSpecies];
-      mp_fSlopeHeightGrowthResponse = new float[iNumSpecies];
+      mp_fAsympHeightGrowth = new double[iNumSpecies];
+      mp_fSlopeHeightGrowthResponse = new double[iNumSpecies];
     }
 
-    mp_fExp = new float[iNumSpecies];
+    mp_fExp = new double[iNumSpecies];
 
     if ( m_bConstRadialLimited )
     {
-      mp_fAdultConstRadInc = new float[iNumSpecies];
+      mp_fAdultConstRadInc = new double[iNumSpecies];
     }
 
     if ( m_bConstBasalAreaLimited )
     {
-      mp_fAdultConstBAInc = new float[iNumSpecies];
+      mp_fAdultConstBAInc = new double[iNumSpecies];
     }
 
     //Read the base variables
@@ -236,7 +236,7 @@ float clRelativeGrowth::CalcDiameterGrowthValue( clTree * p_oTree, clTreePopulat
   fAnnualRelativeGrowth = CalculateMichaelisMentonDiam( iSpecies, fGli );
 
   //Compound the relative growth over the number of years/time step
-  fCompoundRelativeGrowth = pow( 1.0 + fAnnualRelativeGrowth, m_fNumberYearsPerTimestep );
+  fCompoundRelativeGrowth = pow( 1.0 + fAnnualRelativeGrowth, m_iNumberYearsPerTimestep );
 
   //Calculate amount of diameter increase based on the tree's diameter
   fAmountDiamIncrease = pow(fDiam, mp_fExp[iSpecies]) * ( fCompoundRelativeGrowth - 1.0 );
@@ -273,7 +273,7 @@ float clRelativeGrowth::CalcHeightGrowthValue(clTree *p_oTree, clTreePopulation 
   fAnnualRelativeGrowth = CalculateMichaelisMentonHeight( iSpecies, fGli );
 
   //Compound the relative growth over the number of years/time step
-  for (iYr = 0; iYr < m_fNumberYearsPerTimestep; iYr++) {
+  for (iYr = 0; iYr < m_iNumberYearsPerTimestep; iYr++) {
     fNewHeight += fAnnualRelativeGrowth * pow(fNewHeight, mp_fExp[iSpecies]);
   }
   //Don't allow a negative new height - set to 10 cm

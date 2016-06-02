@@ -172,35 +172,35 @@ void clCompetitionHarvest::RegisterTreeDataMembers()
 void clCompetitionHarvest::ReadParameterFileData( xercesc::DOMDocument * p_oDoc,
     clTreePopulation *p_oPop )
 {
-  floatVal * p_fTempValues = NULL; //for getting species-specific values
+  doubleVal * p_fTempValues = NULL; //for getting species-specific values
   float *p_fTempAll = new float[m_iNumSpecies];
   try
   {
     clPlot *p_oPlot = mp_oSimManager->GetPlotObject();
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
     stringstream sTag;
-    float fTemp, fPlotSize = p_oPlot->GetPlotArea(),
-        fTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
-    int iTemp;
+    float fTemp, fPlotSize = p_oPlot->GetPlotArea();
+    int iTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep(),
+        iTemp;
     short int i; //loop counters
 
-    //Set up our floatVal array that will extract values only for the species
+    //Set up our doubleVal array that will extract values only for the species
     //assigned to this behavior
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
     //Declare arrays
-    mp_fAlpha = new float[m_iNumSpecies];
-    mp_fBeta = new float[m_iNumSpecies];
-    mp_fC = new float[m_iNumSpecies];
-    mp_fD = new float[m_iNumSpecies];
-    mp_fGamma = new float[m_iNumSpecies];
-    mp_fMaxCrowdingRadius = new float[m_iNumSpecies];
-    mp_fPropToCut = new float[m_iNumSpecies];
-    mp_fLambda = new float*[m_iNumSpecies];
+    mp_fAlpha = new double[m_iNumSpecies];
+    mp_fBeta = new double[m_iNumSpecies];
+    mp_fC = new double[m_iNumSpecies];
+    mp_fD = new double[m_iNumSpecies];
+    mp_fGamma = new double[m_iNumSpecies];
+    mp_fMaxCrowdingRadius = new double[m_iNumSpecies];
+    mp_fPropToCut = new double[m_iNumSpecies];
+    mp_fLambda = new double*[m_iNumSpecies];
     for (i = 0; i < m_iNumSpecies; i++)
-      mp_fLambda[i] = new float[m_iNumSpecies];
+      mp_fLambda[i] = new double[m_iNumSpecies];
 
     //Maximum crowding radius
     FillSpeciesSpecificValue( p_oElement, "di_compHarvMaxCrowdingRadius",
@@ -348,7 +348,7 @@ void clCompetitionHarvest::ReadParameterFileData( xercesc::DOMDocument * p_oDoc,
     }
 
     //Transform the interval from years to timesteps
-    m_iInterval *= (int)fTimestep;
+    m_iInterval *= iTimestep;
 
     //Filename for list of trees harvested - optional
     FillSingleValue( p_oElement, "di_compHarvHarvestedListFile", &m_sHarvestListFilename, false );
@@ -395,8 +395,8 @@ void clCompetitionHarvest::GetData( xercesc::DOMDocument * p_oDoc )
 
     //Miscellaneous final setup
     m_iReasonCode = whyDead::harvest;
-    mp_fTargetToCut = new float[m_iNumSpecies];
-    mp_fAlreadyCut = new float[m_iNumSpecies];
+    mp_fTargetToCut = new double[m_iNumSpecies];
+    mp_fAlreadyCut = new double[m_iNumSpecies];
 
     //Set time since last harvest so that harvests can occur the first
     //timestep

@@ -41,7 +41,7 @@ public:
    * @param p_oPlot Plot object for querying for nitrogen values.
    * @param iSpecies Species for which to calculate nitrogen effect.
    */
-  float CalculateNitrogenEffect(clPlot *p_oPlot, int iSpecies);
+  double CalculateNitrogenEffect(clPlot *p_oPlot, int iSpecies);
 
   /**
    * Does setup.
@@ -54,10 +54,10 @@ public:
 protected:
 
   /**Nitrogen effect X0. Array is sized number of species.*/
-  float *mp_fX0;
+  double *mp_fX0;
 
   /**Nitrogen effect Xb. Array is sized number of species.*/
-  float *mp_fXb;
+  double *mp_fXb;
 
 };
 

@@ -67,13 +67,13 @@ class clPowerHeightGrowth : virtual public clGrowthBase {
   protected:
 
   /** n - sized number of species*/
-  float *mp_fN;
+  double *mp_fN;
 
   /** b - sized number of species*/
-  float *mp_fB;
+  double *mp_fB;
 
   /**Number of years per timestep - from sim manager*/
-  float m_fNumberYearsPerTimestep;
+  int m_iNumberYearsPerTimestep;
 
 };
 //---------------------------------------------------------------------------

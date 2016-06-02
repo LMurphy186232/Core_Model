@@ -24,7 +24,7 @@ public:
    * @param p_oPlot Plot object for querying for temperature values.
    * @param iSpecies Species for which to calculate temperature effect.
    */
-  virtual float CalculateTemperatureEffect(clPlot *p_oPlot, int iSpecies) = 0;
+  virtual double CalculateTemperatureEffect(clPlot *p_oPlot, int iSpecies) = 0;
 
   /**
    * Does any desired setup.

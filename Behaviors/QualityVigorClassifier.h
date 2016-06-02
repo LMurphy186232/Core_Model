@@ -146,75 +146,75 @@ private:
 
   /** Beta0 for vigor transition. Sized number of species assigned to this
    * behavior.*/
-  float *mp_fVigBeta0;
+  double *mp_fVigBeta0;
 
   /** Beta1 for vigor transition, initial class 1. Sized number of species
    * assigned to this behavior. If species is coniferous, this is ignored.*/
-  float *mp_fVigBeta11;
+  double *mp_fVigBeta11;
 
   /** Beta1 for vigor transition, initial class 2. Sized number of species
    * assigned to this behavior. If species is coniferous, this is ignored.*/
-  float *mp_fVigBeta12;
+  double *mp_fVigBeta12;
 
   /** Beta1 for vigor transition, initial class 3. Sized number of species
    * assigned to this behavior. If species is coniferous, this is ignored.*/
-  float *mp_fVigBeta13;
+  double *mp_fVigBeta13;
 
   /** Beta1 for vigor transition, initial class 4. Sized number of species
    * assigned to this behavior. If species is coniferous, this is ignored.*/
-  float *mp_fVigBeta14;
+  double *mp_fVigBeta14;
 
   /** Beta1 for vigor transition, initial class 5. Sized number of species
    * assigned to this behavior. If species is deciduous, this is ignored.*/
-  float *mp_fVigBeta15;
+  double *mp_fVigBeta15;
 
   /** Beta1 for vigor transition, initial class 6. Sized number of species
    * assigned to this behavior. If species is deciduous, this is ignored.*/
-  float *mp_fVigBeta16;
+  double *mp_fVigBeta16;
 
   /** Beta2 for vigor transition. Sized number of species assigned to this
    * behavior.*/
-  float *mp_fVigBeta2;
+  double *mp_fVigBeta2;
 
   /** Beta3 for vigor transition. Sized number of species assigned to this
    * behavior.*/
-  float *mp_fVigBeta3;
+  double *mp_fVigBeta3;
 
   /** Beta0 for quality transition. Sized number of species assigned to this
    * behavior. If species is coniferous, this is ignored.*/
-  float *mp_fQualBeta0;
+  double *mp_fQualBeta0;
 
   /** Beta1 for quality transition, initial class 1. Sized number of species
    * assigned to this behavior. If species is coniferous, this is ignored.*/
-  float *mp_fQualBeta11;
+  double *mp_fQualBeta11;
 
   /** Beta1 for quality transition, initial class 2. Sized number of species
    * assigned to this behavior. If species is coniferous, this is ignored.*/
-  float *mp_fQualBeta12;
+  double *mp_fQualBeta12;
 
   /** Beta1 for quality transition, initial class 3. Sized number of species
    * assigned to this behavior. If species is coniferous, this is ignored.*/
-  float *mp_fQualBeta13;
+  double *mp_fQualBeta13;
 
   /** Beta1 for quality transition, initial class 4. Sized number of species
    * assigned to this behavior. If species is coniferous, this is ignored.*/
-  float *mp_fQualBeta14;
+  double *mp_fQualBeta14;
 
   /** Beta2 for quality transition. Sized number of species assigned to this
    * behavior. If species is coniferous, this is ignored.*/
-  float *mp_fQualBeta2;
+  double *mp_fQualBeta2;
 
   /** Beta3 for quality transition. Sized number of species assigned to this
    * behavior. If species is coniferous, this is ignored.*/
-  float *mp_fQualBeta3;
+  double *mp_fQualBeta3;
 
   /** Probability of new adults being vigorous. Sized number of species assigned
    * to this behavior.*/
-  float *mp_fNewAdultProbVigorous;
+  double *mp_fNewAdultProbVigorous;
 
   /** Probability of new adults being sawlog quality. Sized number of species
    * assigned to this behavior. If species is coniferous, this is ignored.*/
-  float *mp_fNewAdultProbSawlog;
+  double *mp_fNewAdultProbSawlog;
 
   /**For array access*/
   short int *mp_iIndexes;

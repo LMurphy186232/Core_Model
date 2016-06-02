@@ -23,7 +23,7 @@ public:
    * @param p_oPlot Plot object for querying for temperature values.
    * @param iSpecies Species for which to calculate precipitation effect.
    */
-  float CalculatePrecipitationEffect(clPlot *p_oPlot, int iSpecies) {return 1.0;};
+  double CalculatePrecipitationEffect(clPlot *p_oPlot, int iSpecies) {return 1.0;};
 
   /**
    * Does any desired setup.

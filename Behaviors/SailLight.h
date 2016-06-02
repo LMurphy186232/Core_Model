@@ -59,8 +59,8 @@ class clSailLight : public clLightBase {
 
   protected:
 
-  float m_fMaxShadingRadius; /**<Maximum radius at which trees can shade, in meters*/
-  float *mp_fAltTans; /**<Tangent of each altitude angle.  Array size is 90 (degrees)*/
+  double m_fMaxShadingRadius; /**<Maximum radius at which trees can shade, in meters*/
+  double *mp_fAltTans; /**<Tangent of each altitude angle.  Array size is 90 (degrees)*/
 
   /**The fraction of shading neighbor height which is assumed to be crown*/
   enum crowndpthequalsheight {yes, /**<The crown extends the full length of the trunk*/

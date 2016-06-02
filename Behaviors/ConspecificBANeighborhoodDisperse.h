@@ -57,13 +57,13 @@ class clConspecificBANeighborhoodDisperse : virtual public clDisperseBase {
   protected:
 
   /**A parameter - sized number of species.*/
-  float *mp_fA;
+  double *mp_fA;
 
   /**B parameter - sized number of species.*/
-  float *mp_fB;
+  double *mp_fB;
 
   /**Neighborhood search radius.*/
-  float m_fRadius;
+  double m_fRadius;
 
   /**Minimum sapling height. For doing neighbor searches.*/
   float m_fMinSaplingHeight;

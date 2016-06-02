@@ -28,7 +28,7 @@ clGrowthBase( p_oSimManager), clMichMenBase( p_oSimManager )
   m_bConstBasalAreaLimited = false;
 
   mp_oResourceGrid = NULL;
-  m_fNumberYearsPerTimestep = 0;
+  m_iNumberYearsPerTimestep = 0;
   m_iResourceCode = -1;
 }
 
@@ -80,24 +80,24 @@ void clDoubleMMRelGrowth::SetNameData(std::string sNameString)
 //////////////////////////////////////////////////////////////////////////////
 void clDoubleMMRelGrowth::DoShellSetup( DOMDocument * p_oDoc )
 {
-  floatVal * p_fTempValues = NULL;
+  doubleVal * p_fTempValues = NULL;
   try
   {
     short int iNumSpecies = mp_oGrowthOrg->GetNumberOfSpecies(), i;
 
-    m_fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_iNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
     //Declare the arrays we'd like read
-    mp_fAsympDiamGrowth = new float[iNumSpecies];
-    mp_fSlopeDiamGrowthResponse = new float[iNumSpecies];
-    mp_fResourceInfluence = new float[iNumSpecies];
+    mp_fAsympDiamGrowth = new double[iNumSpecies];
+    mp_fSlopeDiamGrowthResponse = new double[iNumSpecies];
+    mp_fResourceInfluence = new double[iNumSpecies];
 
     //Read the base variables with the base class function
     GetParameterFileData( p_oDoc );
 
     //Now read this behavior's additional parameter
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     clTreePopulation *p_oPop = (clTreePopulation*) mp_oSimManager->GetPopulationObject("treepopulation");
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
@@ -213,7 +213,7 @@ float clDoubleMMRelGrowth::CalcDiameterGrowthValue( clTree * p_oTree, clTreePopu
   fAnnualRelativeGrowth = ( fAnnualRelativeGrowth * fGli ) / ( (fAnnualRelativeGrowth / mp_fSlopeDiamGrowthResponse[iSpecies]) + fGli );
 
   //Compound the relative growth over the number of years/time step
-  fCompoundRelativeGrowth = pow( 1.0 + fAnnualRelativeGrowth, m_fNumberYearsPerTimestep );
+  fCompoundRelativeGrowth = pow( 1.0 + fAnnualRelativeGrowth, m_iNumberYearsPerTimestep );
 
   //Calculate amount of diameter increase based on the tree's diameter
   fAmountDiamIncrease = fDiam * ( fCompoundRelativeGrowth - 1.0 );

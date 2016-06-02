@@ -77,34 +77,34 @@ class clFoliarChemistry : virtual public clBehaviorBase {
   clGrid* mp_oGrid;
 
   /** "a" for foliar dry weight. Array size is # total species.*/
-  float *mp_fA;
+  double *mp_fA;
 
   /** "b" for foliar dry weight. Array size is # total species.*/
-  float *mp_fB;
+  double *mp_fB;
 
   /** Concentration for N.  Array size is # total species.*/
-  float *mp_fN;
+  double *mp_fN;
 
   /** Concentration for P.  Array size is # total species.*/
-  float *mp_fP;
+  double *mp_fP;
 
   /** Concentration for lignin.  Array size is # total species.*/
-  float *mp_fLignin;
+  double *mp_fLignin;
 
   /** Concentration for fiber.  Array size is # total species.*/
-  float *mp_fFiber;
+  double *mp_fFiber;
 
   /** Concentration for cellulose.  Array size is # total species.*/
-  float *mp_fCellulose;
+  double *mp_fCellulose;
 
   /** Concentration for tannins.  Array size is # total species.*/
-  float *mp_fTannins;
+  double *mp_fTannins;
 
   /** Concentration for phenolics.  Array size is # total species.*/
-  float *mp_fPhenolics;
+  double *mp_fPhenolics;
 
   /** Concentration for SLA.  Array size is # total species.*/
-  float *mp_fSLA;
+  double *mp_fSLA;
 
 
   /**String to pass to clTreePopulation::Find() in order to get the trees for

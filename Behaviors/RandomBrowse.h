@@ -64,11 +64,11 @@ class clRandomBrowse : virtual public clBehaviorBase {
   protected:
   /** Probability of browse (or mean prob). Array size is total number of
    * species.*/
-  float *mp_fBrowseProb;
+  double *mp_fBrowseProb;
 
   /** Standard deviation of browse probability, if using a normal draw each
    * timestep. Array size is total number of species.*/
-  float *mp_fBrowseStdDev;
+  double *mp_fBrowseStdDev;
 
   /**String to pass to clTreePopulation::Find() in order to get the trees for
   * which to calculate volume.  This will instigate a species/type search for

@@ -82,7 +82,7 @@ clRandomBrowse::~clRandomBrowse()
 /////////////////////////////////////////////////////////////////////////////
 void clRandomBrowse::GetData( xercesc::DOMDocument * p_oDoc )
 {
-  floatVal * p_fTempValues = NULL; //for getting species-specific values
+  doubleVal * p_fTempValues = NULL; //for getting species-specific values
   char *cQueryTemp = NULL;
   bool *p_bTypes = NULL;
   try
@@ -90,15 +90,15 @@ void clRandomBrowse::GetData( xercesc::DOMDocument * p_oDoc )
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
     char cQueryPiece[5]; //for assembling the search query
-    float fYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
-    int iNumTypes = p_oPop->GetNumberOfTypes(),
+    int iYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep(),
+        iNumTypes = p_oPop->GetNumberOfTypes(),
         i, iTemp;
 
     cQueryTemp = new char[(p_oPop->GetNumberOfSpecies() * 4) + 50];
 
-    //Set up our floatVal array that will extract values only for the species
+    //Set up our doubleVal array that will extract values only for the species
     //assigned to this behavior
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -125,7 +125,7 @@ void clRandomBrowse::GetData( xercesc::DOMDocument * p_oDoc )
     }
 
     //Get the parameter file value for browsed probability
-    mp_fBrowseProb = new float[m_iNumSpecies];
+    mp_fBrowseProb = new double[m_iNumSpecies];
     for (i = 0; i < m_iNumSpecies; i++) {
       mp_fBrowseProb[i] = 0;
     }
@@ -141,7 +141,7 @@ void clRandomBrowse::GetData( xercesc::DOMDocument * p_oDoc )
       mp_fBrowseProb[p_fTempValues[i].code] = p_fTempValues[i].val;
 
     //If normal draw probability, get the standard deviation
-    mp_fBrowseStdDev = new float[m_iNumSpecies];
+    mp_fBrowseStdDev = new double[m_iNumSpecies];
     for (i = 0; i < m_iNumSpecies; i++) {
       mp_fBrowseStdDev[i] = 0;
     }
@@ -172,7 +172,7 @@ void clRandomBrowse::GetData( xercesc::DOMDocument * p_oDoc )
         throw( stcErr );
       }
 
-      mp_fBrowseProb[i] = 1 - pow(1 - mp_fBrowseProb[i], fYearsPerTimestep);
+      mp_fBrowseProb[i] = 1 - pow(1 - mp_fBrowseProb[i], iYearsPerTimestep);
     }
 
     //Format the query string

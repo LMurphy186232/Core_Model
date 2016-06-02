@@ -137,25 +137,25 @@ void clWindstorm::GetData( xercesc::DOMDocument * p_oDoc )
 
 void clWindstorm::ReadParFile( xercesc::DOMDocument * p_oDoc, clTreePopulation *p_oPop )
 {
-  floatVal * p_fTempValues = NULL; //for getting species-specific values
+  doubleVal * p_fTempValues = NULL; //for getting species-specific values
   try {
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
     std::stringstream sLabel;
-    float fTemp;
+    double fTemp;
     int iTemp;
     int i;
 
     //Declare our arrays
-    mp_fA = new float[m_iTotalNumSpecies];
-    mp_fB = new float[m_iTotalNumSpecies];
-    mp_fC = new float[m_iTotalNumSpecies];
-    mp_fMinDBH = new float[m_iTotalNumSpecies];
-    mp_fStormProbabilities = new float[m_iNumReturnIntervals];
-    mp_fStormSeverities = new float[m_iNumReturnIntervals];
+    mp_fA = new double[m_iTotalNumSpecies];
+    mp_fB = new double[m_iTotalNumSpecies];
+    mp_fC = new double[m_iTotalNumSpecies];
+    mp_fMinDBH = new double[m_iTotalNumSpecies];
+    mp_fStormProbabilities = new double[m_iNumReturnIntervals];
+    mp_fStormSeverities = new double[m_iNumReturnIntervals];
 
-    //Set up our floatVal array that will extract values only for the species
+    //Set up our doubleVal array that will extract values only for the species
     //assigned to this behavior
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -359,10 +359,10 @@ void clWindstorm::Action()
           fTrendBit, //trend effect on frequency
           fSineBit, //sinusoidal effect on frequency
           fCyclicity, //total cyclicity effect
-          fPlotArea = mp_oSimManager->GetPlotObject()->GetPlotArea(),
-          fNumYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep(),
-          fCurrentTimestep = mp_oSimManager->GetCurrentTimestep();
-    int iSp, iTp, i, j, iDead;
+          fPlotArea = mp_oSimManager->GetPlotObject()->GetPlotArea();
+    int iNumYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep(),
+        iCurrentTimestep = mp_oSimManager->GetCurrentTimestep(),
+        iSp, iTp, i, j, iDead;
 
     p_fDeadBA = new float[m_iTotalNumSpecies]; //basal area killed per species
     p_fDeadDen = new float[m_iTotalNumSpecies]; //density killed per species
@@ -378,14 +378,14 @@ void clWindstorm::Action()
     p_oStormPackage = NULL;
 
     //If it's not time to start storms yet, don't
-    if (fCurrentTimestep < m_iFirstStormTimestep) {
+    if (iCurrentTimestep < m_iFirstStormTimestep) {
       delete[] p_fDeadBA;
       delete[] p_fDeadDen;
       return;
     }
 
     //Calculate the effects of cyclicity
-    fX = 4 * (fCurrentTimestep - m_iFirstStormTimestep) * fNumYearsPerTimestep / m_fSSTPeriod;
+    fX = 4.0 * (iCurrentTimestep - m_iFirstStormTimestep) * iNumYearsPerTimestep / m_fSSTPeriod;
     fSineBit = m_fSineD * sin( M_PI * (fX - m_fSineG)/(2 * m_fSineF));
     fTrendBit = m_fTrendSlopeM * fX + m_fTrendInterceptI;
     fCyclicity = fSineBit + fTrendBit;
@@ -393,7 +393,7 @@ void clWindstorm::Action()
     //Figure out what storms happen
     for ( i = 0; i < m_iNumReturnIntervals; i++ )
     {
-      for ( j = 0; j < fNumYearsPerTimestep; j++ )
+      for ( j = 0; j < iNumYearsPerTimestep; j++ )
       {
         if ( clModelMath::GetRand() <= mp_fStormProbabilities[i] * fCyclicity )
         {
@@ -464,7 +464,7 @@ void clWindstorm::Action()
           } else {
             p_oStormPackage = mp_oResultsGrid->CreatePackage(p_oStormPackage);
           }
-          p_oStormPackage->SetValue(m_iSeverityCode, mp_fStormSeverities[i]);
+          p_oStormPackage->SetValue(m_iSeverityCode, (float)mp_fStormSeverities[i]);
           for (iSp = 0; iSp < m_iTotalNumSpecies; iSp++) {
             p_oStormPackage->SetValue(mp_iBa_xCodes[iSp], p_fDeadBA[iSp] / fPlotArea);
             p_oStormPackage->SetValue(mp_iDensity_xCodes[iSp], p_fDeadDen[iSp] / fPlotArea);

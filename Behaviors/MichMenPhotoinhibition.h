@@ -79,23 +79,23 @@ class clMichMenPhotoinhibition : virtual public clGrowthBase {
   protected:
 
   /** alpha - sized number of behavior species*/
-  float *mp_fAlpha;
+  double *mp_fAlpha;
 
   /** beta - sized number of behavior species*/
-  float *mp_fBeta;
+  double *mp_fBeta;
 
   /** phi - sized number of behavior species*/
-  float *mp_fPhi;
+  double *mp_fPhi;
 
   /** d - sized number of behavior species*/
-  float *mp_fD;
+  double *mp_fD;
 
   /**To help access the other arrays*/
   int *mp_iIndexes;
 
   /**Conversion factor to translate the results of the function to the
   * appropriate units per timestep*/
-  float m_fYearsPerTimestep;
+  int m_iYearsPerTimestep;
 };
 //---------------------------------------------------------------------------
 #endif // MichMenPhotoinhibition_H

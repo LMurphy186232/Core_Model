@@ -23,8 +23,8 @@ clSizeEffectPowerFunction::~clSizeEffectPowerFunction() {
 ////////////////////////////////////////////////////////////////////////////
 // CalculateSizeEffect
 ////////////////////////////////////////////////////////////////////////////
-float clSizeEffectPowerFunction::CalculateSizeEffect(clTree *p_oTree, const float &fDiam) {
-  float fSizeEffect;
+double clSizeEffectPowerFunction::CalculateSizeEffect(clTree *p_oTree, const float &fDiam) {
+  double fSizeEffect;
   int iSpecies = p_oTree->GetSpecies();
 
   fSizeEffect = mp_fA[iSpecies] * pow(fDiam, mp_fB[iSpecies]);
@@ -38,16 +38,16 @@ float clSizeEffectPowerFunction::CalculateSizeEffect(clTree *p_oTree, const floa
 // DoSetup
 ////////////////////////////////////////////////////////////////////////////
 void clSizeEffectPowerFunction::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) {
-  floatVal * p_fTempValues; //for getting species-specific values
+  doubleVal * p_fTempValues; //for getting species-specific values
   int iNumBehaviorSpecies = p_oNCI->GetNumBehaviorSpecies(),
       iNumTotalSpecies = p_oPop->GetNumberOfSpecies(), i;
 
-  mp_fA = new float[iNumTotalSpecies];
-  mp_fB = new float[iNumTotalSpecies];
+  mp_fA = new double[iNumTotalSpecies];
+  mp_fB = new double[iNumTotalSpecies];
 
-  //Set up our floatVal array that will extract values only for the species
+  //Set up our doubleVal array that will extract values only for the species
   //assigned to this behavior
-  p_fTempValues = new floatVal[iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[iNumBehaviorSpecies];
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
     p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
 

@@ -103,15 +103,15 @@ class clDensitySeedSurvival : virtual public clBehaviorBase {
 
   /**Density-dependence steepness parameter.  Array size is total number of
   * species.*/
-  float *mp_fDensDepSteepness;
+  double *mp_fDensDepSteepness;
 
   /**Density-dependence slope parameter.  Array size is total number of
   * species.*/
-  float *mp_fDensDepSlope;
+  double *mp_fDensDepSlope;
 
   /**Minimum height for neighbor trees. Only used if m_bSeeds = FALSE. Array
    * size is total number of species.*/
-  float *mp_fMinHeight;
+  double *mp_fMinHeight;
 
   /**Data member codes for seed grid for number of seeds.  Array size is #
   * total species.*/
@@ -139,7 +139,7 @@ class clDensitySeedSurvival : virtual public clBehaviorBase {
 
   /**Radius, in meters, for which to search for conspecific trees, starting at
    * the center of a grid cell. Only used if m_bSeeds = FALSE. */
-  float m_fSearchRadius;
+  double m_fSearchRadius;
 
   /**If true, we are using the density of conspecific seeds; if false, we are
    * using conspecific trees.*/

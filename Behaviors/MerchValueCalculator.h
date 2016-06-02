@@ -378,19 +378,19 @@ class clMerchValueCalculator : virtual public clBehaviorBase {
   * currency the user prefers.  During parameter file reading this will be
   * divided by 1000 to be value per foot of timber. Array size is # total
   * species.*/
-  float *mp_fVal;
+  double *mp_fVal;
 
   /** Form classes.  This is the proportion of DBH that the diameter is at the
   * top of the first log.  This is entered by the user as a percentage between
   * 60 and 100 but to save math we convert to a proportion and subtract it from
   * 1 so it's the inverse.  Array size is # behavior species.*/
-  float *mp_fFormClass;
+  double *mp_fFormClass;
 
   /** Taper table.  This is the amount by which diameter is reduced,
   * in inches, at the top of the last log in a 2-, 3-, 4-, 5-, or 6-log tree.
   * First array index is 16 (m_iDBHIncs, DBH in 2-in increments from 10 to 40
   * inches); second index is 6 (m_iMaxLogs).*/
-  float **mp_fTaperTable;
+  double **mp_fTaperTable;
 
   /** Table of board feet for form class 78.  This is the volume, in board
    * feet, for trees having 1 to 6 logs.  First array index is m_iFormDBHIncs;

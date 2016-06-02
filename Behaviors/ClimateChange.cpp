@@ -28,8 +28,8 @@ clClimateChange::clClimateChange(clSimManager * p_oSimManager) : clWorkerBase( p
     m_fVersionNumber = 1;
     m_fMinimumVersionNumber = 1;
 
-    m_fTimeElapsed = 0;
-    m_fTimestepLength = 0;
+    m_iTimeElapsed = 0;
+    m_iTimestepLength = 0;
     m_fB = 0;
     m_fC = 0;
     m_fStartingValue = 0;
@@ -81,8 +81,8 @@ void clClimateChange::GetData(DOMDocument * p_oDoc)
       m_fStartingValue = p_oPlot->GetMeanAnnualPrecip();
     }
 
-    m_fTimeElapsed = 0;
-    m_fTimestepLength = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_iTimeElapsed = 0;
+    m_iTimestepLength = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
   }
   catch (modelErr& err)
@@ -111,7 +111,7 @@ void clClimateChange::Action()
   clPlot *p_oPlot = mp_oSimManager->GetPlotObject();
   float fNewValue;
 
-  fNewValue = m_fStartingValue + m_fB * pow(m_fTimeElapsed, m_fC);
+  fNewValue = m_fStartingValue + m_fB * pow(m_iTimeElapsed, m_fC);
   fNewValue = fmax(fNewValue, m_fMin);
   fNewValue = fmin(fNewValue, m_fMax);
 
@@ -133,7 +133,7 @@ void clClimateChange::Action()
     p_oPlot->SetMeanAnnualPrecip(fNewValue);
 
   }
-  m_fTimeElapsed += m_fTimestepLength;
+  m_iTimeElapsed += m_iTimestepLength;
 }
 
 //////////////////////////////////////////////////////////////////////////////

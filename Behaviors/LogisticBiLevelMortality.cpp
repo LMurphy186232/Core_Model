@@ -29,7 +29,7 @@ clLogisticBiLevelMortality::clLogisticBiLevelMortality(clSimManager *p_oSimManag
 
    mp_oPop = NULL;
    m_iLightCode = -1;
-   m_fYearsPerTimestep = 0;
+   m_iYearsPerTimestep = 0;
  }
  catch (modelErr&err) {throw(err);}
  catch (modelMsg &msg) {throw(msg);} //non-fatal error
@@ -57,7 +57,7 @@ clLogisticBiLevelMortality::~clLogisticBiLevelMortality() {
 // DoShellSetup()
 ////////////////////////////////////////////////////////////////////////////
 void clLogisticBiLevelMortality::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
-  floatVal * p_fTempValues = NULL; //for getting species-specific values
+  doubleVal * p_fTempValues = NULL; //for getting species-specific values
   try {
     mp_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
 
@@ -65,14 +65,14 @@ void clLogisticBiLevelMortality::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
     short int iNumSpecies = mp_oPop->GetNumberOfSpecies(), i;
 
     //Get number of years per timestep
-    m_fYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_iYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
     //Declare the arrays we'd like read
-    mp_fLoLightA = new float[m_iNumBehaviorSpecies];
-    mp_fLoLightB = new float[m_iNumBehaviorSpecies];
-    mp_fHiLightA = new float[m_iNumBehaviorSpecies];
-    mp_fHiLightB = new float[m_iNumBehaviorSpecies];
-    mp_fHiLightThreshold = new float[m_iNumBehaviorSpecies];
+    mp_fLoLightA = new double[m_iNumBehaviorSpecies];
+    mp_fLoLightB = new double[m_iNumBehaviorSpecies];
+    mp_fHiLightA = new double[m_iNumBehaviorSpecies];
+    mp_fHiLightB = new double[m_iNumBehaviorSpecies];
+    mp_fHiLightThreshold = new double[m_iNumBehaviorSpecies];
     mp_iIndexes = new int[iNumSpecies];
 
     //Set up the array indexes
@@ -87,7 +87,7 @@ void clLogisticBiLevelMortality::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
 
     //Declare the species-specific temp array and pre-load with the species that
     //this behavior affects
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -194,8 +194,8 @@ deadCode clLogisticBiLevelMortality::DoMort(clTree *p_oTree, const float &fDiam,
 
   fSurvivalProb = fSurvivalProb / (1 + fSurvivalProb);
   //Compound by number of years per timestep
-  if (1 != m_fYearsPerTimestep)
-    fSurvivalProb = pow(fSurvivalProb, m_fYearsPerTimestep);
+  if (1 != m_iYearsPerTimestep)
+    fSurvivalProb = pow(fSurvivalProb, m_iYearsPerTimestep);
 
   if(clModelMath::GetRand() < fSurvivalProb)
     return notdead;

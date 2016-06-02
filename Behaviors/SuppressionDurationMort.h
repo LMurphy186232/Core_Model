@@ -76,13 +76,13 @@ class clSuppressionDurationMort : virtual public clMortalityBase {
   float **mp_fMortProbs;
 
   /**Max mort rate - sized number of species.*/
-  float *mp_fMax;
+  double *mp_fMax;
 
   /**X0 - sized number of species.*/
-  float *mp_fX0;
+  double *mp_fX0;
 
   /**Xb - sized number of species.*/
-  float *mp_fXb;
+  double *mp_fXb;
 
   /** Codes for "Tree Age" data member. Array size is number of species by
    * number of types.*/

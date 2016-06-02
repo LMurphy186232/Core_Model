@@ -23,7 +23,7 @@ public:
    * all other types. This can be got from the tree but it's already been
    * extracted so let's pass it in.
    */
-  virtual float CalculateSizeEffect(clTree *p_oTree, const float &fDiam) = 0;
+  virtual double CalculateSizeEffect(clTree *p_oTree, const float &fDiam) = 0;
 
   /**
    * Does any desired setup.

@@ -76,18 +76,18 @@ void clDensitySeedSurvival::GetData(DOMDocument * p_oDoc) {
         (clTreePopulation *) mp_oSimManager->GetPopulationObject(
             "treepopulation");
     clPlot *p_oPlot = mp_oSimManager->GetPlotObject();
-    floatVal * p_fTemp = NULL; //for getting species-specific values
+    doubleVal * p_fTemp = NULL; //for getting species-specific values
     std::stringstream sLabel;
     float fXTemp, fYTemp;
     short int iNumSpecies = p_oPop->GetNumberOfSpecies(), i;
 
     //Declare our arrays
-    mp_fDensDepSteepness = new float[iNumSpecies];
-    mp_fDensDepSlope = new float[iNumSpecies];
+    mp_fDensDepSteepness = new double[iNumSpecies];
+    mp_fDensDepSlope = new double[iNumSpecies];
     mp_iSeedGridCode = new short int[iNumSpecies];
 
     //Set up our temp array - pre-load with this behavior's species
-    p_fTemp = new floatVal[m_iNumBehaviorSpecies];
+    p_fTemp = new doubleVal[m_iNumBehaviorSpecies];
     for (i = 0; i < m_iNumBehaviorSpecies; i++)
       p_fTemp[i].code = mp_iWhatSpecies[i];
 
@@ -153,7 +153,7 @@ void clDensitySeedSurvival::GetData(DOMDocument * p_oDoc) {
       //Using tree neighbors - get the extra parameters required
 
       //Minimum neighbor height
-      mp_fMinHeight = new float[iNumSpecies];
+      mp_fMinHeight = new double[iNumSpecies];
       FillSpeciesSpecificValue(p_oElement, "es_densDepMinNeighHeight",
           "es_ddmnhVal", p_fTemp, m_iNumBehaviorSpecies, p_oPop, true);
       for (i = 0; i < m_iNumBehaviorSpecies; i++)

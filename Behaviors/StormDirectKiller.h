@@ -86,11 +86,11 @@ class clStormDirectKiller : virtual public clBehaviorBase {
 
   /**Storm "a" parameter. Array size is total number of species. From the
    * parameter file.*/
-  float *mp_fA;
+  double *mp_fA;
 
   /**Storm "b" parameter. Array size is total number of species. From the
    * parameter file.*/
-  float *mp_fB;
+  double *mp_fB;
 
   /**Return codes for the "dead" bool tree data member.  Array index one is
   * sized m_iNumTypes; array index two is sized total number of species.*/

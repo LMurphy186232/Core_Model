@@ -90,33 +90,33 @@ class clLogBiLevelGrowth : virtual public clGrowthBase {
   clGrid *mp_oStormLight;
 
   /**Max growth, in m, in low light - sized number of behavior species*/
-  float *mp_fLoLightMaxGrowth;
+  double *mp_fLoLightMaxGrowth;
 
   /**X0 in low light - sized number of behavior species*/
-  float *mp_fLoLightX0;
+  double *mp_fLoLightX0;
 
   /**Xb in low light - sized number of behavior species*/
-  float *mp_fLoLightXb;
+  double *mp_fLoLightXb;
 
   /**Max growth, in m, in high light - sized number of behavior species*/
-  float *mp_fHiLightMaxGrowth;
+  double *mp_fHiLightMaxGrowth;
 
   /**X0 in high light - sized number of behavior species*/
-  float *mp_fHiLightX0;
+  double *mp_fHiLightX0;
 
   /**Xb in high light - sized number of behavior species*/
-  float *mp_fHiLightXb;
+  double *mp_fHiLightXb;
 
   /**Threshold between low light and high light growth, as a value between 0
   * and 100 - sized number of behavior species*/
-  float *mp_fHiLightThreshold;
+  double *mp_fHiLightThreshold;
 
   /**To help access the other arrays*/
   int *mp_iIndexes;
 
   /**Conversion factor to translate the results of the function to the
   * appropriate units per timestep*/
-  float m_fYearsPerTimestep;
+  int m_iYearsPerTimestep;
 
   /**Code for the "Light" data member of the "Storm Light" grid*/
   int m_iLightCode;

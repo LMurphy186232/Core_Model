@@ -18,7 +18,7 @@ public:
    * Calculates damage effect.
    * @param p_oTree Tree for which to calculate damage effect.
    */
-  virtual float CalculateDamageEffect(clTree *p_oTree) = 0;
+  virtual double CalculateDamageEffect(clTree *p_oTree) = 0;
 
   /**
    * Does any desired setup.

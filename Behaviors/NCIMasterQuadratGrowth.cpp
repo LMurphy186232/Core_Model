@@ -68,18 +68,18 @@ void clNCIMasterQuadratGrowth::DoShellSetup(xercesc::DOMDocument * p_oDoc) {
   m_iNumTotalSpecies = p_oPop->GetNumberOfSpecies();
 
   DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
-  floatVal * p_fTempValues; //for getting species-specific values
+  doubleVal * p_fTempValues; //for getting species-specific values
   int iTemp;
   short int i; //loop counters
 
-  //Set up our floatVal array that will extract values only for the species
+  //Set up our doubleVal array that will extract values only for the species
   //assigned to this behavior
-  p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
   for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
     p_fTempValues[i].code = mp_iWhatSpecies[i];
 
   //Maximum potential growth
-  mp_fMaxPotentialValue = new float[m_iNumTotalSpecies];
+  mp_fMaxPotentialValue = new double[m_iNumTotalSpecies];
   FillSpeciesSpecificValue( p_oElement, "gr_nciMaxPotentialGrowth", "gr_nmpgVal", p_fTempValues,
       m_iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
@@ -119,7 +119,7 @@ void clNCIMasterQuadratGrowth::DoShellSetup(xercesc::DOMDocument * p_oDoc) {
   if (lognormal_pdf == m_iStochasticGrowthMethod ||
       normal_pdf == m_iStochasticGrowthMethod) {
 
-    mp_fRandParameter = new float[m_iNumTotalSpecies];
+    mp_fRandParameter = new double[m_iNumTotalSpecies];
     FillSpeciesSpecificValue(p_oElement, "gr_standardDeviation", "gr_sdVal",
           p_fTempValues, m_iNumBehaviorSpecies, p_oPop, true);
 
@@ -217,8 +217,8 @@ void clNCIMasterQuadratGrowth::PreGrowthCalcs(clTreePopulation * p_oPop) {
     float fCrowdingEffect, //tree's crowding effect
     fX, fY,
     fGrowth,
-    fInfectionEffect, //tree's infection effect
-    fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    fInfectionEffect; //tree's infection effect
+    int iNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
     short int iSpecies, iSp, //type and species of a tree
     iNumXCells = mp_oGrid->GetNumberXCells(),
     iNumYCells = mp_oGrid->GetNumberYCells(),
@@ -279,7 +279,7 @@ void clNCIMasterQuadratGrowth::PreGrowthCalcs(clTreePopulation * p_oPop) {
               p_fNEffect[iSpecies] * fInfectionEffect;
 
           //Transform to per timestep
-          fGrowth *= fNumberYearsPerTimestep;
+          fGrowth *= iNumberYearsPerTimestep;
 
           //Assign the growth back to the grid
           mp_oGrid->SetValueOfCell(iX, iY, mp_iGridGrowthCodes[iSpecies], fGrowth );

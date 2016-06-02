@@ -37,7 +37,7 @@ clHeightGLIWeibullMortality::clHeightGLIWeibullMortality(clSimManager *p_oSimMan
    m_fVersionNumber = 2.0;
    m_fMinimumVersionNumber = 1.0;
 
-   m_fYearsPerTimestep = 0;
+   m_iYearsPerTimestep = 0;
  }
  catch (modelErr&err) {throw(err);}
  catch (modelMsg &msg) {throw(msg);} //non-fatal error
@@ -102,7 +102,7 @@ void clHeightGLIWeibullMortality::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
       mp_iIndexes[mp_iWhatSpecies[i]] = i;
 
     //Get number of years per timestep
-    m_fYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_iYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
     GetTreeDataMemberCodes();
     ReadParameterFileData(p_oDoc);
@@ -121,7 +121,7 @@ void clHeightGLIWeibullMortality::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
 // ReadParameterFileData()
 ////////////////////////////////////////////////////////////////////////////
 void clHeightGLIWeibullMortality::ReadParameterFileData(xercesc::DOMDocument *p_oDoc) {
-  floatVal * p_fTempValues = NULL; //for getting species-specific values
+  doubleVal * p_fTempValues = NULL; //for getting species-specific values
   try {
     clTreePopulation *p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
@@ -131,20 +131,20 @@ void clHeightGLIWeibullMortality::ReadParameterFileData(xercesc::DOMDocument *p_
     bool bBrowsing;
 
     //Declare the arrays we'd like read
-    mp_fA = new float[m_iNumBehaviorSpecies];
-    mp_fB = new float[m_iNumBehaviorSpecies];
-    mp_fC = new float[m_iNumBehaviorSpecies];
-    mp_fD = new float[m_iNumBehaviorSpecies];
-    mp_fMaxMort = new float[m_iNumBehaviorSpecies];
-    mp_fBrowsedA = new float[m_iNumBehaviorSpecies];
-    mp_fBrowsedB = new float[m_iNumBehaviorSpecies];
-    mp_fBrowsedC = new float[m_iNumBehaviorSpecies];
-    mp_fBrowsedD = new float[m_iNumBehaviorSpecies];
-    mp_fBrowsedMaxMort = new float[m_iNumBehaviorSpecies];
+    mp_fA = new double[m_iNumBehaviorSpecies];
+    mp_fB = new double[m_iNumBehaviorSpecies];
+    mp_fC = new double[m_iNumBehaviorSpecies];
+    mp_fD = new double[m_iNumBehaviorSpecies];
+    mp_fMaxMort = new double[m_iNumBehaviorSpecies];
+    mp_fBrowsedA = new double[m_iNumBehaviorSpecies];
+    mp_fBrowsedB = new double[m_iNumBehaviorSpecies];
+    mp_fBrowsedC = new double[m_iNumBehaviorSpecies];
+    mp_fBrowsedD = new double[m_iNumBehaviorSpecies];
+    mp_fBrowsedMaxMort = new double[m_iNumBehaviorSpecies];
 
     //Declare the species-specific temp array and pre-load with the species that
     //this behavior affects
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -301,8 +301,8 @@ deadCode clHeightGLIWeibullMortality::DoMort(clTree *p_oTree, const float &fDiam
   }
 
   //Compound by number of years per timestep
-  if (1 != m_fYearsPerTimestep)
-    fMortProb = 1 - pow(1 - fMortProb, m_fYearsPerTimestep);
+  if (1 != m_iYearsPerTimestep)
+    fMortProb = 1 - pow(1 - fMortProb, m_iYearsPerTimestep);
 
   if(clModelMath::GetRand() < fMortProb)
     return natural;

@@ -82,7 +82,7 @@ public:
    * @return Max tree height.
    * @throw Error if the species isn't valid.
    */
-  float GetMaxTreeHeight(int iSpecies);
+  double GetMaxTreeHeight(int iSpecies);
 
   /**
    * Calculates height according to the adult DBH-height relationship for the
@@ -207,7 +207,7 @@ public:
    * Gets the maximum possible crown radius.
    * @return Maximum possible crown radius, in m.
    */
-  float GetMaxCrownRadius() {return m_fMaxCrownRad;};
+  double GetMaxCrownRadius() {return m_fMaxCrownRad;};
 
   /**
    * Cleanup function that resets the plot density and basal area information.
@@ -266,20 +266,20 @@ protected:
 
   /**Tree maximum height for each species.  Array size is total # species.
    * Values are required for all species.*/
-  float *mp_fMaxTreeHeight;
+  double *mp_fMaxTreeHeight;
 
   //-----------------------------------------------------------------------//
   // Parameters for standard crown radius
   //-----------------------------------------------------------------------//
 
   /**Asymptotic crown radius.  Array size is total # species.*/
-  float *mp_fAsympCrownRad;
+  double *mp_fAsympCrownRad;
 
   /**Crown radius exponent.  Array size is total # species.*/
-  float *mp_fCrownRadExp;
+  double *mp_fCrownRadExp;
 
   /**Max crown radius, in m.  Array size is total # species.*/
-  float *mp_fMaxCrownRad;
+  double *mp_fMaxCrownRad;
 
   //-----------------------------------------------------------------------//
   // Parameters DBH - d10 relationship
@@ -287,21 +287,21 @@ protected:
 
   /**Slope of DBH to diameter at 10 cm.  For converting from one to the other.
    * Array size is total # species.*/
-  float *mp_fDbhToDiam10Slope;
+  double *mp_fDbhToDiam10Slope;
 
   /**Intercept of DBH to diameter at 10 cm.  For converting from one to the
    * other. Array size is total # species.*/
-  float *mp_fDbhToDiam10Intercept;
+  double *mp_fDbhToDiam10Intercept;
 
   //-----------------------------------------------------------------------//
   // Parameters for standard crown depth
   //-----------------------------------------------------------------------//
 
   /**Asymptotic crown depth.  Array size is total # species.*/
-  float *mp_fAsympCrownDepth;
+  double *mp_fAsympCrownDepth;
 
   /**Crown depth exponent.  Array size is total # species.*/
-  float *mp_fCrownDepthExp;
+  double *mp_fCrownDepthExp;
 
   //-----------------------------------------------------------------------//
   // Parameters for height - d10 relationship
@@ -309,14 +309,14 @@ protected:
 
   /**Slope of the height-diameter at 10 cm conversion relationship.  Array size
    * is total # species.*/
-  float *mp_fSlopeHeightDiam10;
+  double *mp_fSlopeHeightDiam10;
 
   //-----------------------------------------------------------------------//
   // Parameters for standard DBH - height relationship
   //-----------------------------------------------------------------------//
 
   /**Slope of asymptotic height.  Array size is total # species.*/
-  float *mp_fSlopeAsympHeight;
+  double *mp_fSlopeAsympHeight;
 
   //-----------------------------------------------------------------------//
   // Parameters for adult linear DBH - height relationship
@@ -324,11 +324,11 @@ protected:
 
   /**Slope of adult linear height-dbh equation.  Array size is total #
    * species.*/
-  float *mp_fAdultLinearSlope;
+  double *mp_fAdultLinearSlope;
 
   /**Intercept of adult linear height-dbh equation.  Array size is total #
    * species.*/
-  float *mp_fAdultLinearIntercept;
+  double *mp_fAdultLinearIntercept;
 
   //-----------------------------------------------------------------------//
   // Parameters for adult reverse linear DBH - height relationship
@@ -336,11 +336,11 @@ protected:
 
   /**Slope of adult reverse linear height-dbh equation.  Array size is total #
    * species.*/
-  float *mp_fAdultReverseLinearSlope;
+  double *mp_fAdultReverseLinearSlope;
 
   /**Intercept of adult reverse linear height-dbh equation.  Array size is
    * total # species.*/
-  float *mp_fAdultReverseLinearIntercept;
+  double *mp_fAdultReverseLinearIntercept;
 
   //-----------------------------------------------------------------------//
   // Parameters for sapling linear DBH - height relationship
@@ -348,11 +348,11 @@ protected:
 
   /**Slope of sapling linear height-dbh equation.  Array size is total #
    * species.*/
-  float *mp_fSaplingLinearSlope;
+  double *mp_fSaplingLinearSlope;
 
   /**Intercept of sapling linear height-dbh equation.  Array size is total #
    * species.*/
-  float *mp_fSaplingLinearIntercept;
+  double *mp_fSaplingLinearIntercept;
 
   //-----------------------------------------------------------------------//
   // Parameters for sapling reverse linear DBH - height relationship
@@ -360,11 +360,11 @@ protected:
 
   /**Slope of sapling reverse linear height-dbh equation.  Array size is total #
    * species.*/
-  float *mp_fSaplingReverseLinearSlope;
+  double *mp_fSaplingReverseLinearSlope;
 
   /**Intercept of sapling reverse linear height-dbh equation.  Array size is
    * total # species.*/
-  float *mp_fSaplingReverseLinearIntercept;
+  double *mp_fSaplingReverseLinearIntercept;
 
   //-----------------------------------------------------------------------//
   // Parameters for seedling linear DBH - height relationship
@@ -372,11 +372,11 @@ protected:
 
   /**Slope of seedling linear height-dbh equation.  Array size is total #
    * species.*/
-  float *mp_fSeedlingLinearSlope;
+  double *mp_fSeedlingLinearSlope;
 
   /**Intercept of seedling linear height-dbh equation.  Array size is total #
    * species.*/
-  float *mp_fSeedlingLinearIntercept;
+  double *mp_fSeedlingLinearIntercept;
 
   //-----------------------------------------------------------------------//
   // Parameters for seedling reverse linear DBH - height relationship
@@ -384,11 +384,11 @@ protected:
 
   /**Slope of seedling reverse linear height-dbh equation.  Array size is total #
    * species.*/
-  float *mp_fSeedlingReverseLinearSlope;
+  double *mp_fSeedlingReverseLinearSlope;
 
   /**Intercept of seedling reverse linear height-dbh equation.  Array size is
    * total # species.*/
-  float *mp_fSeedlingReverseLinearIntercept;
+  double *mp_fSeedlingReverseLinearIntercept;
 
   //-----------------------------------------------------------------------//
   // Parameters for Chapman-Richards crown radius
@@ -396,19 +396,19 @@ protected:
 
   /**Crown radius intercept for the Chapman-Richards equation.  Array size is
    * total # species.*/
-  float *mp_fCRCrownRadIntercept;
+  double *mp_fCRCrownRadIntercept;
 
   /**Asymptotic crown radius for the Chapman-Richards equation.  Array size is
    * total # species.*/
-  float *mp_fCRAsympCrownRad;
+  double *mp_fCRAsympCrownRad;
 
   /**Chapman-Richards crown radius equation shape parameter 1.  Array size is
    * total # species.*/
-  float *mp_fCRCrownRadShape1;
+  double *mp_fCRCrownRadShape1;
 
   /**Chapman-Richards crown radius equation shape parameter 2.  Array size is
    * total # species.*/
-  float *mp_fCRCrownRadShape2;
+  double *mp_fCRCrownRadShape2;
 
   //-----------------------------------------------------------------------//
   // Parameters for Chapman-Richards crown depth
@@ -416,235 +416,235 @@ protected:
 
   /**Crown depth intercept for the Chapman-Richards equation.  Array size is
    * total # species.*/
-  float *mp_fCRCrownHtIntercept;
+  double *mp_fCRCrownHtIntercept;
 
   /**Asymptotic crown depth for the Chapman-Richards equation.  Array size is
    * total # species.*/
-  float *mp_fCRAsympCrownHt;
+  double *mp_fCRAsympCrownHt;
 
   /**Chapman-Richards crown depth equation shape parameter 1.  Array size is
    * total # species.*/
-  float *mp_fCRCrownHtShape1;
+  double *mp_fCRCrownHtShape1;
 
   /**Chapman-Richards crown depth equation shape parameter 2.  Array size is
    * total # species.*/
-  float *mp_fCRCrownHtShape2;
+  double *mp_fCRCrownHtShape2;
 
   /**Power function a parameter.  Array size is total # species.*/
-  float *mp_fPowerA;
+  double *mp_fPowerA;
 
   /**Power function b parameter (exponent).  Array size is total # species.*/
-  float *mp_fPowerExpB;
+  double *mp_fPowerExpB;
 
   /**Non-spatial density dependent instrumental crown depth "a". Array size is
    * total # species.*/
-  float *mp_fNonSpatDensDepInstCHA;
+  double *mp_fNonSpatDensDepInstCHA;
 
   /**Non-spatial density dependent instrumental crown depth "b". Array size is
    * total # species.*/
-  float *mp_fNonSpatDensDepInstCHB;
+  double *mp_fNonSpatDensDepInstCHB;
 
   /**Non-spatial density dependent instrumental crown depth "c". Array size is
    * total # species.*/
-  float *mp_fNonSpatDensDepInstCHC;
+  double *mp_fNonSpatDensDepInstCHC;
 
   /**Non-spatial density dependent instrumental crown depth "d". Array size is
    * total # species.*/
-  float *mp_fNonSpatDensDepInstCHD;
+  double *mp_fNonSpatDensDepInstCHD;
 
   /**Non-spatial density dependent instrumental crown depth "e". Array size is
    * total # species.*/
-  float *mp_fNonSpatDensDepInstCHE;
+  double *mp_fNonSpatDensDepInstCHE;
 
   /**Non-spatial density dependent instrumental crown depth "f". Array size is
    * total # species.*/
-  float *mp_fNonSpatDensDepInstCHF;
+  double *mp_fNonSpatDensDepInstCHF;
 
   /**Non-spatial density dependent instrumental crown depth "g". Array size is
    * total # species.*/
-  float *mp_fNonSpatDensDepInstCHG;
+  double *mp_fNonSpatDensDepInstCHG;
 
   /**Non-spatial density dependent instrumental crown depth "h". Array size is
    * total # species.*/
-  float *mp_fNonSpatDensDepInstCHH;
+  double *mp_fNonSpatDensDepInstCHH;
 
   /**Non-spatial density dependent instrumental crown depth "i". Array size is
    * total # species.*/
-  float *mp_fNonSpatDensDepInstCHI;
+  double *mp_fNonSpatDensDepInstCHI;
 
   /**Non-spatial density dependent instrumental crown depth "j". Array size is
    * total # species.*/
-  float *mp_fNonSpatDensDepInstCHJ;
+  double *mp_fNonSpatDensDepInstCHJ;
 
   /**Non-spatial exponential density dependent crown radius "D1". Array size is
    * total # species.*/
-  float *mp_fNonSpatExpDensDepCRD1;
+  double *mp_fNonSpatExpDensDepCRD1;
 
   /**Non-spatial exponential density dependent crown radius "a". Array size is
    * total # species.*/
-  float *mp_fNonSpatExpDensDepCRA;
+  double *mp_fNonSpatExpDensDepCRA;
 
   /**Non-spatial exponential density dependent crown radius "b". Array size is
    * total # species.*/
-  float *mp_fNonSpatExpDensDepCRB;
+  double *mp_fNonSpatExpDensDepCRB;
 
   /**Non-spatial exponential density dependent crown radius "c". Array size is
    * total # species.*/
-  float *mp_fNonSpatExpDensDepCRC;
+  double *mp_fNonSpatExpDensDepCRC;
 
   /**Non-spatial exponential density dependent crown radius "d". Array size is
    * total # species.*/
-  float *mp_fNonSpatExpDensDepCRD;
+  double *mp_fNonSpatExpDensDepCRD;
 
   /**Non-spatial exponential density dependent crown radius "e". Array size is
    * total # species.*/
-  float *mp_fNonSpatExpDensDepCRE;
+  double *mp_fNonSpatExpDensDepCRE;
 
   /**Non-spatial exponential density dependent crown radius "f". Array size is
    * total # species.*/
-  float *mp_fNonSpatExpDensDepCRF;
+  double *mp_fNonSpatExpDensDepCRF;
 
   /**Non-spatial density dependent instrumental crown radius "a". Array size is
    * total # species.*/
-  float *mp_fNonSpatDensDepInstCRA;
+  double *mp_fNonSpatDensDepInstCRA;
 
   /**Non-spatial density dependent instrumental crown radius "b". Array size is
    * total # species.*/
-  float *mp_fNonSpatDensDepInstCRB;
+  double *mp_fNonSpatDensDepInstCRB;
 
   /**Non-spatial density dependent instrumental crown radius "c". Array size is
    * total # species.*/
-  float *mp_fNonSpatDensDepInstCRC;
+  double *mp_fNonSpatDensDepInstCRC;
 
   /**Non-spatial density dependent instrumental crown radius "d". Array size is
    * total # species.*/
-  float *mp_fNonSpatDensDepInstCRD;
+  double *mp_fNonSpatDensDepInstCRD;
 
   /**Non-spatial density dependent instrumental crown radius "e". Array size is
    * total # species.*/
-  float *mp_fNonSpatDensDepInstCRE;
+  double *mp_fNonSpatDensDepInstCRE;
 
   /**Non-spatial density dependent instrumental crown radius "f". Array size is
    * total # species.*/
-  float *mp_fNonSpatDensDepInstCRF;
+  double *mp_fNonSpatDensDepInstCRF;
 
   /**Non-spatial density dependent instrumental crown radius "g". Array size is
    * total # species.*/
-  float *mp_fNonSpatDensDepInstCRG;
+  double *mp_fNonSpatDensDepInstCRG;
 
   /**Non-spatial density dependent instrumental crown radius "h". Array size is
    * total # species.*/
-  float *mp_fNonSpatDensDepInstCRH;
+  double *mp_fNonSpatDensDepInstCRH;
 
   /**Non-spatial density dependent instrumental crown radius "i". Array size is
    * total # species.*/
-  float *mp_fNonSpatDensDepInstCRI;
+  double *mp_fNonSpatDensDepInstCRI;
 
   /**Non-spatial density dependent instrumental crown radius "j". Array size is
    * total # species.*/
-  float *mp_fNonSpatDensDepInstCRJ;
+  double *mp_fNonSpatDensDepInstCRJ;
 
   /**Non-spatial logistic density dependent crown depth "a". Array size is
    * total # species.*/
-  float *mp_fNonSpatLogDensDepCHA;
+  double *mp_fNonSpatLogDensDepCHA;
 
   /**Non-spatial logistic density dependent crown depth "b". Array size is
    * total # species.*/
-  float *mp_fNonSpatLogDensDepCHB;
+  double *mp_fNonSpatLogDensDepCHB;
 
   /**Non-spatial logistic density dependent crown depth "c". Array size is
    * total # species.*/
-  float *mp_fNonSpatLogDensDepCHC;
+  double *mp_fNonSpatLogDensDepCHC;
 
   /**Non-spatial logistic density dependent crown depth "d". Array size is
    * total # species.*/
-  float *mp_fNonSpatLogDensDepCHD;
+  double *mp_fNonSpatLogDensDepCHD;
 
   /**Non-spatial logistic density dependent crown depth "e". Array size is
    * total # species.*/
-  float *mp_fNonSpatLogDensDepCHE;
+  double *mp_fNonSpatLogDensDepCHE;
 
   /**Non-spatial logistic density dependent crown depth "f". Array size is
    * total # species.*/
-  float *mp_fNonSpatLogDensDepCHF;
+  double *mp_fNonSpatLogDensDepCHF;
 
   /**Non-spatial logistic density dependent crown depth "g". Array size is
    * total # species.*/
-  float *mp_fNonSpatLogDensDepCHG;
+  double *mp_fNonSpatLogDensDepCHG;
 
   /**Maximum crown radius value. Array is sized number of species.*/
-  float *mp_fNCIMaxCrownRadius;
+  double *mp_fNCIMaxCrownRadius;
 
   /**Lamba for NCI crown radius. Array is sized number of species by number of
    * species. */
-  float **mp_fNCICRLambda;
+  double **mp_fNCICRLambda;
 
   /**NCI crown radius alpha. Array is sized number of species.*/
-  float *mp_fNCICRAlpha;
+  double *mp_fNCICRAlpha;
 
   /**NCI crown radius beta. Array is sized number of species.*/
-  float *mp_fNCICRBeta;
+  double *mp_fNCICRBeta;
 
   /**NCI crown radius gamma.  Array is sized number of species.*/
-  float *mp_fNCICRGamma;
+  double *mp_fNCICRGamma;
 
   /**NCI crown radius maximum search distance for neighbors, in meters. Array
    * is sized number of species. */
-  float *mp_fNCICRMaxCrowdingRadius;
+  double *mp_fNCICRMaxCrowdingRadius;
 
   /**NCI crown radius crowding effect n.  Array is sized number of species.*/
-  float *mp_fNCICRN;
+  double *mp_fNCICRN;
 
   /**NCI crown radius size effect d.  Array is sized number of species.*/
-  float *mp_fNCICRD;
+  double *mp_fNCICRD;
 
   /**The minimum DBH, in cm, of neighbors to be included in NCI calculations.
   * Array is sized total number of species.*/
-  float *mp_fNCICRMinNeighborDBH;
+  double *mp_fNCICRMinNeighborDBH;
 
   /**Maximum crown depth value. Array is sized number of species.*/
-  float *mp_fNCIMaxCrownDepth;
+  double *mp_fNCIMaxCrownDepth;
 
   /**Lamba for NCI crown depth. Array is sized number of species by number of
    * species. */
-  float **mp_fNCICDLambda;
+  double **mp_fNCICDLambda;
 
   /**NCI crown depth alpha. Array is sized number of species.*/
-  float *mp_fNCICDAlpha;
+  double *mp_fNCICDAlpha;
 
   /**NCI crown depth beta. Array is sized number of species.*/
-  float *mp_fNCICDBeta;
+  double *mp_fNCICDBeta;
 
   /**NCI crown depth gamma.  Array is sized number of species.*/
-  float *mp_fNCICDGamma;
+  double *mp_fNCICDGamma;
 
   /**NCI crown depth maximum search distance for neighbors, in meters. Array
    * is sized number of species. */
-  float *mp_fNCICDMaxCrowdingRadius;
+  double *mp_fNCICDMaxCrowdingRadius;
 
   /**NCI crown depth crowding effect n.  Array is sized number of species.*/
-  float *mp_fNCICDN;
+  double *mp_fNCICDN;
 
   /**NCI crown depth size effect d.  Array is sized number of species.*/
-  float *mp_fNCICDD;
+  double *mp_fNCICDD;
 
   /**The minimum DBH, in cm, of neighbors to be included in NCI calculations.
   * Array is sized total number of species.*/
-  float *mp_fNCICDMinNeighborDBH;
+  double *mp_fNCICDMinNeighborDBH;
 
   /**Maximum possible crown radius*/
-  float m_fMaxCrownRad;
+  double m_fMaxCrownRad;
 
   /**The plot's density, in stems/ha; for non-spatial density dependent crown
    * functions*/
-  float m_fPlotDensity;
+  double m_fPlotDensity;
 
   /**The plot's basal area, in m2/ha; for non-spatial density dependent crown
    * functions*/
-  float m_fPlotBasalArea;
+  double m_fPlotBasalArea;
 
   /**Minimum sapling height.  For doing NCI neighbor searches.*/
-  float m_fMinSaplingHeight;
+  double m_fMinSaplingHeight;
 
   /**Total number of species*/
   int m_iNumSpecies;

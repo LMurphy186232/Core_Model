@@ -71,12 +71,12 @@ class clBrowsedStochasticMortality : virtual public clMortalityBase {
   /**Probability of mortality when browsed - sized number of species.
   * This value comes from the parameter file as an annual probability, which
   * is transformed in DoShellSetup() to a timestep probability.*/
-  float *mp_fBrowsedMortProb;
+  double *mp_fBrowsedMortProb;
 
   /**Probability of mortality when unbrowsed - sized number of species.
   * This value comes from the parameter file as an annual probability, which
   * is transformed in DoShellSetup() to a timestep probability.*/
-  float *mp_fUnbrowsedMortProb;
+  double *mp_fUnbrowsedMortProb;
 
   /** Codes for "Browsed" data member. Array size is number of species by number
    * of types.*/

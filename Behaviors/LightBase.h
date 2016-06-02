@@ -160,11 +160,11 @@ class clLightBase : virtual public clBehaviorBase {
   /**The altitude angle below which the sky is assumed to be dark. Could be in
    * degrees or radians, depending on what the child object is working in. Each
    * child object needs its own copy of this.*/
-  float m_fMinSunAngle;
+  double m_fMinSunAngle;
 
   /**The azimuth angle of north. Not required; will default to 0. Setting this
    * to non-zero allows the user to rotate the sky relative to the plot.*/
-  float m_fAzimuthOfNorth;
+  double m_fAzimuthOfNorth;
 
   /**Number of azimuth angles into which the sky hemisphere is divided. Each
    * child object needs its own copy of this.*/

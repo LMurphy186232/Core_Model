@@ -101,31 +101,31 @@ class clSeasonalWaterDeficit : virtual public clBehaviorBase {
  protected:
 
   /** Proportion of rain that falls in each month. Array length is 12. */
-  float *mp_fPropRainfall;
+  double *mp_fPropRainfall;
 
   /** Radiation for each month, cal/cm2. Array length is 12. */
-  float *mp_fRadiation;
+  double *mp_fRadiation;
 
   /** Ratio of monthly temp to annual. Array length is 12. */
-  float *mp_fRatioMonthlyAnnualTemp;
+  double *mp_fRatioMonthlyAnnualTemp;
 
   /** Monthly temperature. Calculated each timestep. Array length is 12. */
-  float *mp_fMonthlyTemp;
+  double *mp_fMonthlyTemp;
 
   /** Monthly precip. Calculated each timestep. Array length is 12. */
-  float *mp_fMonthlyPrecip;
+  double *mp_fMonthlyPrecip;
 
   /** Monthly PET. Calculated each timestep. Array length is 12. */
-  float *mp_fMonthlyPET;
+  double *mp_fMonthlyPET;
 
   /** Monthly soil moisture. Calculated each timestep. Array length is 12. */
-  float *mp_fMonthlySMS;
+  double *mp_fMonthlySMS;
 
   /** Monthly AET. Calculated each timestep. Array length is 12. */
-  float *mp_fMonthlyAET;
+  double *mp_fMonthlyAET;
 
   /** Available water storage. */
-  float m_fAWS;
+  double m_fAWS;
 
 };
 //---------------------------------------------------------------------------

@@ -45,8 +45,9 @@ clInfectionEffectSizeDependent::~clInfectionEffectSizeDependent() {
 ////////////////////////////////////////////////////////////////////////////
 // CalculateInfectionEffect
 ////////////////////////////////////////////////////////////////////////////
-float clInfectionEffectSizeDependent::CalculateInfectionEffect(clTree *p_oTree) {
-  float fEffect, fDiam;
+double clInfectionEffectSizeDependent::CalculateInfectionEffect(clTree *p_oTree) {
+  double fEffect;
+  float fDiam;
   int iYrsInfested, iSpecies = p_oTree->GetSpecies(),
       iType = p_oTree->GetType();
 
@@ -68,20 +69,20 @@ float clInfectionEffectSizeDependent::CalculateInfectionEffect(clTree *p_oTree) 
 //////////////////////////////////////////////////////////////////////////////
 void clInfectionEffectSizeDependent::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) {
 
-  floatVal * p_fTempValues; //for getting species-specific values
+  doubleVal * p_fTempValues; //for getting species-specific values
   stcSpeciesTypeCombo c;
   int iNumBehaviorSpecies = p_oNCI->GetNumBehaviorSpecies(),
       iNumTypes = p_oPop->GetNumberOfTypes(), i, j;
 
   m_iTotalNumSpecies = p_oPop->GetNumberOfSpecies();
 
-  mp_fA = new float[m_iTotalNumSpecies];
-  mp_fB = new float[m_iTotalNumSpecies];
-  mp_fX0 = new float[m_iTotalNumSpecies];
-  mp_fXb = new float[m_iTotalNumSpecies];
-  mp_fXp = new float[m_iTotalNumSpecies];
+  mp_fA = new double[m_iTotalNumSpecies];
+  mp_fB = new double[m_iTotalNumSpecies];
+  mp_fX0 = new double[m_iTotalNumSpecies];
+  mp_fXb = new double[m_iTotalNumSpecies];
+  mp_fXp = new double[m_iTotalNumSpecies];
 
-  p_fTempValues = new floatVal[iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[iNumBehaviorSpecies];
   for ( i = 0; i < iNumBehaviorSpecies; i++ ) {
     p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
   }

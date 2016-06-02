@@ -8,7 +8,7 @@
  */
 class clShadingEffectNone: virtual public clShadingEffectBase {
 public:
-  float CalculateShadingEffect(clTree *p_oTree) {return 1;};
+  double CalculateShadingEffect(clTree *p_oTree) {return 1;};
   void DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) {;};
 };
 

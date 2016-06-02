@@ -611,8 +611,8 @@ void clTreePopulation::ReadParameters(DOMDocument * p_oDoc) {
     i, j; //loop counters
 
     //Allocate memory for the species-specific arrays
-    mp_fMinAdultDbh = new float[m_iNumSpecies];
-    mp_fMaxSeedlingHeight = new float[m_iNumSpecies];
+    mp_fMinAdultDbh = new double[m_iNumSpecies];
+    mp_fMaxSeedlingHeight = new double[m_iNumSpecies];
 
     //Get the values from the XML document
     //Get the parent node
@@ -927,7 +927,9 @@ void clTreePopulation::CreateTreesFromInitialDensities(DOMDocument * p_oDoc) {
     XMLCh *sVal;
     clPlot * p_oPlot = mp_oSimManager->GetPlotObject(); //for getting the area of the plot
     char *cData;
-    float * p_fDensities = new float[m_iNumSpecies];
+    double * p_fDensities = new double[m_iNumSpecies];
+    double fSeedlingHeight1Upper = 0, //upper bound of seedling height class 1, in cm
+    fSeedlingHeight2Upper = 0; //upper bound of seedling height class 2, in cm
     float fX, fY, //new tree coordinates
     fDiam, //new tree diameter - either dbh or diam10
     fPlotAreaInHec= p_oPlot->GetPlotArea(), //plot area in hectares
@@ -936,8 +938,6 @@ void clTreePopulation::CreateTreesFromInitialDensities(DOMDocument * p_oDoc) {
     //fMinDiam = 0.001, //minimum possible diameter value
     fMinDiam = m_fNewSeedlingDiam10, //minimum possible diameter value
     fLowerLimit = 0, fUpperLimit = 0, //size class size limits
-    fSeedlingHeight1Upper = 0, //upper bound of seedling height class 1, in cm
-    fSeedlingHeight2Upper = 0, //upper bound of seedling height class 2, in cm
     fNumTrees, //number of trees to create
     k; //loop counter in case number of trees is large
     int iSpecies; //species code
@@ -3910,8 +3910,9 @@ void clTreePopulation::TimestepCleanup() {
     clTreeSearch * p_oSearch = NULL;
     clTree * p_oTree;
     float fCrown = -1;
-    int i, j, k, //loop counters
-    iAge, iSp, iTp;
+    int iNumYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep(),
+        i, j, k, //loop counters
+        iAge, iSp, iTp;
     //Go through and delete all open tree searches and tree search records
 
     //Get the initial dummy record
@@ -3939,7 +3940,6 @@ void clTreePopulation::TimestepCleanup() {
     DeleteStumps();
 
     //Update all snag ages and clear crown dimension values
-    int iNumYearsPerTimestep = (int)mp_oSimManager->GetNumberOfYearsPerTimestep();
     for (i = 0; i < m_iNumXCells; i++)
       for (j = 0; j < m_iNumYCells; j++)
       {

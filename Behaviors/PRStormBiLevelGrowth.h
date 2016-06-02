@@ -115,29 +115,29 @@ class clPRStormBiLevelGrowth : virtual public clGrowthBase {
 
   /**Slope of growth equation in low light - b - sized number of behavior
   * species*/
-  float *mp_fLoLightSlope;
+  double *mp_fLoLightSlope;
 
   /**Intercept of growth equation in low light - a - sized number of behavior
   * species*/
-  float *mp_fLoLightIntercept;
+  double *mp_fLoLightIntercept;
 
   /**High light growth equaiton "a" - sized number of behavior species*/
-  float *mp_fHiLightA;
+  double *mp_fHiLightA;
 
   /**High light growth equaiton "b" - sized number of behavior species*/
-  float *mp_fHiLightB;
+  double *mp_fHiLightB;
 
   /** Threshold between low light and high light growth, as a value between 0
   * and 100 - sized number of behavior species
   */
-  float *mp_fHiLightThreshold;
+  double *mp_fHiLightThreshold;
 
   /** To help access the other arrays*/
   int *mp_iIndexes;
 
   /** Conversion factor to translate the results of the function to the
   * appropriate units per timestep*/
-  float m_fYearsPerTimestep;
+  int m_iYearsPerTimestep;
 
   /** Minimum size of seedling, to avoid setting smaller than this */
 

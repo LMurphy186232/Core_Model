@@ -77,12 +77,12 @@ class clDensitySelfThinning : virtual public clMortalityBase {
   deadCode DoMort(clTree *p_oTree, const float &fDbh, const short int &iSpecies);
 
   protected:
-   float m_fNumberYearsPerTimestep; /**<Number of years per timestep*/
-   float * mp_fSelfThinRadius; /**<Radius that defines the neighborhood size (meters)*/
-   float * mp_fMinDensityForMort; /**<Minimum neighborhood density subject to mortality (trees/ha)*/
-   float * mp_fSelfThinAsymptote; /**<Asymptote parameter*/
-   float * mp_fSelfThinDiamEffect; /**<Diameter effect parameter*/
-   float * mp_fSelfThinDensityEffect; /**<Density effect parameter*/
+   int m_iNumberYearsPerTimestep; /**<Number of years per timestep*/
+   double *mp_fSelfThinRadius; /**<Radius that defines the neighborhood size (meters)*/
+   double *mp_fMinDensityForMort; /**<Minimum neighborhood density subject to mortality (trees/ha)*/
+   double *mp_fSelfThinAsymptote; /**<Asymptote parameter*/
+   double *mp_fSelfThinDiamEffect; /**<Diameter effect parameter*/
+   double *mp_fSelfThinDensityEffect; /**<Density effect parameter*/
    short int * mp_iIndexes; /**<Speeds access to the arrays*/
 };
 //---------------------------------------------------------------------------

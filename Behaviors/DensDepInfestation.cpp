@@ -121,20 +121,20 @@ void clDensDepInfestation::GetData( xercesc::DOMDocument * p_oDoc )
 
 void clDensDepInfestation::ReadParFile( xercesc::DOMDocument * p_oDoc, clTreePopulation *p_oPop )
 {
-  floatVal * p_fTempValues = NULL; //for getting species-specific values
+  doubleVal * p_fTempValues = NULL; //for getting species-specific values
   try {
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
     int i;
 
     //Declare our arrays
-    mp_fMinDBH = new float[m_iTotalNumSpecies];
-    mp_fCohortDBH = new float[m_iTotalNumSpecies];
-    mp_fProbResistant = new float[m_iTotalNumSpecies];
-    mp_fProbConditionallySusceptible = new float[m_iTotalNumSpecies];
+    mp_fMinDBH = new double[m_iTotalNumSpecies];
+    mp_fCohortDBH = new double[m_iTotalNumSpecies];
+    mp_fProbResistant = new double[m_iTotalNumSpecies];
+    mp_fProbConditionallySusceptible = new double[m_iTotalNumSpecies];
 
-    //Set up our floatVal array that will extract values only for the species
+    //Set up our doubleVal array that will extract values only for the species
     //assigned to this behavior
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -273,7 +273,7 @@ void clDensDepInfestation::Action()
   clTree * p_oTree = p_oBehaviorTrees->NextTree();
   float fDbh, fB, fTargetRate;
   int iSp, iTp, iInf, iStatus,
-  iNumYrsTimestep = (int)mp_oSimManager->GetNumberOfYearsPerTimestep();
+  iNumYrsTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
   //If we haven't reached the first timestep of infestation, exit
   if (m_iFirstTimestep > mp_oSimManager->GetCurrentTimestep()) return;
@@ -550,7 +550,7 @@ void clDensDepInfestation::InfestInitialConditionsTrees() {
   float fB, fDbh,
         fTargetRate, fRand;
   int i, iSp, iTp, iInf, iStatus,
-      iNumYrsTimestep = (int)mp_oSimManager->GetNumberOfYearsPerTimestep();
+      iNumYrsTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
   //Do the tree inventory that allows us to calculate B
   TreeInventory();

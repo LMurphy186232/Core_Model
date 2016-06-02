@@ -89,19 +89,19 @@ clCarbonValueCalculator::~clCarbonValueCalculator()
 /////////////////////////////////////////////////////////////////////////////
 void clCarbonValueCalculator::GetParameterFileData( xercesc::DOMDocument * p_oDoc, clTreePopulation *p_oPop )
 {
-  floatVal * p_fTempValues = NULL; //for getting species-specific values
+  doubleVal * p_fTempValues = NULL; //for getting species-specific values
   try {
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
     int i;
 
-    //Set up our floatVal array that will extract values only for the species
+    //Set up our doubleVal array that will extract values only for the species
     //assigned to this behavior
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
     //Declare our array
-    mp_fCPercentBiomass = new float[m_iNumTotalSpecies];
+    mp_fCPercentBiomass = new double[m_iNumTotalSpecies];
 
     //Get the parameter file values
 

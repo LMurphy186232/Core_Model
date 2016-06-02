@@ -58,7 +58,7 @@ public:
    * @param nci NCI term.
    * @param iSpecies Species for which to calculate effect.
    */
-  float CalculateCrowdingEffect(clTree *p_oTree, const float &fDiam, const clNCITermBase::ncivals nci, const int &iSpecies);
+  double CalculateCrowdingEffect(clTree *p_oTree, const float &fDiam, const clNCITermBase::ncivals nci, const int &iSpecies);
 
   /**
    * Does setup.
@@ -77,21 +77,21 @@ protected:
 
   /**Crowding effect slope. C in Crowding Effect equation above. Array
    * sized number of species.*/
-  float *mp_fC;
+  double *mp_fC;
 
   /**Crowding effect steepness. D in Crowding Effect equation above. Array
    * sized number of species.*/
-  float *mp_fD;
+  double *mp_fD;
 
   /**X0 in Crowding Effect equation above. Array sized number of species.*/
-  float *mp_fX0;
+  double *mp_fX0;
 
   /**Xb in Crowding Effect equation above. Array sized number of species.*/
-  float *mp_fXb;
+  double *mp_fXb;
 
   /**Size sensitivity to NCI parameter. @htmlonly &gamma; @endhtmlonly in
    * Crowding Effect equation above.  Array sized number of species.*/
-  float *mp_fGamma;
+  double *mp_fGamma;
 };
 
 #endif /* CROWDINGEFFECTTEMPDEP_H_ */

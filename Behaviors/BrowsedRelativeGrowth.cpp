@@ -32,7 +32,7 @@ clBrowsedRelativeGrowth::clBrowsedRelativeGrowth(clSimManager *p_oSimManager) :
   mp_iBrowsedCodes = NULL;
 
   m_iNumSpecies = 0;
-  m_fNumberYearsPerTimestep = 0;
+  m_ifNumberYearsPerTimestep = 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -105,7 +105,7 @@ void clBrowsedRelativeGrowth::SetNameData(std::string sNameString)
 //////////////////////////////////////////////////////////////////////////////
 void clBrowsedRelativeGrowth::DoShellSetup( DOMDocument * p_oDoc )
 {
-  floatVal * p_fTempValues = NULL; //for getting species-specific values
+  doubleVal * p_fTempValues = NULL; //for getting species-specific values
   try
   {
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
@@ -114,21 +114,21 @@ void clBrowsedRelativeGrowth::DoShellSetup( DOMDocument * p_oDoc )
 
     m_iNumSpecies = p_oPop->GetNumberOfSpecies();
 
-    //Set up our floatVal array that will extract values only for the species
+    //Set up our doubleVal array that will extract values only for the species
     //assigned to this behavior
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
-    m_fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_ifNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
     //Declare the arrays
-    mp_fUnbrowsedS = new float[m_iNumSpecies];
-    mp_fBrowsedS = new float[m_iNumSpecies];
-    mp_fUnbrowsedA = new float[m_iNumSpecies];
-    mp_fBrowsedA = new float[m_iNumSpecies];
-    mp_fUnbrowsedDiamExp = new float[m_iNumSpecies];
-    mp_fBrowsedDiamExp = new float[m_iNumSpecies];
+    mp_fUnbrowsedS = new double[m_iNumSpecies];
+    mp_fBrowsedS = new double[m_iNumSpecies];
+    mp_fUnbrowsedA = new double[m_iNumSpecies];
+    mp_fBrowsedA = new double[m_iNumSpecies];
+    mp_fUnbrowsedDiamExp = new double[m_iNumSpecies];
+    mp_fBrowsedDiamExp = new double[m_iNumSpecies];
 
     //Unbrowsed S
     FillSpeciesSpecificValue(p_oElement, "gr_slopeGrowthResponse", "gr_sgrVal",
@@ -289,8 +289,7 @@ float clBrowsedRelativeGrowth::CalcDiameterGrowthValue( clTree * p_oTree, clTree
     fAnnualRelativeGrowth = (mp_fBrowsedA[iSpecies] * fGli) /
         (mp_fBrowsedS[iSpecies] + fGli);
     //Compound the relative growth over the number of years/time step
-    fCompoundRelativeGrowth = pow( 1.0 + fAnnualRelativeGrowth,
-        m_fNumberYearsPerTimestep );
+    fCompoundRelativeGrowth = pow( 1.0 + fAnnualRelativeGrowth, m_ifNumberYearsPerTimestep );
 
     //Calculate amount of diameter increase based on the tree's diameter
     fAmountDiamIncrease = pow(fDiam, mp_fBrowsedDiamExp[iSpecies]) *
@@ -299,8 +298,7 @@ float clBrowsedRelativeGrowth::CalcDiameterGrowthValue( clTree * p_oTree, clTree
     fAnnualRelativeGrowth = (mp_fUnbrowsedA[iSpecies] * fGli) /
         (mp_fUnbrowsedS[iSpecies] + fGli);
     //Compound the relative growth over the number of years/time step
-    fCompoundRelativeGrowth = pow( 1.0 + fAnnualRelativeGrowth,
-        m_fNumberYearsPerTimestep );
+    fCompoundRelativeGrowth = pow( 1.0 + fAnnualRelativeGrowth, m_ifNumberYearsPerTimestep );
 
     //Calculate amount of diameter increase based on the tree's diameter
     fAmountDiamIncrease = pow(fDiam, mp_fUnbrowsedDiamExp[iSpecies]) *

@@ -154,7 +154,7 @@ clNCITermBase::ncivals clNCITermNCIBARatio::CalculateNCITerm(clTree * p_oTree, c
 // DoSetup
 //////////////////////////////////////////////////////////////////////////////
 void clNCITermNCIBARatio::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) {
-  floatVal * p_fTempValues; //for getting species-specific values
+  doubleVal * p_fTempValues; //for getting species-specific values
   std::stringstream sLabel;
   int i, j;
 
@@ -176,20 +176,20 @@ void clNCITermNCIBARatio::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oN
     }
   }
 
-  mp_fAlpha = new float[m_iNumTotalSpecies];
-  mp_fBeta = new float[m_iNumTotalSpecies];
-  mp_fMinimumNeighborDBH = new float[m_iNumTotalSpecies];
-  mp_fLambda = new float*[m_iNumTotalSpecies];
+  mp_fAlpha = new double[m_iNumTotalSpecies];
+  mp_fBeta = new double[m_iNumTotalSpecies];
+  mp_fMinimumNeighborDBH = new double[m_iNumTotalSpecies];
+  mp_fLambda = new double*[m_iNumTotalSpecies];
   for (i = 0; i < m_iNumTotalSpecies; i++) {
-    mp_fLambda[i] = new float[m_iNumTotalSpecies];
+    mp_fLambda[i] = new double[m_iNumTotalSpecies];
     for (j = 0; j < m_iNumTotalSpecies; j++) {
       mp_fLambda[i][j] = -1;
     }
   }
 
-  //Set up our floatVal array that will extract values only for the species
+  //Set up our doubleVal array that will extract values only for the species
   //assigned to this behavior
-  p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
   for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
     p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
 

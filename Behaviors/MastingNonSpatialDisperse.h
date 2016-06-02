@@ -77,24 +77,24 @@ class clMastingNonSpatialDisperse : virtual public clDisperseBase {
     /** Mu parameter for inverse gaussian distribution. The array is 2D - the
      * first index is masting or non-masting. The second index is number
      * behavior species. */
-    float **mp_fInvGaussMu;
+    double **mp_fInvGaussMu;
 
     /** Lambda parameter for inverse gaussian distribution. The array is 2D -
      * the first index is masting or non-masting. The second index is number
      * behavior species.*/
-    float **mp_fInvGaussLambda;
+    double **mp_fInvGaussLambda;
 
     /** Mean for normal distribution. The array is 2D - the first index is
      * masting or non-masting. The second index is species. */
-    float **mp_fNormalMean;
+    double **mp_fNormalMean;
 
     /** Standard deviation for normal distribution. The array is 2D - the first
    * index is masting or non-masting. The second index is species. */
-    float **mp_fNormalStandardDev;
+    double **mp_fNormalStandardDev;
 
     /** P parameter for binomial distribution for deciding when to mast -
     * array size = number behavior species*/
-    float *mp_fBinomialP;
+    double *mp_fBinomialP;
 
     /** "Basal area" for each species. Since all we care about is relative
      * proportion, this will just add up the squares of the radii. Array size =

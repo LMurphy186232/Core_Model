@@ -120,11 +120,11 @@ class clNCIMasterQuadratGrowth : virtual public clGrowthBase, clNCIBehaviorBase 
   clGrid* mp_oGrid;
 
   /**Maximum growth value. Array sized number of species.*/
-  float *mp_fMaxPotentialValue;
+  double *mp_fMaxPotentialValue;
 
   /**Standard deviation if normal or lognormal distribution is desired. One for
    * each species.*/
-  float *mp_fRandParameter;
+  double *mp_fRandParameter;
 
   /** Holds data member codes for the "growth_x" data members of the "NCI
    * Climate Quadrat Growth" grid.  Array size is total # species.*/

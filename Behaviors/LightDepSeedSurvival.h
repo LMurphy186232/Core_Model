@@ -143,26 +143,26 @@ public:
 
   /**Storm light extinction coefficients, if m_bUseStormLight is false.  Array
   * size is m_iNumTotalSpecies by 2 - number of damage categories.*/
-  float **mp_fLightExtCoeff;
+  double **mp_fLightExtCoeff;
 
   /**Optimum light level at which there is no reduction in establishment -
   * one per behavior species*/
-  float *mp_fOptimumGLI;
+  double *mp_fOptimumGLI;
 
   /**Slope of favorability dropoff below the optimum light level - one per
   * behavior species*/
-  float *mp_fLowGLISlope;
+  double *mp_fLowGLISlope;
 
   /**Slope of favorability dropoff above the optimum light level - one per
   * behavior species*/
-  float *mp_fHighGLISlope;
+  double *mp_fHighGLISlope;
 
   /**Height at which light is to be calculated, if m_bUseStormLight is false.*/
-  float m_fLightHeight;
+  double m_fLightHeight;
 
   /**Maximum search distance for shading neighbors, if m_bUseStormLight is
   * false.*/
-  float m_fMaxSearchDistance;
+  double m_fMaxSearchDistance;
 
   /**Data member codes for seed grid for number of seeds.  Array size is #
   * behavior species.*/

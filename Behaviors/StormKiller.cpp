@@ -165,23 +165,23 @@ void clStormKiller::GetStmDmgCodes()
 ////////////////////////////////////////////////////////////////////////////
 void clStormKiller::GetParameterFileData( xercesc::DOMDocument * p_oDoc )
 {
-  floatVal * p_fTempValues = NULL; //for getting species-specific values
+  doubleVal * p_fTempValues = NULL; //for getting species-specific values
   try {
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
     int i, iNumSpecies = p_oPop->GetNumberOfSpecies();
 
     //Declare our arrays
-    mp_fMinStormDBH = new float[iNumSpecies];
-    mp_fStmDmgMedA = new float[iNumSpecies];
-    mp_fStmDmgHeavyA = new float[iNumSpecies];
-    mp_fStmDmgMedB = new float[iNumSpecies];
-    mp_fStmDmgHeavyB = new float[iNumSpecies];
-    mp_fPropTipUp = new float[iNumSpecies];
+    mp_fMinStormDBH = new double[iNumSpecies];
+    mp_fStmDmgMedA = new double[iNumSpecies];
+    mp_fStmDmgHeavyA = new double[iNumSpecies];
+    mp_fStmDmgMedB = new double[iNumSpecies];
+    mp_fStmDmgHeavyB = new double[iNumSpecies];
+    mp_fPropTipUp = new double[iNumSpecies];
 
-    //Set up our floatVal array that will extract values only for the species
+    //Set up our doubleVal array that will extract values only for the species
     //assigned to this behavior
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -377,10 +377,9 @@ void clStormKiller::Action()
     clTreeSearch * p_oBehaviorTrees;
     clTree * p_oTree;
     float fDbh, //tree's dbh
-          fSurvivalProb, //probability of survival
-          fNumYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
-    int iTreeDamage, iSnagYears;
-    int iSp, iTp;
+          fSurvivalProb; //probability of survival
+    int iNumYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep(), iTreeDamage, iSnagYears,
+        iSp, iTp;
 
     //Get the dead codes if we haven't already - have to do this here because
     //they wouldn't be available at setup time
@@ -415,7 +414,7 @@ void clStormKiller::Action()
         //Get the time since damage counter and see if it's equal to the
         //snag lifespan
         iSnagYears = iTreeDamage > 2000 ? iTreeDamage % 2000 : iTreeDamage % 1000;
-        iSnagYears += (int)fNumYearsPerTimestep;
+        iSnagYears += iNumYearsPerTimestep;
         if ( iSnagYears >= m_iSnagYears )
         {
           //Kill it!
@@ -424,7 +423,7 @@ void clStormKiller::Action()
         else
         {
           //Increment the counter and put it back
-          iTreeDamage += (int)fNumYearsPerTimestep;
+          iTreeDamage += iNumYearsPerTimestep;
           p_oTree->SetValue( mp_iStmDmgCodes[iTp] [iSp], iTreeDamage );
         }
 

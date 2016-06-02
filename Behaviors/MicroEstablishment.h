@@ -239,24 +239,24 @@ class clMicroEstablishment : virtual public clBehaviorBase {
   short int *mp_iSubstrateCodes;
 
   /**Proportion of the plot that is mound*/
-  float m_fMoundProportion;
+  double m_fMoundProportion;
   /**Mean mound height. Read in in meters, then converted to mm*/
-  float m_fMoundHeightMean;
+  double m_fMoundHeightMean;
   /**Mound height standard deviation. Read in in meters, then converted
   * to mm*/
-  float m_fMoundStandardDeviation;
+  double m_fMoundStandardDeviation;
   /**Fresh log substrate mean height. Read in in meters, then converted
   * to mm*/
-  float m_fFreshLogHeightMean;
+  double m_fFreshLogHeightMean;
   /**Fresh log height standard deviation. Read in in meters, then converted
   * to mm*/
-  float m_fFreshLogStandardDeviation;
+  double m_fFreshLogStandardDeviation;
   /**Fresh log alpha decay parameter; from substrate parameters. This lets
   * this class calculate fresh log ages.*/
-  float m_fFreshLogA;
+  double m_fFreshLogA;
   /**Fresh log alpha decay parameter; from substrate parameters. This lets
   * this class calculate fresh log ages.*/
-  float m_fFreshLogB;
+  double m_fFreshLogB;
 
   int m_iMaxRespiteYears; /**<Maximum number of years of fern respite -
   from parameter file*/

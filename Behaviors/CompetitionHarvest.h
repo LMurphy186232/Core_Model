@@ -165,7 +165,7 @@ class clCompetitionHarvest : virtual public clBehaviorBase {
  /**Lambda for NCI. Array is sized number of species by number of species. The
   * first index is for targets, the second for neighbors. Thus mp_fLambda[2][3]
   * is the effect of target species 2 on species 3 neighbors.*/
- float **mp_fLambda;
+ double **mp_fLambda;
 
  /**Data member codes for the "COE" tree float data member. Array size is number
   * of species by 2 (saplings and adults).*/
@@ -174,48 +174,48 @@ class clCompetitionHarvest : virtual public clBehaviorBase {
  /**Target DBH effect on each neighbor species. @htmlonly &alpha; @endhtmlonly
   * variable in COE equation above. Array is sized number of species and is
   * required for all species.*/
- float *mp_fAlpha;
+ double *mp_fAlpha;
 
  /**Target distance effect. @htmlonly &beta; @endhtmlonly variable in
   * COE equation above. Array is sized number of species and is
   * required for all species.*/
- float *mp_fBeta;
+ double *mp_fBeta;
 
  /**Crowding effect slope. C in COE equation above. Array is sized number of
   * species and is required for all species.*/
- float *mp_fC;
+ double *mp_fC;
 
  /**Crowding effect steepness. D in COE equation above. Array is sized number
   * of species and is required for all species.*/
- float *mp_fD;
+ double *mp_fD;
 
  /**Size sensitivity to competition parameter. @htmlonly &gamma; @endhtmlonly in
   * COE equation above. Array is sized number of species and is required for
   * all species.*/
- float *mp_fGamma;
+ double *mp_fGamma;
 
  /**Maximum radius, in meters, for which a target has a crowding effect on
   * neighbors. Array is sized number of species but is only required for those
   * species to which this behavior applies.*/
- float *mp_fMaxCrowdingRadius;
+ double *mp_fMaxCrowdingRadius;
 
  /**Holds the target left to cut for each species. Ignored unless
   * m_bIsSpeciesSpecific is true. CutTrees() manages this array to
   * properly direct the behavior of the other functions. Array size is number
   * of species.*/
- float *mp_fTargetToCut;
+ double *mp_fTargetToCut;
 
  /**The amount cut this timestep for each species. Ignored unless
   * m_bIsSpeciesSpecific is true. This can be compared against
   * the mp_fTargetToCut array to decide whether an individual of a certain
   * species is eligible for cutting. Array size is number of species.*/
- float *mp_fAlreadyCut;
+ double *mp_fAlreadyCut;
 
  /**Proportion of each species to cut as a value between 0 and 1. All 1s
   * mean treat the species as a common pool (and m_bSpeciesSpecific = false).
   * Array is sized number of species but is only required for those species to
   * which this behavior applies.*/
- float *mp_fPropToCut;
+ double *mp_fPropToCut;
 
  /**Data member codes for the "Cut Density_sp" data member of the "Competition
   * Harvest Results" grid. Array size is number species.*/
@@ -234,18 +234,18 @@ class clCompetitionHarvest : virtual public clBehaviorBase {
 
   /**Maximum crowding radius across all species - used when recalculating COEs
   * after a tree has been cut.*/
-  float m_fMaxMaxCrowdingRadius;
+  double m_fMaxMaxCrowdingRadius;
 
   /**Target DBH divisor. The target's DBH is divided by this term before being
   * used in the COE equation. This is in case any units corrections need to be
   * made.*/
- float m_fQ;
+ double m_fQ;
 
  /**Mininum DBH for harvesting.*/
- float m_fMinHarvestDBH;
+ double m_fMinHarvestDBH;
 
  /**Maxinum DBH for harvesting.*/
- float m_fMaxHarvestDBH;
+ double m_fMaxHarvestDBH;
 
  /**Cut amount - if this is a fixed interval harvest, this is the amount to
   * which the plot is cut back, in m2 of basal area; if this is a fixed BA
@@ -254,15 +254,15 @@ class clCompetitionHarvest : virtual public clBehaviorBase {
   * to cut, this is the proportion to cut between 0 and 1. BA amounts are read
   * as per ha from the parameter file, but they are stored as a total amount
   * here to avoid having to convert back and forth.*/
- float m_fAmtToCut;
+ double m_fAmtToCut;
 
  /**For fixed BA threshold harvests, the BA threshold that triggers a harvest.
   * This is read in from the parameter file as m2/ha, but stored as total
   * m2 of basal area.*/
- float m_fBAThreshold;
+ double m_fBAThreshold;
 
  /**Minimum sapling height.  For doing neighbor searches.*/
-  float m_fMinSaplingHeight;
+ float m_fMinSaplingHeight;
 
  /**For fixed BA threshold harvests, the minimum interval between harvests. For
  * fixed interval harvests, the interval between harvests. This is read from

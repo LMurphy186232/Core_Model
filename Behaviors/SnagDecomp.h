@@ -121,28 +121,28 @@ class clSnagDecomp : virtual public clBehaviorBase {
   protected:
   /**Species-specific matrices of transition probabilities.  Array size is
   * 6 x 6.*/
-  float mp_fSnagTransProb[6][6];
+  double mp_fSnagTransProb[6][6];
 
    /**Parameters used in treefall and snag fall models*/
-	float m_fTreefallAlpha;
-	float *mp_fTreefallBeta;
-	float m_fTreefallDelta;
-	float m_fTreefallTheta;
-	float m_fTreefallIota;
-	float m_fTreefallLamda;
+	double m_fTreefallAlpha;
+	double *mp_fTreefallBeta;
+	double m_fTreefallDelta;
+	double m_fTreefallTheta;
+	double m_fTreefallIota;
+	double m_fTreefallLamda;
 
-	float m_fSnagfallAlpha;
-	float * mp_fSnagfallBeta;
-	float * mp_fSnagfallGamma;
-	float m_fSnagfallZeta;
-	float m_fSnagfallEta;
-	float m_fSnagfallKappa;
+	double m_fSnagfallAlpha;
+	double * mp_fSnagfallBeta;
+	double * mp_fSnagfallGamma;
+	double m_fSnagfallZeta;
+	double m_fSnagfallEta;
+	double m_fSnagfallKappa;
 
 	/**The minimum snag break height.  Actually break height is a height between
 	 * min and max drawn from a uniform distribution.*/
-	float m_fMinBreakHeight;
+	double m_fMinBreakHeight;
   /**The maximum snag break height.*/
-	float m_fMaxBreakHeight;
+	double m_fMaxBreakHeight;
 
   /**String to pass to clTreePopulation::Find() in order to get the trees for
   * which to run snag dynamics.  This will instigate a species search for all

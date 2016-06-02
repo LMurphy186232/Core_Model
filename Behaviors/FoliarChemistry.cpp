@@ -126,26 +126,26 @@ clFoliarChemistry::~clFoliarChemistry()
 void clFoliarChemistry::GetParameterFileData( xercesc::DOMDocument * p_oDoc, clTreePopulation *p_oPop )
 {
   DOMElement * p_oElement = p_oDoc->getDocumentElement();
-  floatVal * p_fTempValues; //for getting species-specific values
+  doubleVal * p_fTempValues; //for getting species-specific values
   int i;
 
-  //Set up our floatVal array that will extract values only for the species
+  //Set up our doubleVal array that will extract values only for the species
   //assigned to this behavior
-  p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
   for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
     p_fTempValues[i].code = mp_iWhatSpecies[i];
 
   //Declare the appropriate arrays
-  mp_fA = new float[m_iNumTotalSpecies];
-  mp_fB = new float[m_iNumTotalSpecies];
-  mp_fN = new float[m_iNumTotalSpecies];
-  mp_fP = new float[m_iNumTotalSpecies];
-  mp_fLignin = new float[m_iNumTotalSpecies];
-  mp_fFiber = new float[m_iNumTotalSpecies];
-  mp_fCellulose = new float[m_iNumTotalSpecies];
-  mp_fTannins = new float[m_iNumTotalSpecies];
-  mp_fPhenolics = new float[m_iNumTotalSpecies];
-  mp_fSLA = new float[m_iNumTotalSpecies];
+  mp_fA = new double[m_iNumTotalSpecies];
+  mp_fB = new double[m_iNumTotalSpecies];
+  mp_fN = new double[m_iNumTotalSpecies];
+  mp_fP = new double[m_iNumTotalSpecies];
+  mp_fLignin = new double[m_iNumTotalSpecies];
+  mp_fFiber = new double[m_iNumTotalSpecies];
+  mp_fCellulose = new double[m_iNumTotalSpecies];
+  mp_fTannins = new double[m_iNumTotalSpecies];
+  mp_fPhenolics = new double[m_iNumTotalSpecies];
+  mp_fSLA = new double[m_iNumTotalSpecies];
 
   FillSpeciesSpecificValue( p_oElement, "an_foliarChemWeightA", "an_fcwaVal", p_fTempValues, m_iNumBehaviorSpecies, p_oPop, true );
   for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {

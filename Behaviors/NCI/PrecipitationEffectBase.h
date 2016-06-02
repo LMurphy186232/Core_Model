@@ -36,7 +36,7 @@ public:
    * @param p_oPlot Plot object for querying for precipitation values.
    * @param iSpecies Species for which to calculate precipitation effect.
    */
-  virtual float CalculatePrecipitationEffect(clPlot *p_oPlot, int iSpecies) = 0;
+  virtual double CalculatePrecipitationEffect(clPlot *p_oPlot, int iSpecies) = 0;
 
   /**
    * Does any desired setup.

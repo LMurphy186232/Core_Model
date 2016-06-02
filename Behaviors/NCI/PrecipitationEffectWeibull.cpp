@@ -28,9 +28,9 @@ clPrecipitationEffectWeibull::~clPrecipitationEffectWeibull() {
 ////////////////////////////////////////////////////////////////////////////
 // CalculatePrecipitationEffect
 ////////////////////////////////////////////////////////////////////////////
-float clPrecipitationEffectWeibull::CalculatePrecipitationEffect(clPlot *p_oPlot, int iSpecies) {
-  float fEffect,
-        fPrecipitation = ((p_oPlot)->*(this->m_precip))();
+double clPrecipitationEffectWeibull::CalculatePrecipitationEffect(clPlot *p_oPlot, int iSpecies) {
+  double fEffect,
+         fPrecipitation = ((p_oPlot)->*(this->m_precip))();
   fEffect = exp(-0.5*pow(fabs(fPrecipitation - mp_fPrecipC[iSpecies])/mp_fPrecipA[iSpecies], mp_fPrecipB[iSpecies]));
   if (fEffect < 0) fEffect = 0;
   if (fEffect > 1) fEffect = 1;
@@ -41,17 +41,17 @@ float clPrecipitationEffectWeibull::CalculatePrecipitationEffect(clPlot *p_oPlot
 // DoSetup
 ////////////////////////////////////////////////////////////////////////////
 void clPrecipitationEffectWeibull::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) {
-  floatVal * p_fTempValues; //for getting species-specific values
+  doubleVal * p_fTempValues; //for getting species-specific values
   int iNumBehaviorSpecies = p_oNCI->GetNumBehaviorSpecies(),
       iNumTotalSpecies = p_oPop->GetNumberOfSpecies(), i, iPrecipType;
 
-  mp_fPrecipA = new float[iNumTotalSpecies];
-  mp_fPrecipB = new float[iNumTotalSpecies];
-  mp_fPrecipC = new float[iNumTotalSpecies];
+  mp_fPrecipA = new double[iNumTotalSpecies];
+  mp_fPrecipB = new double[iNumTotalSpecies];
+  mp_fPrecipC = new double[iNumTotalSpecies];
 
-  //Set up our floatVal array that will extract values only for the species
+  //Set up our doubleVal array that will extract values only for the species
   //assigned to this behavior
-  p_fTempValues = new floatVal[iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[iNumBehaviorSpecies];
   for ( i = 0; i < iNumBehaviorSpecies; i++ ) p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
 
   //Precipitation effect a

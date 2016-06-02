@@ -20,7 +20,7 @@ clPowerHeightGrowth::clPowerHeightGrowth(clSimManager * p_oSimManager) :
     mp_fB = NULL;
 
     m_iGrowthMethod = height_only;
-    m_fNumberYearsPerTimestep = 0;
+    m_iNumberYearsPerTimestep = 0;
 
     m_sNameString = "powergrowthshell";
     m_sXMLRoot = "PowerGrowth";
@@ -51,7 +51,7 @@ clPowerHeightGrowth::~clPowerHeightGrowth() {
 // DoShellSetup()
 /////////////////////////////////////////////////////////////////////////////*/
 void clPowerHeightGrowth::DoShellSetup(DOMDocument * p_oDoc) {
-  floatVal * p_fTempValues = NULL; //for getting species-specific values
+  doubleVal * p_fTempValues = NULL; //for getting species-specific values
   try {
     clTreePopulation * p_oPop =
         (clTreePopulation *) mp_oSimManager->GetPopulationObject(
@@ -60,12 +60,12 @@ void clPowerHeightGrowth::DoShellSetup(DOMDocument * p_oDoc) {
     short int iNumSpecies = p_oPop->GetNumberOfSpecies(), i;
 
     //Declare the arrays we'd like read
-    mp_fB = new float[iNumSpecies];
-    mp_fN = new float[iNumSpecies];
+    mp_fB = new double[iNumSpecies];
+    mp_fN = new double[iNumSpecies];
 
     //Declare the species-specific temp array and pre-load with the species that
     //this behavior affects
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for (i = 0; i < m_iNumBehaviorSpecies; i++)
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -85,7 +85,7 @@ void clPowerHeightGrowth::DoShellSetup(DOMDocument * p_oDoc) {
     for (i = 0; i < m_iNumBehaviorSpecies; i++)
       mp_fB[p_fTempValues[i].code] = p_fTempValues[i].val;
 
-    m_fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_iNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
     delete[] p_fTempValues;
   } catch (modelErr& err) {
@@ -121,7 +121,7 @@ float clPowerHeightGrowth::CalcHeightGrowthValue(clTree *p_oTree,
   fNewHeight = fHeight;
 
   //Compound the relative growth over the number of years/time step
-  for (iYr = 0; iYr < m_fNumberYearsPerTimestep; iYr++) {
+  for (iYr = 0; iYr < m_iNumberYearsPerTimestep; iYr++) {
     fNewHeight += mp_fN[iSpecies] * pow(fNewHeight, mp_fB[iSpecies]);
   }
   //Don't allow a negative new height - set to 10 cm

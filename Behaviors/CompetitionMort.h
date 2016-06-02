@@ -62,26 +62,23 @@ protected:
 
   /**Shape parameter for competition-dependent mortality function. Array sized
    * number of species to which this behavior applies.*/
-  float *mp_fCompMort;
+  double *mp_fCompMort;
 
   /**Parameter for competition-dependent morality function that determines the
    * maximum Relative Increment subject to mortality. Array sized number of
    * species to which this behavior applies.*/
-  float *mp_fCompMortMax;
-
-  /**Number of years per timestep*/
-  float m_fNumberYearsPerTimestep;
+  double *mp_fCompMortMax;
 
   //Parameters to calculate potential growth as in NCI growth
   /**Size effect variance parameter (Xb). Array sized number of species to
    * which this behavior applies.*/
-  float *mp_fXb;
+  double *mp_fXb;
   /**Maximum potential growth in cm/yr. Array sized number of species to which
    * this behavior applies.*/
-  float *mp_fMaxPotentialGrowth;
+  double *mp_fMaxPotentialGrowth;
   /**Size effect mode parameter (X0). Array sized number of species to which
    * this behavior applies.*/
-  float *mp_fX0;
+  double *mp_fX0;
   /**Speeds access to the arrays.*/
   short int *mp_iIndexes;
 

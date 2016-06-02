@@ -53,19 +53,19 @@ class clPlot : virtual public clWorkerBase {
   * Gets the latitude.
   * @return Latitude, in decimal degrees.
   */
-  float GetLatitude() {return m_fLatitude;};
+  double GetLatitude() {return m_fLatitude;};
 
  /**
   * Gets the plot X length.
   * @return Length of plot in X direction in meters.
   */
-  float GetXPlotLength() {return m_fPlotLenX;};
+  double GetXPlotLength() {return m_fPlotLenX;};
 
  /**
   * Gets the plot Y length.
   * @return Length of plot in Y direction in meters.
   */
-  float GetYPlotLength() {return m_fPlotLenY;};
+  double GetYPlotLength() {return m_fPlotLenY;};
 
  /**
   * Gets the length of cells in the X direction.
@@ -89,39 +89,39 @@ class clPlot : virtual public clWorkerBase {
    * Gets the mean annual precipitation.
    * @return Mean annual precipitation, in mm.
    */
-  float GetMeanAnnualPrecip() {return m_fMeanAnnualPrecipMm;};
+  double GetMeanAnnualPrecip() {return m_fMeanAnnualPrecipMm;};
 
   /**
    * Sets the mean annual precipitation.
    * @param fMeanAnnualPrecip Mean annual precipitation, in mm.
    */
-  void SetMeanAnnualPrecip(float fMeanAnnualPrecip)
+  void SetMeanAnnualPrecip(double fMeanAnnualPrecip)
     {m_fMeanAnnualPrecipMm = fMeanAnnualPrecip;};
 
   /**
    * Gets the mean annual temperature.
    * @return Mean annual precipitation, in degrees C.
    */
-  float GetMeanAnnualTemp() {return m_fMeanTempC;};
+  double GetMeanAnnualTemp() {return m_fMeanTempC;};
 
   /**
    * Sets the mean annual temperature.
    * @param fMeanTemp Mean annual precipitation, in degrees C.
    */
-  void SetMeanAnnualTemp(float fMeanTemp)
+  void SetMeanAnnualTemp(double fMeanTemp)
     {m_fMeanTempC = fMeanTemp;};
 
   /**
    * Gets the annual N deposition.
    * @return Annual N deposition.
    */
-  float GetNDeposition() {return m_fNDep;};
+  double GetNDeposition() {return m_fNDep;};
 
   /**
    * Sets the annual N deposition.
    * @param fNDep Annual N deposition.
    */
-  void SetNDeposition(float fNDep)
+  void SetNDeposition(double fNDep)
   {m_fNDep = fNDep;};
 
  /**
@@ -288,19 +288,19 @@ class clPlot : virtual public clWorkerBase {
     else return fTemp2;
   }
 
-  float GetSeasonalPrecipitation() {
+  double GetSeasonalPrecipitation() {
     return m_fSeasonalPrecipitation;
   }
 
-  void SetSeasonalPrecipitation(float fSeasonalPrecipitation) {
+  void SetSeasonalPrecipitation(double fSeasonalPrecipitation) {
     m_fSeasonalPrecipitation = fSeasonalPrecipitation;
   }
 
-  float GetWaterDeficit() {
+  double GetWaterDeficit() {
     return m_fWaterDeficit;
   }
 
-  void SetWaterDeficit(float fWaterDeficit) {
+  void SetWaterDeficit(double fWaterDeficit) {
     m_fWaterDeficit = fWaterDeficit;
   }
 
@@ -335,10 +335,10 @@ class clPlot : virtual public clWorkerBase {
   float m_fPlotArea;
 
   /**Plot length along the X axis, in m.*/
-  float m_fPlotLenX;
+  double m_fPlotLenX;
 
   /**Plot length along the Y axis, in m.*/
-  float m_fPlotLenY;
+  double m_fPlotLenY;
 
   /**Max allowed X value - m_fPlotLenX minus a small value.*/
   float m_fMaxX;
@@ -347,22 +347,22 @@ class clPlot : virtual public clWorkerBase {
   float m_fMaxY;
 
   /**Plot latitude, in decimal degrees - from the par file.*/
-  float m_fLatitude;
+  double m_fLatitude;
 
   /**Mean annual precipitation, mm.*/
-  float m_fMeanAnnualPrecipMm;
+  double m_fMeanAnnualPrecipMm;
 
   /**Water deficit*/
-  float m_fWaterDeficit;
+  double m_fWaterDeficit;
 
   /** Seasonal precipitation */
-  float m_fSeasonalPrecipitation;
+  double m_fSeasonalPrecipitation;
 
   /**Mean annual temperature, degrees Celsius.*/
-  float m_fMeanTempC;
+  double m_fMeanTempC;
 
   /**Annual N deposition.*/
-  float m_fNDep;
+  double m_fNDep;
 
   /**Tangent of each azimuth angle.  Array size is 360 (degrees).*/
   float *mp_fAziTans;

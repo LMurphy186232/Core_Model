@@ -163,7 +163,7 @@ void clQualityVigorClassifier::GetData(DOMDocument * p_oDoc)
 ///////////////////////////////////////////////////////////////////////////////
 void clQualityVigorClassifier::ReadParameterFile(DOMDocument * p_oDoc, clTreePopulation *p_oPop)
 {
-  floatVal * p_fTemp = NULL; //for getting species-specific values
+  doubleVal * p_fTemp = NULL; //for getting species-specific values
   boolVal *p_bTemp = NULL;
   try
   {
@@ -171,28 +171,28 @@ void clQualityVigorClassifier::ReadParameterFile(DOMDocument * p_oDoc, clTreePop
     short int i;
 
     //Declare our arrays
-    mp_fVigBeta0 = new float[m_iNumBehaviorSpecies];
-    mp_fVigBeta11 = new float[m_iNumBehaviorSpecies];
-    mp_fVigBeta12 = new float[m_iNumBehaviorSpecies];
-    mp_fVigBeta13 = new float[m_iNumBehaviorSpecies];
-    mp_fVigBeta14 = new float[m_iNumBehaviorSpecies];
-    mp_fVigBeta15 = new float[m_iNumBehaviorSpecies];
-    mp_fVigBeta16 = new float[m_iNumBehaviorSpecies];
-    mp_fVigBeta2 = new float[m_iNumBehaviorSpecies];
-    mp_fVigBeta3 = new float[m_iNumBehaviorSpecies];
-    mp_fQualBeta0 = new float[m_iNumBehaviorSpecies];
-    mp_fQualBeta11 = new float[m_iNumBehaviorSpecies];
-    mp_fQualBeta12 = new float[m_iNumBehaviorSpecies];
-    mp_fQualBeta13 = new float[m_iNumBehaviorSpecies];
-    mp_fQualBeta14 = new float[m_iNumBehaviorSpecies];
-    mp_fQualBeta2 = new float[m_iNumBehaviorSpecies];
-    mp_fQualBeta3 = new float[m_iNumBehaviorSpecies];
-    mp_fNewAdultProbVigorous = new float[m_iNumBehaviorSpecies];
-    mp_fNewAdultProbSawlog = new float[m_iNumBehaviorSpecies];
+    mp_fVigBeta0 = new double[m_iNumBehaviorSpecies];
+    mp_fVigBeta11 = new double[m_iNumBehaviorSpecies];
+    mp_fVigBeta12 = new double[m_iNumBehaviorSpecies];
+    mp_fVigBeta13 = new double[m_iNumBehaviorSpecies];
+    mp_fVigBeta14 = new double[m_iNumBehaviorSpecies];
+    mp_fVigBeta15 = new double[m_iNumBehaviorSpecies];
+    mp_fVigBeta16 = new double[m_iNumBehaviorSpecies];
+    mp_fVigBeta2 = new double[m_iNumBehaviorSpecies];
+    mp_fVigBeta3 = new double[m_iNumBehaviorSpecies];
+    mp_fQualBeta0 = new double[m_iNumBehaviorSpecies];
+    mp_fQualBeta11 = new double[m_iNumBehaviorSpecies];
+    mp_fQualBeta12 = new double[m_iNumBehaviorSpecies];
+    mp_fQualBeta13 = new double[m_iNumBehaviorSpecies];
+    mp_fQualBeta14 = new double[m_iNumBehaviorSpecies];
+    mp_fQualBeta2 = new double[m_iNumBehaviorSpecies];
+    mp_fQualBeta3 = new double[m_iNumBehaviorSpecies];
+    mp_fNewAdultProbVigorous = new double[m_iNumBehaviorSpecies];
+    mp_fNewAdultProbSawlog = new double[m_iNumBehaviorSpecies];
     mp_bDeciduous = new bool[m_iNumBehaviorSpecies];
 
     //Set up our temp array - pre-load with this behavior's species
-    p_fTemp = new floatVal[m_iNumBehaviorSpecies];
+    p_fTemp = new doubleVal[m_iNumBehaviorSpecies];
     p_bTemp = new boolVal[m_iNumBehaviorSpecies];
     for (i = 0; i < m_iNumBehaviorSpecies; i++) {
       p_fTemp[i].code = mp_iWhatSpecies[i];
@@ -525,7 +525,7 @@ void clQualityVigorClassifier::Action() {
 ///////////////////////////////////////////////////////////////////////////////
 void clQualityVigorClassifier::HandleInitialConditionsTrees(DOMDocument * p_oDoc, clTreePopulation *p_oPop)
 {
-  floatVal * p_fTemp = NULL; //for getting species-specific values
+  doubleVal * p_fTemp = NULL; //for getting species-specific values
   float **p_fPropVig = NULL, **p_fPropSaw = NULL;
   float *p_fMinDBH = NULL, *p_fMaxDBH = NULL;
   try
@@ -535,8 +535,8 @@ void clQualityVigorClassifier::HandleInitialConditionsTrees(DOMDocument * p_oDoc
     DOMNode * p_oDocNode;
     DOMElement * p_oElement;
     XMLCh *sVal;
-    float fDBH,
-    fTemp; //workhorse variable
+    float fDBH;
+    double fTemp; //workhorse variable
     unsigned short int iNumClasses, //for counting one species's size classes
     i, j; //loop counters
     bool bVal, bFound;
@@ -574,7 +574,7 @@ void clQualityVigorClassifier::HandleInitialConditionsTrees(DOMDocument * p_oDoc
       }
 
       //Set up our temp array - pre-load with this behavior's species
-      p_fTemp = new floatVal[m_iNumBehaviorSpecies];
+      p_fTemp = new doubleVal[m_iNumBehaviorSpecies];
       for (i = 0; i < m_iNumBehaviorSpecies; i++) {
         p_fTemp[i].code = mp_iWhatSpecies[i];
       }

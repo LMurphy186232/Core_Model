@@ -70,21 +70,21 @@ clStochasticBiLevelMortality::~clStochasticBiLevelMortality()
 ////////////////////////////////////////////////////////////////////////////
 void clStochasticBiLevelMortality::DoShellSetup( xercesc::DOMDocument * p_oDoc )
 {
-  floatVal * p_fTempValues = NULL; //for getting species-specific values
+  doubleVal * p_fTempValues = NULL; //for getting species-specific values
   try
   {
     mp_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
 
     DOMElement * p_oElement = p_oDoc->getDocumentElement();
-    float fYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    int iYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
     short int iNumSpecies = mp_oPop->GetNumberOfSpecies(),
               iNumTypes = mp_oPop->GetNumberOfTypes(),
               iSp, iTp, i, j;
 
     //Declare the arrays we'd like read
-    mp_fLoLightMortProb = new float[m_iNumBehaviorSpecies];
-    mp_fHiLightMortProb = new float[m_iNumBehaviorSpecies];
-    mp_fHiLightThreshold = new float[m_iNumBehaviorSpecies];
+    mp_fLoLightMortProb = new double[m_iNumBehaviorSpecies];
+    mp_fHiLightMortProb = new double[m_iNumBehaviorSpecies];
+    mp_fHiLightThreshold = new double[m_iNumBehaviorSpecies];
     mp_iIndexes = new int[iNumSpecies];
 
     //Set up the array indexes
@@ -134,7 +134,7 @@ void clStochasticBiLevelMortality::DoShellSetup( xercesc::DOMDocument * p_oDoc )
 
     //Declare the species-specific temp array and pre-load with the species
     //that this behavior affects
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -153,7 +153,7 @@ void clStochasticBiLevelMortality::DoShellSetup( xercesc::DOMDocument * p_oDoc )
         stcErr.sMoreInfo = "All values for probability of mortality must be between 0 and 1.";
         throw( stcErr );
       }
-      mp_fLoLightMortProb[mp_iIndexes[p_fTempValues[i].code]] = 1 - pow( 1 - p_fTempValues[i].val, fYearsPerTimestep );
+      mp_fLoLightMortProb[mp_iIndexes[p_fTempValues[i].code]] = 1 - pow( 1 - p_fTempValues[i].val, iYearsPerTimestep );
     }
 
     //Translate the values
@@ -173,7 +173,7 @@ void clStochasticBiLevelMortality::DoShellSetup( xercesc::DOMDocument * p_oDoc )
         stcErr.sMoreInfo = "All values for probability of mortality must be between 0 and 1.";
         throw( stcErr );
       }
-      mp_fHiLightMortProb[mp_iIndexes[p_fTempValues[i].code]] = 1 - pow( 1 - p_fTempValues[i].val, fYearsPerTimestep );
+      mp_fHiLightMortProb[mp_iIndexes[p_fTempValues[i].code]] = 1 - pow( 1 - p_fTempValues[i].val, iYearsPerTimestep );
     }
 
     //High-light threshold

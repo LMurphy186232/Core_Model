@@ -56,21 +56,21 @@ protected:
 
   /**Maximum search radius, in meters, in which to look for
    * neighbors.*/
-  float m_fMaxCrowdingRadius;
+  double m_fMaxCrowdingRadius;
 
   /**Maximum search radius, in meters, in which to look for crowding adult
    * neighbors.*/
-  float m_fMaxAdultRadius;
+  double m_fMaxAdultRadius;
 
   /**Maximum search radius, in meters, in which to look for crowding sapling
    * neighbors.*/
-  float m_fMaxSaplingRadius;
+  double m_fMaxSaplingRadius;
 
   /**Minimum sapling height. For doing neighbor searches.*/
   float m_fMinSaplingHeight;
 
   /**Basal area for default size.*/
-  float m_fDefaultBA;
+  double m_fDefaultBA;
 };
 
 #endif /* DEFAULTNCITERM_H_ */

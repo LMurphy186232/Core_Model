@@ -59,7 +59,7 @@ void clSimpleLinearGrowth::DoShellSetup(DOMDocument * p_oDoc) {
   {
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
-    floatVal * p_fTempValues; //for getting species-specific values
+    doubleVal * p_fTempValues; //for getting species-specific values
     short int iNumSpecies = p_oPop->GetNumberOfSpecies(), i;
 
     //Conversion factor
@@ -67,20 +67,20 @@ void clSimpleLinearGrowth::DoShellSetup(DOMDocument * p_oDoc) {
     {
       //The conversion factor needs to convert from cm to m and from
       //annual to timestep
-      m_fConversionFactor = mp_oSimManager->GetNumberOfYearsPerTimestep() / 100;
+      m_fConversionFactor = mp_oSimManager->GetNumberOfYearsPerTimestep() / 100.0;
     } else {
       //The conversion factor needs to convert from mm to cm, from annual to
       //timestep, and from radial to diameter
-      m_fConversionFactor = mp_oSimManager->GetNumberOfYearsPerTimestep() / 10 * 2;
+      m_fConversionFactor = mp_oSimManager->GetNumberOfYearsPerTimestep() / 10.0 * 2.0;
     }
 
     //Declare the arrays we'd like read
-    mp_fSlope = new float[iNumSpecies];
-    mp_fIntercept = new float[iNumSpecies];
+    mp_fSlope = new double[iNumSpecies];
+    mp_fIntercept = new double[iNumSpecies];
 
     //Declare the species-specific temp array and pre-load with the species that
     //this behavior affects
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
     p_fTempValues[i].code = mp_iWhatSpecies[i];
 

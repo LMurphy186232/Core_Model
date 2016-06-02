@@ -68,21 +68,21 @@ class clTempDependentNeighborhoodDisperse : virtual public clDisperseBase {
   protected:
 
   /**Fecundity M - sized number of species.*/
-  float *mp_fFecM;
+  double *mp_fFecM;
   /**Fecundity N - sized number of species.*/
-  float *mp_fFecN;
+  double *mp_fFecN;
   /**Presence M - sized number of species.*/
-  float *mp_fPresM;
+  double *mp_fPresM;
   /**Presence B - sized number of species.*/
-  float *mp_fPresB;
+  double *mp_fPresB;
   /**Presence threshold - sized number of species.*/
-  float *mp_fThreshold;
+  double *mp_fThreshold;
   /**A parameter - sized number of species.*/
-  float *mp_fA;
+  double *mp_fA;
   /**B parameter - sized number of species.*/
-  float *mp_fB;
+  double *mp_fB;
   /**Neighborhood search radius.*/
-  float m_fRadius;
+  double m_fRadius;
   /**Minimum sapling height. For doing neighbor searches.*/
   float m_fMinSaplingHeight;
   /**Whether or not presence testing is required for this run.  If all values in

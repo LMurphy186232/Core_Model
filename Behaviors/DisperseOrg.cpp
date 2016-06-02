@@ -190,7 +190,7 @@ void clDisperseOrg::GetParameterFileData(clSimManager * p_oSimManager, xercesc::
     DOMElement * p_oElement = p_oDoc->getDocumentElement();
     clPopulationBase * p_oTempPop = p_oSimManager->GetPopulationObject("treepopulation");
     clTreePopulation * p_oPop = (clTreePopulation *) p_oTempPop;
-    floatVal * p_fTemp; //for getting values from parameter file
+    doubleVal * p_fTemp; //for getting values from parameter file
     bool * p_bSpeciesUsed; //for getting values from the parameter file
     int iTemp = deterministic_pdf;
     short int i, j; //loop counters
@@ -235,7 +235,7 @@ void clDisperseOrg::GetParameterFileData(clSimManager * p_oSimManager, xercesc::
         normal_pdf == m_iSeedDistributionMethod ||
         negative_binomial_pdf == m_iSeedDistributionMethod)
     {
-      mp_fRandParameter = new float[m_iTotalSpecies];
+      mp_fRandParameter = new double[m_iTotalSpecies];
 
       //Only populate those species that use disperse - compile the list
       p_bSpeciesUsed = new bool[m_iTotalSpecies];
@@ -259,7 +259,7 @@ void clDisperseOrg::GetParameterFileData(clSimManager * p_oSimManager, xercesc::
         if (p_bSpeciesUsed[i]) iTemp++;
       }
 
-      p_fTemp = new floatVal[iTemp];
+      p_fTemp = new doubleVal[iTemp];
       iTemp = 0;
       for (i = 0; i < m_iTotalSpecies; i++)
       {

@@ -118,10 +118,10 @@ class clDoubleMMRelGrowth : virtual public clMichMenBase {
 
   /**Parameter governing the influence of the second resource (C in equation
   * above).  Array size is number of behavior species.*/
-  float *mp_fResourceInfluence;
+  double *mp_fResourceInfluence;
 
   /**Number of years per timestep - from sim manager*/
-  float m_fNumberYearsPerTimestep;
+  int m_iNumberYearsPerTimestep;
 
   /**The float data member code for the resource grid.*/
   short int m_iResourceCode;

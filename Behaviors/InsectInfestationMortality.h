@@ -89,19 +89,19 @@ class clInsectInfestationMortality : virtual public clMortalityBase {
   /** Precalculated mortality probabilities, out to m_iMaxMortTime; any
    * infestation time beyond this can be calculated as a one-off. First index
    * is species, second is time of infestation */
-  float **mp_fMortProbs;
+  double **mp_fMortProbs;
 
   /**Intercept - sized number of species.*/
-  float *mp_fIntercept;
+  double *mp_fIntercept;
 
   /**Max mort rate - sized number of species.*/
-  float *mp_fMax;
+  double *mp_fMax;
 
   /**X0 - sized number of species.*/
-  float *mp_fX0;
+  double *mp_fX0;
 
   /**Xb - sized number of species.*/
-  float *mp_fXb;
+  double *mp_fXb;
 
   /** Codes for "YearsInfested" data member. Array size is number of species by
    * number of types.*/

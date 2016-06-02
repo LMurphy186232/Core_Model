@@ -54,15 +54,15 @@ protected:
 
   /**Maximum search radius, in meters, in which to look for
    * neighbors. Array is sized number of species.*/
-  float *mp_fMaxCrowdingRadius;
+  double *mp_fMaxCrowdingRadius;
 
   /**Maximum search radius, in meters, in which to look for crowding adult
    * neighbors. Array is sized number of species.*/
-  float *mp_fMaxAdultRadius;
+  double *mp_fMaxAdultRadius;
 
   /**Maximum search radius, in meters, in which to look for crowding sapling
    * neighbors. Array is sized number of species.*/
-  float *mp_fMaxSaplingRadius;
+  double *mp_fMaxSaplingRadius;
 
   /**Minimum sapling height. For doing neighbor searches.*/
   float m_fMinSaplingHeight;

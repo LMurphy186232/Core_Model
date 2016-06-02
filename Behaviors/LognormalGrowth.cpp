@@ -27,7 +27,7 @@ clLognormalGrowth::clLognormalGrowth( clSimManager * p_oSimManager ) :
     m_sXMLRoot = "LognormalGrowth";
 
     m_fConversionFactor = 0;
-    m_fNumberOfYearsPerTimestep = 0;
+    m_iNumberOfYearsPerTimestep = 0;
   }
   catch ( modelErr & err )
   {
@@ -71,7 +71,7 @@ void clLognormalGrowth::DoShellSetup( DOMDocument * p_oDoc )
     clPopulationBase * p_oTemp = mp_oSimManager->GetPopulationObject( "treepopulation" );
     clTreePopulation * p_oPop = ( clTreePopulation * ) p_oTemp;
     DOMElement * p_oElement = p_oDoc->getDocumentElement();
-    floatVal * p_fTempValues; //for getting species-specific values
+    doubleVal * p_fTempValues; //for getting species-specific values
     short int iNumSpecies = p_oPop->GetNumberOfSpecies(), i;
 
     //Conversion factor
@@ -84,7 +84,7 @@ void clLognormalGrowth::DoShellSetup( DOMDocument * p_oDoc )
       m_fConversionFactor = 0.2;
     }
 
-    m_fNumberOfYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_iNumberOfYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
     //Make the list of indexes
     mp_iIndexes = new short int[iNumSpecies];
@@ -92,13 +92,13 @@ void clLognormalGrowth::DoShellSetup( DOMDocument * p_oDoc )
       mp_iIndexes[mp_iWhatSpecies[i]] = i;
 
     //Declare the arrays we'd like read
-    mp_fIncAtDiam36 = new float[m_iNumBehaviorSpecies];
-    mp_fShape = new float[m_iNumBehaviorSpecies];
-    mp_fShade = new float[m_iNumBehaviorSpecies];
+    mp_fIncAtDiam36 = new double[m_iNumBehaviorSpecies];
+    mp_fShape = new double[m_iNumBehaviorSpecies];
+    mp_fShade = new double[m_iNumBehaviorSpecies];
 
     //Declare the species-specific temp array and pre-load with the species that
     //this behavior affects
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -259,10 +259,10 @@ float clLognormalGrowth::CalcHeightGrowthValue(clTree *p_oTree, clTreePopulation
   p_oTree->GetValue(iDiamCode, &fDiam);
 
   //Calculate the diameter increment
-  fDiamIncrement = fDiameterGrowth / m_fNumberOfYearsPerTimestep;
+  fDiamIncrement = fDiameterGrowth / m_iNumberOfYearsPerTimestep;
 
   //Increment the height
-  for (i = 0; i < m_fNumberOfYearsPerTimestep; i++) {
+  for (i = 0; i < m_iNumberOfYearsPerTimestep; i++) {
     fHeightIncrement += CalculateFunctionValue(iSpecies, fGLI, fDiam);
     fDiam += fDiamIncrement;
   }
@@ -287,7 +287,7 @@ float clLognormalGrowth::CalcDiameterGrowthValue(clTree *p_oTree, clTreePopulati
   p_oTree->GetValue(iDiamCode, &fDiam);
 
   //Increment the height
-  for (i = 0; i < m_fNumberOfYearsPerTimestep; i++) {
+  for (i = 0; i < m_iNumberOfYearsPerTimestep; i++) {
     fDiamIncrement = CalculateFunctionValue(iSpecies, fGLI, fDiam) * m_fConversionFactor;
     fTotalDiamIncrement += fDiamIncrement;
     fDiam += fDiamIncrement;

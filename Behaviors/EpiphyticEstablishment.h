@@ -117,22 +117,22 @@ public:
   char *m_cQuery;
 
   /**a in the seedling probability equation.  Array size is number of species.*/
-  float *mp_fA;
+  double *mp_fA;
 
   /**b in the seedling probability equation.  Array size is number of species.*/
-  float *mp_fB;
+  double *mp_fB;
 
   /**c in the seedling probability equation.  Array size is number of species.*/
-  float *mp_fC;
+  double *mp_fC;
 
   /**m in the seedling height equation.  Array size is number of species.*/
-  float *mp_fM;
+  double *mp_fM;
 
   /**n in the seedling height equation.  Array size is number of species.*/
-  float *mp_fN;
+  double *mp_fN;
 
   /**Maximum search distance for shading neighbors.*/
-  float m_fMaxSearchDistance;
+  double m_fMaxSearchDistance;
 
   /**Species of seedlings to disperse.*/
   int m_iSeedlingSpecies;

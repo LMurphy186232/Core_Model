@@ -77,32 +77,32 @@ class clPostHarvestSkiddingMort : virtual public clMortalityBase {
   protected:
 
   /**Parameter for the annual mortality rate before harvesting.**/
-  float *mp_fPreHarvestBackgroundMort;
+  double *mp_fPreHarvestBackgroundMort;
   /**Parameter for the basic post-harvest increase in windthrow mortality.**/
-  float *mp_fWindthrowHarvestBasicProb;
+  double *mp_fWindthrowHarvestBasicProb;
   /**Parameter for the basic post-harvest increase in snag-recruitment mortality**/
-  float *mp_fSnagRecruitHarvestBasicProb;
+  double *mp_fSnagRecruitHarvestBasicProb;
   /**Parameter for the increase in post-harvest windthrow mortality with size.**/
-  float *mp_fWindthrowSizeEffect;
+  double *mp_fWindthrowSizeEffect;
   /**Parameter for the increase in post-harvest windthrow mortality with nearby harvesting.**/
-  float *mp_fWindthrowHarvestIntensityEffect;
+  double *mp_fWindthrowHarvestIntensityEffect;
   /**Parameter for the increase in post-harvest snag-recruitment mortality with nearby harvesting.**/
-  float *mp_fSnagRecruitHarvestIntensityEffect;
+  double *mp_fSnagRecruitHarvestIntensityEffect;
   /**Parameter for the decrease in post-harvest windthrow mortality with crowding.**/
-  float *mp_fWindthrowCrowdingEffect;
+  double *mp_fWindthrowCrowdingEffect;
   /**Parameter for the increase in post-harvest snag-recruitment mortality with crowding.**/
-  float *mp_fSnagRecruitCrowdingEffect;
+  double *mp_fSnagRecruitCrowdingEffect;
   /**Parameter for rate of decrease in post-harvest windthrow mortality with time since harvest.**/
-  float *mp_fWindthrowHarvestRateParam;
+  double *mp_fWindthrowHarvestRateParam;
   /**Parameter for rate of decrease in post-harvest snag-recruitment mortality with time since harvest.**/
-  float *mp_fSnagRecruitHarvestRateParam;
+  double *mp_fSnagRecruitHarvestRateParam;
   /**Parameter for background post-harvest windthrow mortality.**/
-  float *mp_fWindthrowBackgroundProb;
+  double *mp_fWindthrowBackgroundProb;
   /**Parameter for background post-harvest snag-recruitment mortality.**/
-  float *mp_fSnagRecruitBackgroundProb;
+  double *mp_fSnagRecruitBackgroundProb;
 
   /**Distance from a tree at which local basal area is calculated for crowding effect.**/
-  float m_fCrowdingEffectRadius;
+  double m_fCrowdingEffectRadius;
 
 
   /**Code for Harvest Type in Harvest Results grid.**/
@@ -129,7 +129,7 @@ class clPostHarvestSkiddingMort : virtual public clMortalityBase {
 
 
 
-  float m_fNumberYearsPerTimestep; /**<Number of years per timestep*/
+  int m_iNumberYearsPerTimestep; /**<Number of years per timestep*/
 
   /**
   * This creates the Years Since Harvest grid at the beginning of the simulation, and

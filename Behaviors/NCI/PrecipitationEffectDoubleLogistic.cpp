@@ -34,9 +34,9 @@ clPrecipitationEffectDoubleLogistic::~clPrecipitationEffectDoubleLogistic() {
 ////////////////////////////////////////////////////////////////////////////
 // CalculatePrecipitationEffect
 ////////////////////////////////////////////////////////////////////////////
-float clPrecipitationEffectDoubleLogistic::CalculatePrecipitationEffect(clPlot *p_oPlot, int iSpecies) {
-  float fEffect,
-        fPpt = ((p_oPlot)->*(this->m_precip))();
+double clPrecipitationEffectDoubleLogistic::CalculatePrecipitationEffect(clPlot *p_oPlot, int iSpecies) {
+  double fEffect,
+         fPpt = ((p_oPlot)->*(this->m_precip))();
   fEffect = (mp_fAl[iSpecies] + ((1-mp_fAl[iSpecies])/(1+pow(mp_fBl[iSpecies]/fPpt, mp_fCl[iSpecies])))) *
             (mp_fAh[iSpecies] + ((1-mp_fAh[iSpecies])/(1+pow(fPpt/mp_fBh[iSpecies], mp_fCh[iSpecies]))));
   if (fEffect < 0) fEffect = 0;
@@ -48,20 +48,20 @@ float clPrecipitationEffectDoubleLogistic::CalculatePrecipitationEffect(clPlot *
 // DoSetup
 ////////////////////////////////////////////////////////////////////////////
 void clPrecipitationEffectDoubleLogistic::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) {
-  floatVal * p_fTempValues; //for getting species-specific values
+  doubleVal * p_fTempValues; //for getting species-specific values
   int iNumBehaviorSpecies = p_oNCI->GetNumBehaviorSpecies(),
       iNumTotalSpecies = p_oPop->GetNumberOfSpecies(), i, iPrecipType;
 
-  mp_fAl = new float[iNumTotalSpecies];
-  mp_fBl = new float[iNumTotalSpecies];
-  mp_fCl = new float[iNumTotalSpecies];
-  mp_fAh = new float[iNumTotalSpecies];
-  mp_fBh = new float[iNumTotalSpecies];
-  mp_fCh = new float[iNumTotalSpecies];
+  mp_fAl = new double[iNumTotalSpecies];
+  mp_fBl = new double[iNumTotalSpecies];
+  mp_fCl = new double[iNumTotalSpecies];
+  mp_fAh = new double[iNumTotalSpecies];
+  mp_fBh = new double[iNumTotalSpecies];
+  mp_fCh = new double[iNumTotalSpecies];
 
-  //Set up our floatVal array that will extract values only for the species
+  //Set up our doubleVal array that will extract values only for the species
   //assigned to this behavior
-  p_fTempValues = new floatVal[iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[iNumBehaviorSpecies];
   for ( i = 0; i < iNumBehaviorSpecies; i++ ) p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
 
   //Precipitation effect al

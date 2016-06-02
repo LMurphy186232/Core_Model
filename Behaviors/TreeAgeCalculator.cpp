@@ -224,8 +224,7 @@ void clTreeAgeCalculator::Action() {
           ( clTreePopulation * ) mp_oSimManager->GetPopulationObject("treepopulation");
   clTreeSearch * p_oBehaviorTrees = p_oPop->Find(m_cQuery);
   clTree * p_oTree;
-  int iNumYearsPerTimestep =
-      ( int )mp_oSimManager->GetNumberOfYearsPerTimestep(), iSp, iTp, iAge;
+  int iNumYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep(), iSp, iTp, iAge;
 
   try
   {

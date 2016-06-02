@@ -11,10 +11,10 @@
 using namespace xercesc;
 using namespace std;
 //////////////////////////////////////////////////////////////////////////////
-// FillSpeciesSpecificValue() - with floatVal array
+// FillSpeciesSpecificValue() - with doubleVal array
 /////////////////////////////////////////////////////////////////////////////*/
-void FillSpeciesSpecificValue( xercesc::DOMElement *p_oParent, string sTagName,
-    string sSubTagName, floatVal *p_array, int iNumSpecies,
+/*void FillSpeciesSpecificValue( xercesc::DOMElement *p_oParent, string sTagName,
+    string sSubTagName, doubleVal *p_array, int iNumSpecies,
     clTreePopulation *p_oPop, bool bRequired) {
   try {
     DOMNodeList *p_oNodeList;  //node list object - for catching all nodes with
@@ -138,7 +138,7 @@ void FillSpeciesSpecificValue( xercesc::DOMElement *p_oParent, string sTagName,
     stcErr.sFunction = "FillSpeciesSpecificValue";
     throw(stcErr);
   }
-}
+}*/
 
 //////////////////////////////////////////////////////////////////////////////
 // FillSpeciesSpecificValue() - with doubleVal array
@@ -548,7 +548,7 @@ void FillSpeciesSpecificValue( xercesc::DOMElement *p_oParent, string sTagName,
 //////////////////////////////////////////////////////////////////////////////
 // FillSpeciesSpecificValue() - with float array (get all species)
 /////////////////////////////////////////////////////////////////////////////*/
-void FillSpeciesSpecificValue(xercesc::DOMElement *p_oParent, string sTagName,
+/*void FillSpeciesSpecificValue(xercesc::DOMElement *p_oParent, string sTagName,
     string sSubTagName, float *p_array, clTreePopulation *p_oPop,
     bool bRequired) {
   try {
@@ -668,7 +668,7 @@ void FillSpeciesSpecificValue(xercesc::DOMElement *p_oParent, string sTagName,
     stcErr.sFunction = "FillSpeciesSpecificValue";
     throw(stcErr);
   }
-}
+}*/
 
 //////////////////////////////////////////////////////////////////////////////
 // FillSpeciesSpecificValue() - with double array (get all species)
@@ -1034,7 +1034,7 @@ void FillSingleValue(xercesc::DOMElement *p_oParent,
 ///////////////////////////////////////////////////////////////////////////////
 // FillSingleValue() - Float version
 //////////////////////////////////////////////////////////////////////////////
-void FillSingleValue(xercesc::DOMElement *p_oParent,
+/*void FillSingleValue(xercesc::DOMElement *p_oParent,
     string sTagName, float *p_fValToFill, bool bRequired) {
   try {
     DOMNodeList *p_oNodeList; //for searching the document
@@ -1111,7 +1111,7 @@ void FillSingleValue(xercesc::DOMElement *p_oParent,
     stcErr.sFunction = "FillSingleValue(float)";
     throw(stcErr);
   }
-}
+}*/
 
 ///////////////////////////////////////////////////////////////////////////////
 // FillSingleValue() - double version

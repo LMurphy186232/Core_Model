@@ -61,11 +61,11 @@ class clNonSpatialDispersal : virtual public clDisperseBase {
   protected:
 
   /**Array of species with each one's dbh for reproduction*/
-  float *mp_fDbhForReproduction;
+  double *mp_fDbhForReproduction;
   /**Slope of the lambda function - sized number of species.*/
-  float *mp_fSlopeOfLambda;
+  double *mp_fSlopeOfLambda;
   /**Intercept of the lambda function - sized number of species.*/
-  float *mp_fInterceptOfLambda;
+  double *mp_fInterceptOfLambda;
   /**Area of plot in hectares, for scaling basal area*/
   float m_fAreaOfPlotInHa;
 

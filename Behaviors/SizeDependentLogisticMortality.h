@@ -60,16 +60,16 @@ public:
 protected:
 
   /**Max parameter. Array size # species */
-  float *mp_fMax;
+  double *mp_fMax;
 
   /**X0 parameter. Array size # species */
-  float *mp_fX0;
+  double *mp_fX0;
 
   /**Xb parameter. Array size # species */
-  float *mp_fXb;
+  double *mp_fXb;
 
   /**Number years/timestep*/
-  float m_fNumberYearsPerTimestep;
+  int m_iNumberYearsPerTimestep;
 };
 //---------------------------------------------------------------------------
 #endif

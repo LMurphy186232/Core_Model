@@ -167,25 +167,25 @@ class clWindstorm : virtual public clBehaviorBase {
   * Annual probability of the occurence of a storm of each return interval.  If
   * the user has set the storm severity of a given return interval to 0, its
   * probability is also set to 0. Array size is m_iNumReturnIntervals.*/
-  float *mp_fStormProbabilities;
+  double *mp_fStormProbabilities;
 
   /** Severity of each storm return interval.  Array size is
   m_iNumReturnIntervals. */
-  float *mp_fStormSeverities;
+  double *mp_fStormSeverities;
 
   /** Storm intercept for tree mortality (a) parameter.  Array size is
    * total # species. */
-  float *mp_fA;
+  double *mp_fA;
 
   /** The "b" parameter for each species.  Array size is total # species. */
-  float *mp_fB;
+  double *mp_fB;
 
   /** The "d" parameter for each species.  Array size is total # species. */
-  float *mp_fC;
+  double *mp_fC;
 
   /** Minimum DBH for trees to be killed in storms.  Array size is total #
    * species. */
-  float *mp_fMinDBH;
+  double *mp_fMinDBH;
 
   /** Return codes for the "ba_x" package float data members of the "Windstorm
    * Results" grid.  Array size is total # species.*/
@@ -201,22 +201,22 @@ class clWindstorm : virtual public clBehaviorBase {
   char *m_cQuery;
 
   /** SST periodicity (Sr) */
-  float m_fSSTPeriod;
+  double m_fSSTPeriod;
 
   /** Sine function d */
-  float m_fSineD;
+  double m_fSineD;
 
   /** Sine function f */
-  float m_fSineF;
+  double m_fSineF;
 
   /** Sine function g */
-  float m_fSineG;
+  double m_fSineG;
 
   /** Trend function slope (m) */
-  float m_fTrendSlopeM;
+  double m_fTrendSlopeM;
 
   /** Trend function intercept (i) */
-  float m_fTrendInterceptI;
+  double m_fTrendInterceptI;
 
   /**The total number of storm return intervals.  Hardcoded at 11.*/
   int m_iNumReturnIntervals;

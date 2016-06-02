@@ -70,7 +70,7 @@ void clPRSemiStochGrowth::DoShellSetup( DOMDocument * p_oDoc )
   {
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
-    floatVal * p_fTempValues; //for getting species-specific values
+    doubleVal * p_fTempValues; //for getting species-specific values
     short int iNumSpecies = p_oPop->GetNumberOfSpecies(), i;
 
     //Make the list of indexes
@@ -79,15 +79,15 @@ void clPRSemiStochGrowth::DoShellSetup( DOMDocument * p_oDoc )
       mp_iIndexes[mp_iWhatSpecies[i]] = i;
 
     //Declare the arrays we'd like read
-    mp_fHeightThreshold = new float[m_iNumBehaviorSpecies];
-    mp_fA = new float[m_iNumBehaviorSpecies];
-    mp_fB = new float[m_iNumBehaviorSpecies];
-    mp_fMeanDiam = new float[m_iNumBehaviorSpecies];
-    mp_fDiamStdDev = new float[m_iNumBehaviorSpecies];
+    mp_fHeightThreshold = new double[m_iNumBehaviorSpecies];
+    mp_fA = new double[m_iNumBehaviorSpecies];
+    mp_fB = new double[m_iNumBehaviorSpecies];
+    mp_fMeanDiam = new double[m_iNumBehaviorSpecies];
+    mp_fDiamStdDev = new double[m_iNumBehaviorSpecies];
 
     //Declare the species-specific temp array and pre-load with the species that
     //this behavior affects
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 

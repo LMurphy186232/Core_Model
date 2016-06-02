@@ -8,7 +8,7 @@
  */
 class clDamageEffectNone: virtual public clDamageEffectBase {
 public:
-  float CalculateDamageEffect(clTree *p_oTree) {return 1;};
+  double CalculateDamageEffect(clTree *p_oTree) {return 1;};
   void DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) {;};
 };
 

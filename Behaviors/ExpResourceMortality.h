@@ -110,24 +110,24 @@ class clExpResourceMortality : virtual public clMortalityBase {
 
   /**Mortality at zero growth parameter - "a" in equation above.  Array size is
    * number of behavior species.*/
-  float *mp_fA;
+  double *mp_fA;
 
   /**Light dependent mortality parameter - "b" in equation above.  Array size
    * is number of behavior species.*/
-  float *mp_fB;
+  double *mp_fB;
 
   /**Resource dependent mortality parameter - "c" in equation above.  Array
    * size is number of behavior species.*/
-  float *mp_fC;
+  double *mp_fC;
 
   /**"d" in equation above.  Array size is number of behavior species.*/
-  float *mp_fD;
+  double *mp_fD;
 
   /**For array access*/
   short int *mp_iIndexes;
 
   /**Number of years per timestep*/
-  float m_fNumberYearsPerTimestep;
+  int m_iNumberYearsPerTimestep;
 
   /**Index for "Resource" data member of the "Resource" grid*/
   short int m_iResourceCode;

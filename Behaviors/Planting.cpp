@@ -80,8 +80,8 @@ void clPlant::GetData(DOMDocument *p_oDoc) {
               *p_oChildElement;
    XMLCh *sVal;
    std::string sTemp;
-   floatVal *p_fVals = NULL;//for extracting float data from parameter file
-   float fTemp;             //for extracting float data from parameter file
+   doubleVal *p_fVals = NULL;//for extracting float data from parameter file
+   double fTemp;             //for extracting float data from parameter file
    int iNumPlantEvents,     //total number of plant events to extract
        iX, iY,              //X and Y grid values for package
        iNumberTimesteps = mp_oSimManager->GetNumberOfTimesteps(),
@@ -221,15 +221,15 @@ void clPlant::GetData(DOMDocument *p_oDoc) {
 
      //Get the spacing distance or density
      FillSingleValue(p_oElement, "pl_distanceOrDensity", &fTemp, true);
-     p_oNewPackage->SetValue(m_iSpacingOrDensityCode, fTemp);
+     p_oNewPackage->SetValue(m_iSpacingOrDensityCode, (float)fTemp);
 
-     //Create the floatVal array and load it with the species we've been given
+     //Create the doubleVal array and load it with the species we've been given
      iTemp = 0;
      for (j = 0; j < iNumSpecies; j++)
        if (p_bSpeciesList[j]) iTemp++;
 
      if (p_fVals) delete[] p_fVals;
-     p_fVals = new floatVal[iTemp];
+     p_fVals = new doubleVal[iTemp];
      iTemp = 0;
      for (j = 0; j < iNumSpecies; j++)
        if (p_bSpeciesList[j]) {
@@ -244,7 +244,7 @@ void clPlant::GetData(DOMDocument *p_oDoc) {
      //Transfer this to our package
      for (j = 0; j < iTemp; j++)
        p_oNewPackage->SetValue(mp_iAmtPlantCodes[p_fVals[j].code],
-                             p_fVals[j].val);
+                             (float)p_fVals[j].val);
 
 
 
@@ -301,14 +301,14 @@ void clPlant::GetData(DOMDocument *p_oDoc) {
      } //end of for (j = 0; j < iNumChildren; j++)
    } //end of for (i = 0; i < iNumPlantEvents; i++)
 
-   //Now get the new diam10 values, if they exist - load the floatVal array with
+   //Now get the new diam10 values, if they exist - load the doubleVal array with
    //the master species list representing any species that was in a plant event
    iTemp = 0;
    for (i = 0; i < iNumSpecies; i++)
      if (p_bMasterSpeciesList[i]) iTemp++;
 
    if (p_fVals) delete[] p_fVals;
-   p_fVals = new floatVal[iTemp];
+   p_fVals = new doubleVal[iTemp];
    iTemp = 0;
    for (i = 0; i < iNumSpecies; i++)
      if (p_bMasterSpeciesList[i]) {

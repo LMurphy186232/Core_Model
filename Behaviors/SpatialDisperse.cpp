@@ -37,7 +37,7 @@ clSpatialDispersal::clSpatialDispersal( clSimManager * p_oSimManager ) :
     mp_bIsUsed = NULL;
     m_cQuery = NULL;
 
-   m_fNumYearsPerTimestep = 0;
+   m_iNumYearsPerTimestep = 0;
    m_iMaxDistance = 0;
    m_bStumps = false;
    m_bIsGap = false;
@@ -142,41 +142,41 @@ void clSpatialDispersal::DeclareArrays()
 {
   int i, j, k;
   //Declare our data arrays
-  mp_fDbhForReproduction = new float[m_iTotalSpecies];
+  mp_fDbhForReproduction = new double[m_iTotalSpecies];
 
-  mp_fDispersalX0 = new float * * [m_iNumFunctions];
-  mp_fThetaXb = new float * * [m_iNumFunctions];
-  mp_fBeta = new float * * [m_iNumFunctions];
-  mp_fStr = new float * * [m_iNumFunctions];
-  mp_fFecundity = new float * * [m_iNumFunctions];
-  mp_fCumProb = new float * * * [m_iNumFunctions];
+  mp_fDispersalX0 = new double * * [m_iNumFunctions];
+  mp_fThetaXb = new double * * [m_iNumFunctions];
+  mp_fBeta = new double * * [m_iNumFunctions];
+  mp_fStr = new double * * [m_iNumFunctions];
+  mp_fFecundity = new double * * [m_iNumFunctions];
+  mp_fCumProb = new double * * * [m_iNumFunctions];
   if ( m_bStumps )
   {
-    mp_fStumpStr = new float[m_iNumBehaviorSpecies];
-    mp_fStumpBeta = new float[m_iNumBehaviorSpecies];
-    mp_fStumpFecundity = new float[m_iNumBehaviorSpecies];
+    mp_fStumpStr = new double[m_iNumBehaviorSpecies];
+    mp_fStumpBeta = new double[m_iNumBehaviorSpecies];
+    mp_fStumpFecundity = new double[m_iNumBehaviorSpecies];
   }
 
   for ( i = 0; i < m_iNumFunctions; i++ )
   {
-    mp_fDispersalX0[i] = new float * [m_iNumCovers];
-    mp_fThetaXb[i] = new float * [m_iNumCovers];
-    mp_fBeta[i] = new float * [m_iNumCovers];
-    mp_fStr[i] = new float * [m_iNumCovers];
-    mp_fFecundity[i] = new float * [m_iNumCovers];
-    mp_fCumProb[i] = new float * * [m_iNumCovers];
+    mp_fDispersalX0[i] = new double * [m_iNumCovers];
+    mp_fThetaXb[i] = new double * [m_iNumCovers];
+    mp_fBeta[i] = new double * [m_iNumCovers];
+    mp_fStr[i] = new double * [m_iNumCovers];
+    mp_fFecundity[i] = new double * [m_iNumCovers];
+    mp_fCumProb[i] = new double * * [m_iNumCovers];
 
 
     for ( j = 0; j < m_iNumCovers; j++ )
     {
       if ( canopy == j || m_bIsGap )
       {
-        mp_fDispersalX0[i] [j] = new float[m_iNumBehaviorSpecies];
-        mp_fThetaXb[i] [j] = new float[m_iNumBehaviorSpecies];
-        mp_fBeta[i] [j] = new float[m_iNumBehaviorSpecies];
-        mp_fStr[i] [j] = new float[m_iNumBehaviorSpecies];
-        mp_fFecundity[i] [j] = new float[m_iNumBehaviorSpecies];
-        mp_fCumProb[i] [j] = new float * [m_iNumBehaviorSpecies];
+        mp_fDispersalX0[i] [j] = new double[m_iNumBehaviorSpecies];
+        mp_fThetaXb[i] [j] = new double[m_iNumBehaviorSpecies];
+        mp_fBeta[i] [j] = new double[m_iNumBehaviorSpecies];
+        mp_fStr[i] [j] = new double[m_iNumBehaviorSpecies];
+        mp_fFecundity[i] [j] = new double[m_iNumBehaviorSpecies];
+        mp_fCumProb[i] [j] = new double * [m_iNumBehaviorSpecies];
 
         //Declare these later - only those that are needed
         for ( k = 0; k < m_iNumBehaviorSpecies; k++ )
@@ -218,7 +218,7 @@ void clSpatialDispersal::DoShellSetup( xercesc::DOMDocument * p_oDoc )
     int i;
     bool bAdults = false, bSaplings = false;
 
-    m_fNumYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_iNumYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
     m_bStumps = false;
 
@@ -307,7 +307,7 @@ void clSpatialDispersal::PopulateUsedTable( clTreePopulation * p_oPop )
 ///////////////////////////////////////////////////////////////////////////////
 void clSpatialDispersal::GetParameterFileData( xercesc::DOMDocument * p_oDoc )
 {
-  floatVal * p_fTemp = NULL; //for getting species-specific values
+  doubleVal * p_fTemp = NULL; //for getting species-specific values
   intVal * p_iTemp = NULL; //for getting species-specific values
   try {
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
@@ -323,7 +323,7 @@ void clSpatialDispersal::GetParameterFileData( xercesc::DOMDocument * p_oDoc )
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_iTemp[i].code = mp_iWhatSpecies[i];
 
-    p_fTemp = new floatVal[m_iNumBehaviorSpecies];
+    p_fTemp = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTemp[i].code = mp_iWhatSpecies[i];
 
@@ -374,7 +374,7 @@ void clSpatialDispersal::GetParameterFileData( xercesc::DOMDocument * p_oDoc )
 
     //Now declare the float temp array to match and load with these species
     delete[] p_fTemp; p_fTemp = NULL;
-    p_fTemp = new floatVal[iNumFunctionSpecies];
+    p_fTemp = new doubleVal[iNumFunctionSpecies];
     iNumFunctionSpecies = 0;
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
       if ( weibull == mp_iWhatFunction[canopy] [i] ) {
@@ -440,7 +440,7 @@ void clSpatialDispersal::GetParameterFileData( xercesc::DOMDocument * p_oDoc )
 
     //Now declare the float temp array to match and load with these species
     delete[] p_fTemp; p_fTemp = NULL;
-    p_fTemp = new floatVal[iNumFunctionSpecies];
+    p_fTemp = new doubleVal[iNumFunctionSpecies];
     iNumFunctionSpecies = 0;
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
     {
@@ -526,7 +526,7 @@ void clSpatialDispersal::GetParameterFileData( xercesc::DOMDocument * p_oDoc )
 
       //Now declare the float temp array to match and load with these species
       delete[] p_fTemp; p_fTemp = NULL;
-      p_fTemp = new floatVal[iNumFunctionSpecies];
+      p_fTemp = new doubleVal[iNumFunctionSpecies];
       iNumFunctionSpecies = 0;
       for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       {
@@ -595,7 +595,7 @@ void clSpatialDispersal::GetParameterFileData( xercesc::DOMDocument * p_oDoc )
 
       //Now declare the float temp array to match and load with these species
       delete[] p_fTemp; p_fTemp = NULL;
-      p_fTemp = new floatVal[iNumFunctionSpecies];
+      p_fTemp = new doubleVal[iNumFunctionSpecies];
       iNumFunctionSpecies = 0;
       for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       {
@@ -656,7 +656,7 @@ void clSpatialDispersal::GetParameterFileData( xercesc::DOMDocument * p_oDoc )
 
       //Now declare the float temp array to match and load with these species
       delete[] p_fTemp; p_fTemp = NULL;
-      p_fTemp = new floatVal[iNumFunctionSpecies];
+      p_fTemp = new doubleVal[iNumFunctionSpecies];
       iNumFunctionSpecies = 0;
       for ( i = 0; i < m_iNumSpeciesTypeCombos; i++ )
         if ( clTreePopulation::stump == mp_whatSpeciesTypeCombos[i].iType )
@@ -747,7 +747,7 @@ void clSpatialDispersal::CalcFecAndFunctions()
                  mp_fStr[i] [j] [mp_iIndexes[mp_iWhatSpecies[k]]]
                  / pow( 30, mp_fBeta[i] [j] [mp_iIndexes[mp_iWhatSpecies[k]]] );
 
-            mp_fCumProb[i] [j] [k] = new float[m_iMaxDistance];
+            mp_fCumProb[i] [j] [k] = new double[m_iMaxDistance];
 
             CalculateProbabilityDistribution( mp_fCumProb[i] [j] [k], m_iMaxDistance, mp_iWhatSpecies[k], iFunction, iCover );
           }
@@ -768,7 +768,7 @@ void clSpatialDispersal::CalcFecAndFunctions()
                mp_fStr[i] [canopy] [mp_iIndexes[mp_iWhatSpecies[k]]]
                / pow( 30, mp_fBeta[i] [canopy] [mp_iIndexes[mp_iWhatSpecies[k]]] );
 
-          mp_fCumProb[i] [canopy] [k] = new float[m_iMaxDistance];
+          mp_fCumProb[i] [canopy] [k] = new double[m_iMaxDistance];
 
           CalculateProbabilityDistribution( mp_fCumProb[i] [canopy] [k], m_iMaxDistance, mp_iWhatSpecies[k], iFunction, canopy );
         }
@@ -790,7 +790,7 @@ void clSpatialDispersal::CalcFecAndFunctions()
 //////////////////////////////////////////////////////////////////////////////
 // CalculateProbabilityDistribution()
 /////////////////////////////////////////////////////////////////////////////
-void clSpatialDispersal::CalculateProbabilityDistribution( float * p_fProbArray, int iMaxDistance, int iSpecies,
+void clSpatialDispersal::CalculateProbabilityDistribution( double * p_fProbArray, int iMaxDistance, int iSpecies,
      function iFunction, cover iCover )
      {
        try
@@ -1037,7 +1037,7 @@ void clSpatialDispersal::SpatialDisperse( clTree * p_oTree, clTreePopulation * p
     if ( clTreePopulation::stump == iType )
     {
 
-      fNumSeeds = clModelMath::Round( mp_fStumpFecundity[iSpIndex] * pow( fDbh, mp_fStumpBeta[iSpIndex] ), 0 ) * m_fNumYearsPerTimestep;
+      fNumSeeds = clModelMath::Round( mp_fStumpFecundity[iSpIndex] * pow( fDbh, mp_fStumpBeta[iSpIndex] ), 0 ) * m_iNumYearsPerTimestep;
 
       //For stumps - I'm kind of guessing here.  I don't have confirmation that
       //this is how this is supposed to be calculated.
@@ -1505,7 +1505,7 @@ void clSpatialDispersal::SetNameData(std::string sNameString)
 float clSpatialDispersal::GetNumberOfSeeds(float fDbh, short int iSp, int iCover, int iFunc )
 {
   return clModelMath::RandomRound( mp_fFecundity[iFunc] [iCover] [mp_iIndexes[iSp]]
-       * pow( fDbh, mp_fBeta[iFunc] [iCover] [mp_iIndexes[iSp]] ) * m_fNumYearsPerTimestep );
+       * pow( fDbh, mp_fBeta[iFunc] [iCover] [mp_iIndexes[iSp]] ) * m_iNumYearsPerTimestep );
 }
 
 /*/ ////////////////////////////////////////////////////////////////////////////

@@ -238,8 +238,8 @@ void clHarvestInterface::GetData( xercesc::DOMDocument * p_oDoc )
     ofstream parametersOut;
     ifstream parametersIn;
     char *cData, cTemp[PARAM_FILE_LINE_LENGTH];
-    float fNumYearsPerTS = mp_oSimManager->GetNumberOfYearsPerTimestep();
-    int iNumColumns, //number of extra columns added by user to input file
+    int iNumYearsPerTS = mp_oSimManager->GetNumberOfYearsPerTimestep(),
+        iNumColumns, //number of extra columns added by user to input file
         iNumBaseColumns = 6, //number of default required columns
         iSp, iTp, i, j, //loop counters
         iNumLines, //line counter
@@ -292,7 +292,7 @@ void clHarvestInterface::GetData( xercesc::DOMDocument * p_oDoc )
       throw( stcErr );
     }
     if (m_iPeriod > 0) {
-      m_iPeriod /= (int)fNumYearsPerTS;
+      m_iPeriod /= iNumYearsPerTS;
       if (m_iPeriod < 1)
         m_iPeriod = 1;
     }

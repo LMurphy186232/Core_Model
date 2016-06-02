@@ -11,7 +11,7 @@ using namespace std;
 // Constructor
 //////////////////////////////////////////////////////////////////////////////
 clGrid::clGrid(clSimManager *p_oSimManager, const std::string sGridName,
-    short int iNumIntVals, short int iNumFloatVals, short int iNumStringVals,
+    short int iNumIntVals, short int iNumdoubleVals, short int iNumStringVals,
     short int iNumBoolVals, float fXCellLength,  float fYCellLength) :
     clWorkerBase(p_oSimManager) {
   try {
@@ -45,7 +45,7 @@ clGrid::clGrid(clSimManager *p_oSimManager, const std::string sGridName,
       stcErr.sMoreInfo = s.str();
       throw(stcErr);
     }
-    if (iNumIntVals < 0 || iNumFloatVals < 0 || iNumStringVals < 0 ||
+    if (iNumIntVals < 0 || iNumdoubleVals < 0 || iNumStringVals < 0 ||
         iNumBoolVals < 0) {
       modelErr stcErr;
       stcErr.iErrorCode = BAD_DATA;
@@ -71,7 +71,7 @@ clGrid::clGrid(clSimManager *p_oSimManager, const std::string sGridName,
 
     //Assign the data member numbers
     m_iNumIntVals = iNumIntVals;
-    m_iNumFloatVals = iNumFloatVals;
+    m_iNumFloatVals = iNumdoubleVals;
     m_iNumStringVals = iNumStringVals;
     m_iNumBoolVals = iNumBoolVals;
 
@@ -198,7 +198,7 @@ clGrid::clGrid(clSimManager *p_oSimManager, const std::string sGridName,
 // ChangePackageDataStructure()
 /////////////////////////////////////////////////////////////////////////////
 void clGrid::ChangePackageDataStructure(short int iNumIntVals,
-    short int iNumFloatVals, short int iNumCharVals, short int iNumBoolVals) {
+    short int iNumdoubleVals, short int iNumCharVals, short int iNumBoolVals) {
   try {
     short int i;
 
@@ -226,7 +226,7 @@ void clGrid::ChangePackageDataStructure(short int iNumIntVals,
 
     //Assign the new variables
     m_iNumPackageIntVals = iNumIntVals;
-    m_iNumPackageFloatVals = iNumFloatVals;
+    m_iNumPackageFloatVals = iNumdoubleVals;
     m_iNumPackageStringVals = iNumCharVals;
     m_iNumPackageBoolVals = iNumBoolVals;
 
@@ -240,8 +240,8 @@ void clGrid::ChangePackageDataStructure(short int iNumIntVals,
     }
     if (0 == m_iNumPackageFloatVals) mp_sPackageFloatLabels = NULL;
     else {
-      mp_sPackageFloatLabels = new string[iNumFloatVals];
-      for (i = 0; i < iNumFloatVals; i++) {
+      mp_sPackageFloatLabels = new string[iNumdoubleVals];
+      for (i = 0; i < iNumdoubleVals; i++) {
         mp_sPackageFloatLabels[i] = "";
       }
     }
@@ -988,7 +988,7 @@ float clGrid::GetAverageIntValue(float fX, float fY, short int iCode,
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// GetAverageFloatValue()
+// GetAveragedoubleValue()
 /////////////////////////////////////////////////////////////////////////////
 float clGrid::GetAverageFloatValue(float fX, float fY, short int iCode,
     float fRadius) {
@@ -1157,7 +1157,7 @@ float clGrid::GetAverageIntValue(float fFromX, float fFromY, float fToX, float f
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// GetAverageFloatValue()
+// GetAveragedoubleValue()
 /////////////////////////////////////////////////////////////////////////////
 float clGrid::GetAverageFloatValue(float fFromX, float fFromY, float fToX, float fToY,
     short int iCode) {

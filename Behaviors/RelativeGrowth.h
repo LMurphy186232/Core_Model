@@ -118,10 +118,10 @@ class clRelativeGrowth : virtual public clMichMenBase {
   protected:
 
   /**Diameter or height exponent - array size is number of species*/
-  float *mp_fExp;
+  double *mp_fExp;
 
   /**Number of years per timestep - from sim manager*/
-  float m_fNumberYearsPerTimestep;
+  int m_iNumberYearsPerTimestep;
 };
 //---------------------------------------------------------------------------
 #endif

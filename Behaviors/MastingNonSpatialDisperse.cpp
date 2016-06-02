@@ -104,7 +104,7 @@ clMastingNonSpatialDisperse::~clMastingNonSpatialDisperse() {
 // DoShellSetup()
 ////////////////////////////////////////////////////////////////////////////
 void clMastingNonSpatialDisperse::DoShellSetup(DOMDocument * p_oDoc) {
-  floatVal * p_fTempValues = NULL; //for getting species-specific values
+  doubleVal * p_fTempValues = NULL; //for getting species-specific values
   intVal * p_iTempValues = NULL; //for getting species-specific values
   try
   {
@@ -115,7 +115,7 @@ void clMastingNonSpatialDisperse::DoShellSetup(DOMDocument * p_oDoc) {
 
     //Declare the temp array and populate it with the species to which this
     //behavior applies
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -125,20 +125,20 @@ void clMastingNonSpatialDisperse::DoShellSetup(DOMDocument * p_oDoc) {
 
     mp_iEvent = new mastEvent[m_iNumBehaviorSpecies];
     //Declare the parameter arrays
-    mp_fInvGaussMu = new float*[numevents];
-    mp_fInvGaussLambda = new float*[numevents];
-    mp_fNormalMean = new float*[numevents];
-    mp_fNormalStandardDev = new float*[numevents];
+    mp_fInvGaussMu = new double*[numevents];
+    mp_fInvGaussLambda = new double*[numevents];
+    mp_fNormalMean = new double*[numevents];
+    mp_fNormalStandardDev = new double*[numevents];
     mp_iFunction = new pdf*[numevents];
     for (i = 0; i < numevents; i++) {
-      mp_fInvGaussMu[i] = new float[m_iNumBehaviorSpecies];
-      mp_fInvGaussLambda[i] = new float[m_iNumBehaviorSpecies];
-      mp_fNormalMean[i] = new float[m_iNumBehaviorSpecies];
-      mp_fNormalStandardDev[i] = new float[m_iNumBehaviorSpecies];
+      mp_fInvGaussMu[i] = new double[m_iNumBehaviorSpecies];
+      mp_fInvGaussLambda[i] = new double[m_iNumBehaviorSpecies];
+      mp_fNormalMean[i] = new double[m_iNumBehaviorSpecies];
+      mp_fNormalStandardDev[i] = new double[m_iNumBehaviorSpecies];
       mp_iFunction[i] = new pdf[m_iNumBehaviorSpecies];
     }
 
-    mp_fBinomialP = new float[m_iNumBehaviorSpecies];
+    mp_fBinomialP = new double[m_iNumBehaviorSpecies];
     mp_iGroup = new short int[m_iNumBehaviorSpecies];
 
     mp_fBasalArea = new float[m_iNumBehaviorSpecies];
@@ -219,7 +219,7 @@ void clMastingNonSpatialDisperse::DoShellSetup(DOMDocument * p_oDoc) {
 
     //Now declare the float temp array to match and load with these species
     delete[] p_fTempValues; p_fTempValues = NULL;
-    p_fTempValues = new floatVal[iNumFunctionSpecies];
+    p_fTempValues = new doubleVal[iNumFunctionSpecies];
     iNumFunctionSpecies = 0;
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
       if ( inverse_gaussian_pdf == mp_iFunction[mast][i] ) {
@@ -289,7 +289,7 @@ void clMastingNonSpatialDisperse::DoShellSetup(DOMDocument * p_oDoc) {
 
     //Now declare the float temp array to match and load with these species
     delete[] p_fTempValues; p_fTempValues = NULL;
-    p_fTempValues = new floatVal[iNumFunctionSpecies];
+    p_fTempValues = new doubleVal[iNumFunctionSpecies];
     iNumFunctionSpecies = 0;
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
       if ( normal_pdf == mp_iFunction[mast][i] ) {
@@ -333,7 +333,7 @@ void clMastingNonSpatialDisperse::DoShellSetup(DOMDocument * p_oDoc) {
 
     //Now declare the float temp array to match and load with these species
     delete[] p_fTempValues; p_fTempValues = NULL;
-    p_fTempValues = new floatVal[iNumFunctionSpecies];
+    p_fTempValues = new doubleVal[iNumFunctionSpecies];
     iNumFunctionSpecies = 0;
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
       if ( inverse_gaussian_pdf == mp_iFunction[nonmast][i] ) {
@@ -401,7 +401,7 @@ void clMastingNonSpatialDisperse::DoShellSetup(DOMDocument * p_oDoc) {
 
     //Now declare the float temp array to match and load with these species
     delete[] p_fTempValues; p_fTempValues = NULL;
-    p_fTempValues = new floatVal[iNumFunctionSpecies];
+    p_fTempValues = new doubleVal[iNumFunctionSpecies];
     iNumFunctionSpecies = 0;
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
       if ( normal_pdf == mp_iFunction[nonmast][i] ) {
@@ -478,7 +478,6 @@ void clMastingNonSpatialDisperse::AddSeeds() {
     float fNumGridSeeds, //seeds already in one grid cell
           fNumSeeds,
           fTotalBasalArea=0, //total group basal area
-          fNumYrs = mp_oSimManager->GetNumberOfYearsPerTimestep(),
           //grid cell lengths in the middle of the grid
           fMidX = mp_oSeedGrid->GetLengthXCells(),
           fMidY = mp_oSeedGrid->GetLengthYCells(),
@@ -488,6 +487,7 @@ void clMastingNonSpatialDisperse::AddSeeds() {
           fEndY = p_oPlot->GetYPlotLength() - ((iNumYCells - 1)*fMidY),
           fArea, //one cell's area
           fCellX, fCellY; //one cell's X and Y dimensions
+    int iNumYrs = mp_oSimManager->GetNumberOfYearsPerTimestep();
     short int i, j, iNumInGroup, iX, iY;
   try {
     p_bDone = new bool[m_iNumBehaviorSpecies]; //for group management
@@ -532,7 +532,7 @@ void clMastingNonSpatialDisperse::AddSeeds() {
         if (fNumSeeds < 0) fNumSeeds = 0;
 
         //Scale from seeds per year to seeds per timestep
-        fNumSeeds *= fNumYrs;
+        fNumSeeds *= iNumYrs;
 
         //Split seeds by group basal area - first get total basal area for
         //group

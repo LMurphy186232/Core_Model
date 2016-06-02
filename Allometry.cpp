@@ -238,9 +238,9 @@ void clAllometry::GetData(DOMDocument * p_oDoc, clTreePopulation * p_oPop) {
   m_iNumSpecies = p_oPop->GetNumberOfSpecies();
 
   //Declare our arrays that we'll always need
-  mp_fMaxTreeHeight = new float[m_iNumSpecies];
-  mp_fDbhToDiam10Slope = new float[m_iNumSpecies];
-  mp_fDbhToDiam10Intercept = new float[m_iNumSpecies];
+  mp_fMaxTreeHeight = new double[m_iNumSpecies];
+  mp_fDbhToDiam10Slope = new double[m_iNumSpecies];
+  mp_fDbhToDiam10Intercept = new double[m_iNumSpecies];
 
   //Get all-species parameters
   FillSpeciesSpecificValue(p_oElement, "tr_canopyHeight", "tr_chVal",
@@ -523,7 +523,7 @@ float clAllometry::ConvertDbhToDiam10(const float & fDbh, const int & iSpecies) 
 //////////////////////////////////////////////////////////////////////////////
 // GetMaxTreeHeight()
 //////////////////////////////////////////////////////////////////////////////
-float clAllometry::GetMaxTreeHeight(int iSpecies) {
+double clAllometry::GetMaxTreeHeight(int iSpecies) {
   if (iSpecies < 0 || iSpecies >= m_iNumSpecies) {
     //invalid species - throw an error
     modelErr stcErr;
@@ -979,7 +979,7 @@ void clAllometry::DoDataUpdates() {
 // SetupAdultHeightDiam()
 //////////////////////////////////////////////////////////////////////////////
 void clAllometry::SetupAdultHeightDiam(xercesc::DOMElement * p_oElement) {
-  floatVal * p_fTemp = NULL; //for extracting values for a subset of all species
+  doubleVal * p_fTemp = NULL; //for extracting values for a subset of all species
   int * p_iWhatFunction = NULL; //for getting which function to use for each
   //species
   int i, iHowMany;
@@ -1027,7 +1027,7 @@ void clAllometry::SetupAdultHeightDiam(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (standard == p_iWhatFunction[i]) {
@@ -1038,7 +1038,7 @@ void clAllometry::SetupAdultHeightDiam(xercesc::DOMElement * p_oElement) {
 
       //Declare the arrays we'll need
       if (!mp_fSlopeAsympHeight) {
-        mp_fSlopeAsympHeight = new float[m_iNumSpecies];
+        mp_fSlopeAsympHeight = new double[m_iNumSpecies];
       }
 
       FillSpeciesSpecificValue(p_oElement, "tr_slopeOfAsymHeight",
@@ -1059,7 +1059,7 @@ void clAllometry::SetupAdultHeightDiam(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (linear == p_iWhatFunction[i]) {
@@ -1069,8 +1069,8 @@ void clAllometry::SetupAdultHeightDiam(xercesc::DOMElement * p_oElement) {
       }
 
       //Declare the arrays we'll need
-      mp_fAdultLinearSlope = new float[m_iNumSpecies];
-      mp_fAdultLinearIntercept = new float[m_iNumSpecies];
+      mp_fAdultLinearSlope = new double[m_iNumSpecies];
+      mp_fAdultLinearIntercept = new double[m_iNumSpecies];
 
       //Linear adult slope - throw an error if any values are 0
       FillSpeciesSpecificValue(p_oElement, "tr_adultLinearSlope", "tr_alsVal",
@@ -1106,7 +1106,7 @@ void clAllometry::SetupAdultHeightDiam(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (reverse_linear == p_iWhatFunction[i]) {
@@ -1115,8 +1115,8 @@ void clAllometry::SetupAdultHeightDiam(xercesc::DOMElement * p_oElement) {
         }
       }
 
-      mp_fAdultReverseLinearSlope = new float[m_iNumSpecies];
-      mp_fAdultReverseLinearIntercept = new float[m_iNumSpecies];
+      mp_fAdultReverseLinearSlope = new double[m_iNumSpecies];
+      mp_fAdultReverseLinearIntercept = new double[m_iNumSpecies];
 
       //Reverse linear adult slope - throw an error if any are 0
       FillSpeciesSpecificValue(p_oElement, "tr_adultReverseLinearSlope",
@@ -1156,7 +1156,7 @@ void clAllometry::SetupAdultHeightDiam(xercesc::DOMElement * p_oElement) {
 //////////////////////////////////////////////////////////////////////////////
 void clAllometry::SetupAdultCrownRadius(xercesc::DOMElement * p_oElement) {
 
-  floatVal * p_fTemp = NULL; //for extracting values for a subset of all species
+  doubleVal * p_fTemp = NULL; //for extracting values for a subset of all species
   int * p_iWhatFunction = NULL; //for getting which function to use for each
   //species
 
@@ -1203,7 +1203,7 @@ void clAllometry::SetupAdultCrownRadius(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (standard == p_iWhatFunction[i]) {
@@ -1214,11 +1214,11 @@ void clAllometry::SetupAdultCrownRadius(xercesc::DOMElement * p_oElement) {
 
       //Declare arrays we'll need
       if (!mp_fAsympCrownRad)
-        mp_fAsympCrownRad = new float[m_iNumSpecies];
+        mp_fAsympCrownRad = new double[m_iNumSpecies];
       if (!mp_fCrownRadExp)
-        mp_fCrownRadExp = new float[m_iNumSpecies];
+        mp_fCrownRadExp = new double[m_iNumSpecies];
       if (!mp_fMaxCrownRad)
-        mp_fMaxCrownRad = new float[m_iNumSpecies];
+        mp_fMaxCrownRad = new double[m_iNumSpecies];
 
       FillSpeciesSpecificValue(p_oElement, "tr_stdAsympCrownRad", "tr_sacrVal",
           p_fTemp, iHowMany, m_oPop, true);
@@ -1251,7 +1251,7 @@ void clAllometry::SetupAdultCrownRadius(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (linear == p_iWhatFunction[i]) {
@@ -1262,13 +1262,13 @@ void clAllometry::SetupAdultCrownRadius(xercesc::DOMElement * p_oElement) {
 
       //Declare the arrays we'll need
       if (!mp_fCRCrownRadIntercept)
-        mp_fCRCrownRadIntercept = new float[m_iNumSpecies];
+        mp_fCRCrownRadIntercept = new double[m_iNumSpecies];
       if (!mp_fCRAsympCrownRad)
-        mp_fCRAsympCrownRad = new float[m_iNumSpecies];
+        mp_fCRAsympCrownRad = new double[m_iNumSpecies];
       if (!mp_fCRCrownRadShape1)
-        mp_fCRCrownRadShape1 = new float[m_iNumSpecies];
+        mp_fCRCrownRadShape1 = new double[m_iNumSpecies];
       if (!mp_fCRCrownRadShape2)
-        mp_fCRCrownRadShape2 = new float[m_iNumSpecies];
+        mp_fCRCrownRadShape2 = new double[m_iNumSpecies];
 
       //Crown radius intercept
       FillSpeciesSpecificValue(p_oElement, "tr_chRichCrownRadIntercept",
@@ -1312,7 +1312,7 @@ void clAllometry::SetupAdultCrownRadius(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (non_spat_exp_dens_dep_cr == p_iWhatFunction[i]) {
@@ -1322,23 +1322,23 @@ void clAllometry::SetupAdultCrownRadius(xercesc::DOMElement * p_oElement) {
       }
 
       //Declare arrays we'll need
-      mp_fNonSpatDensDepInstCHA = new float[m_iNumSpecies];
-      mp_fNonSpatDensDepInstCHB = new float[m_iNumSpecies];
-      mp_fNonSpatDensDepInstCHC = new float[m_iNumSpecies];
-      mp_fNonSpatDensDepInstCHD = new float[m_iNumSpecies];
-      mp_fNonSpatDensDepInstCHE = new float[m_iNumSpecies];
-      mp_fNonSpatDensDepInstCHF = new float[m_iNumSpecies];
-      mp_fNonSpatDensDepInstCHG = new float[m_iNumSpecies];
-      mp_fNonSpatDensDepInstCHH = new float[m_iNumSpecies];
-      mp_fNonSpatDensDepInstCHI = new float[m_iNumSpecies];
-      mp_fNonSpatDensDepInstCHJ = new float[m_iNumSpecies];
-      mp_fNonSpatExpDensDepCRD1 = new float[m_iNumSpecies];
-      mp_fNonSpatExpDensDepCRA = new float[m_iNumSpecies];
-      mp_fNonSpatExpDensDepCRB = new float[m_iNumSpecies];
-      mp_fNonSpatExpDensDepCRC = new float[m_iNumSpecies];
-      mp_fNonSpatExpDensDepCRD = new float[m_iNumSpecies];
-      mp_fNonSpatExpDensDepCRE = new float[m_iNumSpecies];
-      mp_fNonSpatExpDensDepCRF = new float[m_iNumSpecies];
+      mp_fNonSpatDensDepInstCHA = new double[m_iNumSpecies];
+      mp_fNonSpatDensDepInstCHB = new double[m_iNumSpecies];
+      mp_fNonSpatDensDepInstCHC = new double[m_iNumSpecies];
+      mp_fNonSpatDensDepInstCHD = new double[m_iNumSpecies];
+      mp_fNonSpatDensDepInstCHE = new double[m_iNumSpecies];
+      mp_fNonSpatDensDepInstCHF = new double[m_iNumSpecies];
+      mp_fNonSpatDensDepInstCHG = new double[m_iNumSpecies];
+      mp_fNonSpatDensDepInstCHH = new double[m_iNumSpecies];
+      mp_fNonSpatDensDepInstCHI = new double[m_iNumSpecies];
+      mp_fNonSpatDensDepInstCHJ = new double[m_iNumSpecies];
+      mp_fNonSpatExpDensDepCRD1 = new double[m_iNumSpecies];
+      mp_fNonSpatExpDensDepCRA = new double[m_iNumSpecies];
+      mp_fNonSpatExpDensDepCRB = new double[m_iNumSpecies];
+      mp_fNonSpatExpDensDepCRC = new double[m_iNumSpecies];
+      mp_fNonSpatExpDensDepCRD = new double[m_iNumSpecies];
+      mp_fNonSpatExpDensDepCRE = new double[m_iNumSpecies];
+      mp_fNonSpatExpDensDepCRF = new double[m_iNumSpecies];
 
       FillSpeciesSpecificValue(p_oElement, "tr_nonSpatDensDepInstCHA",
           "tr_nsddichaVal", p_fTemp, iHowMany, m_oPop, true);
@@ -1440,7 +1440,7 @@ void clAllometry::SetupAdultCrownRadius(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (nci_cr == p_iWhatFunction[i]) {
@@ -1451,25 +1451,25 @@ void clAllometry::SetupAdultCrownRadius(xercesc::DOMElement * p_oElement) {
 
       //Declare arrays we'll need
       if (!mp_fNCIMaxCrownRadius)
-        mp_fNCIMaxCrownRadius = new float[m_iNumSpecies];
+        mp_fNCIMaxCrownRadius = new double[m_iNumSpecies];
       if (!mp_fNCICRAlpha)
-        mp_fNCICRAlpha = new float[m_iNumSpecies];
+        mp_fNCICRAlpha = new double[m_iNumSpecies];
       if (!mp_fNCICRBeta)
-        mp_fNCICRBeta = new float[m_iNumSpecies];
+        mp_fNCICRBeta = new double[m_iNumSpecies];
       if (!mp_fNCICRGamma)
-        mp_fNCICRGamma = new float[m_iNumSpecies];
+        mp_fNCICRGamma = new double[m_iNumSpecies];
       if (!mp_fNCICRMaxCrowdingRadius)
-        mp_fNCICRMaxCrowdingRadius = new float[m_iNumSpecies];
+        mp_fNCICRMaxCrowdingRadius = new double[m_iNumSpecies];
       if (!mp_fNCICRN)
-        mp_fNCICRN = new float[m_iNumSpecies];
+        mp_fNCICRN = new double[m_iNumSpecies];
       if (!mp_fNCICRD)
-        mp_fNCICRD = new float[m_iNumSpecies];
+        mp_fNCICRD = new double[m_iNumSpecies];
       if (!mp_fNCICRMinNeighborDBH)
-        mp_fNCICRMinNeighborDBH = new float[m_iNumSpecies];
+        mp_fNCICRMinNeighborDBH = new double[m_iNumSpecies];
       if (!mp_fNCICRLambda) {
-        mp_fNCICRLambda = new float*[m_iNumSpecies];
+        mp_fNCICRLambda = new double*[m_iNumSpecies];
         for (i = 0; i < m_iNumSpecies; i++)
-          mp_fNCICRLambda[i] = new float[m_iNumSpecies];
+          mp_fNCICRLambda[i] = new double[m_iNumSpecies];
       }
 
       FillSpeciesSpecificValue(p_oElement, "tr_nciCRMaxCrownRadius",
@@ -1543,7 +1543,7 @@ void clAllometry::SetupAdultCrownRadius(xercesc::DOMElement * p_oElement) {
 //////////////////////////////////////////////////////////////////////////////
 void clAllometry::SetupSaplingHeightDiam(xercesc::DOMElement * p_oElement) {
 
-  floatVal * p_fTemp = NULL; //for extracting values for a subset of all species
+  doubleVal * p_fTemp = NULL; //for extracting values for a subset of all species
   int * p_iWhatFunction = NULL; //for getting which function to use for each
   //species
 
@@ -1597,7 +1597,7 @@ void clAllometry::SetupSaplingHeightDiam(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (standard == p_iWhatFunction[i]) {
@@ -1607,7 +1607,7 @@ void clAllometry::SetupSaplingHeightDiam(xercesc::DOMElement * p_oElement) {
       }
 
       if (!mp_fSlopeAsympHeight) {
-        mp_fSlopeAsympHeight = new float[m_iNumSpecies];
+        mp_fSlopeAsympHeight = new double[m_iNumSpecies];
       }
 
       FillSpeciesSpecificValue(p_oElement, "tr_slopeOfAsymHeight",
@@ -1628,7 +1628,7 @@ void clAllometry::SetupSaplingHeightDiam(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (linear == p_iWhatFunction[i]) {
@@ -1638,8 +1638,8 @@ void clAllometry::SetupSaplingHeightDiam(xercesc::DOMElement * p_oElement) {
       }
 
       //Declare arrays we'll need
-      mp_fSaplingLinearSlope = new float[m_iNumSpecies];
-      mp_fSaplingLinearIntercept = new float[m_iNumSpecies];
+      mp_fSaplingLinearSlope = new double[m_iNumSpecies];
+      mp_fSaplingLinearIntercept = new double[m_iNumSpecies];
 
       //Linear sapling slope - throw an error if any values are 0
       FillSpeciesSpecificValue(p_oElement, "tr_saplingLinearSlope",
@@ -1676,7 +1676,7 @@ void clAllometry::SetupSaplingHeightDiam(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (reverse_linear == p_iWhatFunction[i]) {
@@ -1686,8 +1686,8 @@ void clAllometry::SetupSaplingHeightDiam(xercesc::DOMElement * p_oElement) {
       }
 
       //Declare arrays we'll need
-      mp_fSaplingReverseLinearSlope = new float[m_iNumSpecies];
-      mp_fSaplingReverseLinearIntercept = new float[m_iNumSpecies];
+      mp_fSaplingReverseLinearSlope = new double[m_iNumSpecies];
+      mp_fSaplingReverseLinearIntercept = new double[m_iNumSpecies];
 
       //Reverse linear sapling slope - throw an error if any values are 0
       FillSpeciesSpecificValue(p_oElement, "tr_saplingReverseLinearSlope",
@@ -1723,7 +1723,7 @@ void clAllometry::SetupSaplingHeightDiam(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (power == p_iWhatFunction[i]) {
@@ -1733,8 +1733,8 @@ void clAllometry::SetupSaplingHeightDiam(xercesc::DOMElement * p_oElement) {
       }
 
       //Declare arrays we'll need
-      mp_fPowerA = new float[m_iNumSpecies];
-      mp_fPowerExpB = new float[m_iNumSpecies];
+      mp_fPowerA = new double[m_iNumSpecies];
+      mp_fPowerExpB = new double[m_iNumSpecies];
 
       //Power function "a"
       FillSpeciesSpecificValue(p_oElement, "tr_saplingPowerA", "tr_sapaVal",
@@ -1767,7 +1767,7 @@ void clAllometry::SetupSaplingHeightDiam(xercesc::DOMElement * p_oElement) {
 //////////////////////////////////////////////////////////////////////////////
 void clAllometry::SetupSaplingCrownRadius(xercesc::DOMElement * p_oElement) {
 
-  floatVal * p_fTemp = NULL; //for extracting values for a subset of all species
+  doubleVal * p_fTemp = NULL; //for extracting values for a subset of all species
   int * p_iWhatFunction = NULL; //for getting which function to use for each
   //species
 
@@ -1810,7 +1810,7 @@ void clAllometry::SetupSaplingCrownRadius(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (standard == p_iWhatFunction[i]) {
@@ -1821,11 +1821,11 @@ void clAllometry::SetupSaplingCrownRadius(xercesc::DOMElement * p_oElement) {
 
       //Declare arrays we'll need
       if (!mp_fAsympCrownRad)
-        mp_fAsympCrownRad = new float[m_iNumSpecies];
+        mp_fAsympCrownRad = new double[m_iNumSpecies];
       if (!mp_fCrownRadExp)
-        mp_fCrownRadExp = new float[m_iNumSpecies];
+        mp_fCrownRadExp = new double[m_iNumSpecies];
       if (!mp_fMaxCrownRad)
-        mp_fMaxCrownRad = new float[m_iNumSpecies];
+        mp_fMaxCrownRad = new double[m_iNumSpecies];
 
       FillSpeciesSpecificValue(p_oElement, "tr_stdAsympCrownRad", "tr_sacrVal",
           p_fTemp, iHowMany, m_oPop, true);
@@ -1857,7 +1857,7 @@ void clAllometry::SetupSaplingCrownRadius(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (linear == p_iWhatFunction[i]) {
@@ -1868,13 +1868,13 @@ void clAllometry::SetupSaplingCrownRadius(xercesc::DOMElement * p_oElement) {
 
       //Declare the arrays we'll need
       if (!mp_fCRCrownRadIntercept)
-        mp_fCRCrownRadIntercept = new float[m_iNumSpecies];
+        mp_fCRCrownRadIntercept = new double[m_iNumSpecies];
       if (!mp_fCRAsympCrownRad)
-        mp_fCRAsympCrownRad = new float[m_iNumSpecies];
+        mp_fCRAsympCrownRad = new double[m_iNumSpecies];
       if (!mp_fCRCrownRadShape1)
-        mp_fCRCrownRadShape1 = new float[m_iNumSpecies];
+        mp_fCRCrownRadShape1 = new double[m_iNumSpecies];
       if (!mp_fCRCrownRadShape2)
-        mp_fCRCrownRadShape2 = new float[m_iNumSpecies];
+        mp_fCRCrownRadShape2 = new double[m_iNumSpecies];
 
       //Crown radius intercept
       FillSpeciesSpecificValue(p_oElement, "tr_chRichCrownRadIntercept",
@@ -1919,7 +1919,7 @@ void clAllometry::SetupSaplingCrownRadius(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (nci_cr == p_iWhatFunction[i]) {
@@ -1930,25 +1930,25 @@ void clAllometry::SetupSaplingCrownRadius(xercesc::DOMElement * p_oElement) {
 
       //Declare arrays we'll need
       if (!mp_fNCIMaxCrownRadius)
-        mp_fNCIMaxCrownRadius = new float[m_iNumSpecies];
+        mp_fNCIMaxCrownRadius = new double[m_iNumSpecies];
       if (!mp_fNCICRAlpha)
-        mp_fNCICRAlpha = new float[m_iNumSpecies];
+        mp_fNCICRAlpha = new double[m_iNumSpecies];
       if (!mp_fNCICRBeta)
-        mp_fNCICRBeta = new float[m_iNumSpecies];
+        mp_fNCICRBeta = new double[m_iNumSpecies];
       if (!mp_fNCICRGamma)
-        mp_fNCICRGamma = new float[m_iNumSpecies];
+        mp_fNCICRGamma = new double[m_iNumSpecies];
       if (!mp_fNCICRMaxCrowdingRadius)
-        mp_fNCICRMaxCrowdingRadius = new float[m_iNumSpecies];
+        mp_fNCICRMaxCrowdingRadius = new double[m_iNumSpecies];
       if (!mp_fNCICRN)
-        mp_fNCICRN = new float[m_iNumSpecies];
+        mp_fNCICRN = new double[m_iNumSpecies];
       if (!mp_fNCICRD)
-        mp_fNCICRD = new float[m_iNumSpecies];
+        mp_fNCICRD = new double[m_iNumSpecies];
       if (!mp_fNCICRMinNeighborDBH)
-        mp_fNCICRMinNeighborDBH = new float[m_iNumSpecies];
+        mp_fNCICRMinNeighborDBH = new double[m_iNumSpecies];
       if (!mp_fNCICRLambda) {
-        mp_fNCICRLambda = new float*[m_iNumSpecies];
+        mp_fNCICRLambda = new double*[m_iNumSpecies];
         for (i = 0; i < m_iNumSpecies; i++)
-          mp_fNCICRLambda[i] = new float[m_iNumSpecies];
+          mp_fNCICRLambda[i] = new double[m_iNumSpecies];
       }
 
       FillSpeciesSpecificValue(p_oElement, "tr_nciCRMaxCrownRadius",
@@ -2023,7 +2023,7 @@ void clAllometry::SetupSaplingCrownRadius(xercesc::DOMElement * p_oElement) {
 //////////////////////////////////////////////////////////////////////////////
 void clAllometry::SetupSaplingCrownDepth(xercesc::DOMElement * p_oElement) {
 
-  floatVal * p_fTemp = NULL; //for extracting values for a subset of all species
+  doubleVal * p_fTemp = NULL; //for extracting values for a subset of all species
   int * p_iWhatFunction = NULL; //for getting which function to use for each
   //species
 
@@ -2066,7 +2066,7 @@ void clAllometry::SetupSaplingCrownDepth(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (standard == p_iWhatFunction[i]) {
@@ -2077,9 +2077,9 @@ void clAllometry::SetupSaplingCrownDepth(xercesc::DOMElement * p_oElement) {
 
       //Declare arrays we'll need
       if (!mp_fAsympCrownDepth)
-        mp_fAsympCrownDepth = new float[m_iNumSpecies];
+        mp_fAsympCrownDepth = new double[m_iNumSpecies];
       if (!mp_fCrownDepthExp)
-        mp_fCrownDepthExp = new float[m_iNumSpecies];
+        mp_fCrownDepthExp = new double[m_iNumSpecies];
 
       FillSpeciesSpecificValue(p_oElement, "tr_stdAsympCrownHt", "tr_sachVal",
           p_fTemp, iHowMany, m_oPop, true);
@@ -2105,7 +2105,7 @@ void clAllometry::SetupSaplingCrownDepth(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (linear == p_iWhatFunction[i]) {
@@ -2116,13 +2116,13 @@ void clAllometry::SetupSaplingCrownDepth(xercesc::DOMElement * p_oElement) {
 
       //Declare any arrays we'll need
       if (!mp_fCRCrownHtIntercept)
-        mp_fCRCrownHtIntercept = new float[m_iNumSpecies];
+        mp_fCRCrownHtIntercept = new double[m_iNumSpecies];
       if (!mp_fCRAsympCrownHt)
-        mp_fCRAsympCrownHt = new float[m_iNumSpecies];
+        mp_fCRAsympCrownHt = new double[m_iNumSpecies];
       if (!mp_fCRCrownHtShape1)
-        mp_fCRCrownHtShape1 = new float[m_iNumSpecies];
+        mp_fCRCrownHtShape1 = new double[m_iNumSpecies];
       if (!mp_fCRCrownHtShape2)
-        mp_fCRCrownHtShape2 = new float[m_iNumSpecies];
+        mp_fCRCrownHtShape2 = new double[m_iNumSpecies];
 
       //Crown height intercept
       FillSpeciesSpecificValue(p_oElement, "tr_chRichCrownHtIntercept",
@@ -2167,7 +2167,7 @@ void clAllometry::SetupSaplingCrownDepth(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (nci_cd == p_iWhatFunction[i]) {
@@ -2178,25 +2178,25 @@ void clAllometry::SetupSaplingCrownDepth(xercesc::DOMElement * p_oElement) {
 
       //Declare arrays we'll need
       if (!mp_fNCIMaxCrownDepth)
-        mp_fNCIMaxCrownDepth = new float[m_iNumSpecies];
+        mp_fNCIMaxCrownDepth = new double[m_iNumSpecies];
       if (!mp_fNCICDAlpha)
-        mp_fNCICDAlpha = new float[m_iNumSpecies];
+        mp_fNCICDAlpha = new double[m_iNumSpecies];
       if (!mp_fNCICDBeta)
-        mp_fNCICDBeta = new float[m_iNumSpecies];
+        mp_fNCICDBeta = new double[m_iNumSpecies];
       if (!mp_fNCICDGamma)
-        mp_fNCICDGamma = new float[m_iNumSpecies];
+        mp_fNCICDGamma = new double[m_iNumSpecies];
       if (!mp_fNCICDMaxCrowdingRadius)
-        mp_fNCICDMaxCrowdingRadius = new float[m_iNumSpecies];
+        mp_fNCICDMaxCrowdingRadius = new double[m_iNumSpecies];
       if (!mp_fNCICDN)
-        mp_fNCICDN = new float[m_iNumSpecies];
+        mp_fNCICDN = new double[m_iNumSpecies];
       if (!mp_fNCICDD)
-        mp_fNCICDD = new float[m_iNumSpecies];
+        mp_fNCICDD = new double[m_iNumSpecies];
       if (!mp_fNCICDMinNeighborDBH)
-        mp_fNCICDMinNeighborDBH = new float[m_iNumSpecies];
+        mp_fNCICDMinNeighborDBH = new double[m_iNumSpecies];
       if (!mp_fNCICDLambda) {
-        mp_fNCICDLambda = new float*[m_iNumSpecies];
+        mp_fNCICDLambda = new double*[m_iNumSpecies];
         for (i = 0; i < m_iNumSpecies; i++)
-          mp_fNCICDLambda[i] = new float[m_iNumSpecies];
+          mp_fNCICDLambda[i] = new double[m_iNumSpecies];
       }
 
       FillSpeciesSpecificValue(p_oElement, "tr_nciCDMaxCrownDepth",
@@ -2271,7 +2271,7 @@ void clAllometry::SetupSaplingCrownDepth(xercesc::DOMElement * p_oElement) {
 //////////////////////////////////////////////////////////////////////////////
 void clAllometry::SetupAdultCrownDepth(xercesc::DOMElement * p_oElement) {
 
-  floatVal * p_fTemp = NULL; //for extracting values for a subset of all species
+  doubleVal * p_fTemp = NULL; //for extracting values for a subset of all species
   int * p_iWhatFunction = NULL; //for getting which function to use for each
   //species
 
@@ -2319,7 +2319,7 @@ void clAllometry::SetupAdultCrownDepth(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (standard_cd == p_iWhatFunction[i]) {
@@ -2330,9 +2330,9 @@ void clAllometry::SetupAdultCrownDepth(xercesc::DOMElement * p_oElement) {
 
       //Declare arrays we'll need
       if (!mp_fAsympCrownDepth)
-        mp_fAsympCrownDepth = new float[m_iNumSpecies];
+        mp_fAsympCrownDepth = new double[m_iNumSpecies];
       if (!mp_fCrownDepthExp)
-        mp_fCrownDepthExp = new float[m_iNumSpecies];
+        mp_fCrownDepthExp = new double[m_iNumSpecies];
 
       FillSpeciesSpecificValue(p_oElement, "tr_stdAsympCrownHt", "tr_sachVal",
           p_fTemp, iHowMany, m_oPop, true);
@@ -2359,7 +2359,7 @@ void clAllometry::SetupAdultCrownDepth(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (chapman_richards_cd == p_iWhatFunction[i]) {
@@ -2370,13 +2370,13 @@ void clAllometry::SetupAdultCrownDepth(xercesc::DOMElement * p_oElement) {
 
       //Declare any arrays we'll need
       if (!mp_fCRCrownHtIntercept)
-        mp_fCRCrownHtIntercept = new float[m_iNumSpecies];
+        mp_fCRCrownHtIntercept = new double[m_iNumSpecies];
       if (!mp_fCRAsympCrownHt)
-        mp_fCRAsympCrownHt = new float[m_iNumSpecies];
+        mp_fCRAsympCrownHt = new double[m_iNumSpecies];
       if (!mp_fCRCrownHtShape1)
-        mp_fCRCrownHtShape1 = new float[m_iNumSpecies];
+        mp_fCRCrownHtShape1 = new double[m_iNumSpecies];
       if (!mp_fCRCrownHtShape2)
-        mp_fCRCrownHtShape2 = new float[m_iNumSpecies];
+        mp_fCRCrownHtShape2 = new double[m_iNumSpecies];
 
       //Crown height intercept
       FillSpeciesSpecificValue(p_oElement, "tr_chRichCrownHtIntercept",
@@ -2420,7 +2420,7 @@ void clAllometry::SetupAdultCrownDepth(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (non_spat_log_dens_dep_cd == p_iWhatFunction[i]) {
@@ -2430,23 +2430,23 @@ void clAllometry::SetupAdultCrownDepth(xercesc::DOMElement * p_oElement) {
       }
 
       //Declare any arrays we'll need
-      mp_fNonSpatDensDepInstCRA = new float[m_iNumSpecies];
-      mp_fNonSpatDensDepInstCRB = new float[m_iNumSpecies];
-      mp_fNonSpatDensDepInstCRC = new float[m_iNumSpecies];
-      mp_fNonSpatDensDepInstCRD = new float[m_iNumSpecies];
-      mp_fNonSpatDensDepInstCRE = new float[m_iNumSpecies];
-      mp_fNonSpatDensDepInstCRF = new float[m_iNumSpecies];
-      mp_fNonSpatDensDepInstCRG = new float[m_iNumSpecies];
-      mp_fNonSpatDensDepInstCRH = new float[m_iNumSpecies];
-      mp_fNonSpatDensDepInstCRI = new float[m_iNumSpecies];
-      mp_fNonSpatDensDepInstCRJ = new float[m_iNumSpecies];
-      mp_fNonSpatLogDensDepCHA = new float[m_iNumSpecies];
-      mp_fNonSpatLogDensDepCHB = new float[m_iNumSpecies];
-      mp_fNonSpatLogDensDepCHC = new float[m_iNumSpecies];
-      mp_fNonSpatLogDensDepCHD = new float[m_iNumSpecies];
-      mp_fNonSpatLogDensDepCHE = new float[m_iNumSpecies];
-      mp_fNonSpatLogDensDepCHF = new float[m_iNumSpecies];
-      mp_fNonSpatLogDensDepCHG = new float[m_iNumSpecies];
+      mp_fNonSpatDensDepInstCRA = new double[m_iNumSpecies];
+      mp_fNonSpatDensDepInstCRB = new double[m_iNumSpecies];
+      mp_fNonSpatDensDepInstCRC = new double[m_iNumSpecies];
+      mp_fNonSpatDensDepInstCRD = new double[m_iNumSpecies];
+      mp_fNonSpatDensDepInstCRE = new double[m_iNumSpecies];
+      mp_fNonSpatDensDepInstCRF = new double[m_iNumSpecies];
+      mp_fNonSpatDensDepInstCRG = new double[m_iNumSpecies];
+      mp_fNonSpatDensDepInstCRH = new double[m_iNumSpecies];
+      mp_fNonSpatDensDepInstCRI = new double[m_iNumSpecies];
+      mp_fNonSpatDensDepInstCRJ = new double[m_iNumSpecies];
+      mp_fNonSpatLogDensDepCHA = new double[m_iNumSpecies];
+      mp_fNonSpatLogDensDepCHB = new double[m_iNumSpecies];
+      mp_fNonSpatLogDensDepCHC = new double[m_iNumSpecies];
+      mp_fNonSpatLogDensDepCHD = new double[m_iNumSpecies];
+      mp_fNonSpatLogDensDepCHE = new double[m_iNumSpecies];
+      mp_fNonSpatLogDensDepCHF = new double[m_iNumSpecies];
+      mp_fNonSpatLogDensDepCHG = new double[m_iNumSpecies];
 
       FillSpeciesSpecificValue(p_oElement, "tr_nonSpatDensDepInstCRA",
           "tr_nsddicraVal", p_fTemp, iHowMany, m_oPop, true);
@@ -2548,7 +2548,7 @@ void clAllometry::SetupAdultCrownDepth(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (nci_cd == p_iWhatFunction[i]) {
@@ -2559,25 +2559,25 @@ void clAllometry::SetupAdultCrownDepth(xercesc::DOMElement * p_oElement) {
 
       //Declare arrays we'll need
       if (!mp_fNCIMaxCrownDepth)
-        mp_fNCIMaxCrownDepth = new float[m_iNumSpecies];
+        mp_fNCIMaxCrownDepth = new double[m_iNumSpecies];
       if (!mp_fNCICDAlpha)
-        mp_fNCICDAlpha = new float[m_iNumSpecies];
+        mp_fNCICDAlpha = new double[m_iNumSpecies];
       if (!mp_fNCICDBeta)
-        mp_fNCICDBeta = new float[m_iNumSpecies];
+        mp_fNCICDBeta = new double[m_iNumSpecies];
       if (!mp_fNCICDGamma)
-        mp_fNCICDGamma = new float[m_iNumSpecies];
+        mp_fNCICDGamma = new double[m_iNumSpecies];
       if (!mp_fNCICDMaxCrowdingRadius)
-        mp_fNCICDMaxCrowdingRadius = new float[m_iNumSpecies];
+        mp_fNCICDMaxCrowdingRadius = new double[m_iNumSpecies];
       if (!mp_fNCICDN)
-        mp_fNCICDN = new float[m_iNumSpecies];
+        mp_fNCICDN = new double[m_iNumSpecies];
       if (!mp_fNCICDD)
-        mp_fNCICDD = new float[m_iNumSpecies];
+        mp_fNCICDD = new double[m_iNumSpecies];
       if (!mp_fNCICDMinNeighborDBH)
-        mp_fNCICDMinNeighborDBH = new float[m_iNumSpecies];
+        mp_fNCICDMinNeighborDBH = new double[m_iNumSpecies];
       if (!mp_fNCICDLambda) {
-        mp_fNCICDLambda = new float*[m_iNumSpecies];
+        mp_fNCICDLambda = new double*[m_iNumSpecies];
         for (i = 0; i < m_iNumSpecies; i++)
-          mp_fNCICDLambda[i] = new float[m_iNumSpecies];
+          mp_fNCICDLambda[i] = new double[m_iNumSpecies];
       }
 
       FillSpeciesSpecificValue(p_oElement, "tr_nciCDMaxCrownDepth",
@@ -2652,7 +2652,7 @@ void clAllometry::SetupAdultCrownDepth(xercesc::DOMElement * p_oElement) {
 //////////////////////////////////////////////////////////////////////////////
 void clAllometry::SetupSeedlingHeightDiam(xercesc::DOMElement * p_oElement) {
 
-  floatVal * p_fTemp = NULL; //for extracting values for a subset of all species
+  doubleVal * p_fTemp = NULL; //for extracting values for a subset of all species
   int * p_iWhatFunction = NULL; //for getting which function to use for each
   //species
 
@@ -2702,7 +2702,7 @@ void clAllometry::SetupSeedlingHeightDiam(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (standard == p_iWhatFunction[i]) {
@@ -2712,7 +2712,7 @@ void clAllometry::SetupSeedlingHeightDiam(xercesc::DOMElement * p_oElement) {
       }
 
       //Declare array we'll need
-      mp_fSlopeHeightDiam10 = new float[m_iNumSpecies];
+      mp_fSlopeHeightDiam10 = new double[m_iNumSpecies];
 
       FillSpeciesSpecificValue(p_oElement, "tr_slopeOfHeight-Diam10",
           "tr_sohdVal", p_fTemp, iHowMany, m_oPop, true);
@@ -2732,7 +2732,7 @@ void clAllometry::SetupSeedlingHeightDiam(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (linear == p_iWhatFunction[i]) {
@@ -2742,8 +2742,8 @@ void clAllometry::SetupSeedlingHeightDiam(xercesc::DOMElement * p_oElement) {
       }
 
       //Declare arrays we'll need
-      mp_fSeedlingLinearSlope = new float[m_iNumSpecies];
-      mp_fSeedlingLinearIntercept = new float[m_iNumSpecies];
+      mp_fSeedlingLinearSlope = new double[m_iNumSpecies];
+      mp_fSeedlingLinearIntercept = new double[m_iNumSpecies];
 
       //Linear seedling slope - throw error if any values are 0
       FillSpeciesSpecificValue(p_oElement, "tr_seedlingLinearSlope",
@@ -2779,7 +2779,7 @@ void clAllometry::SetupSeedlingHeightDiam(xercesc::DOMElement * p_oElement) {
         delete[] p_fTemp;
         p_fTemp = NULL;
       }
-      p_fTemp = new floatVal[iHowMany];
+      p_fTemp = new doubleVal[iHowMany];
       iHowMany = 0;
       for (i = 0; i < m_iNumSpecies; i++) {
         if (reverse_linear == p_iWhatFunction[i]) {
@@ -2789,8 +2789,8 @@ void clAllometry::SetupSeedlingHeightDiam(xercesc::DOMElement * p_oElement) {
       }
 
       //Declare arrays we'll need
-      mp_fSeedlingReverseLinearSlope = new float[m_iNumSpecies];
-      mp_fSeedlingReverseLinearIntercept = new float[m_iNumSpecies];
+      mp_fSeedlingReverseLinearSlope = new double[m_iNumSpecies];
+      mp_fSeedlingReverseLinearIntercept = new double[m_iNumSpecies];
 
       //Reverse linear seedling slope - throw an error if any are 0
       FillSpeciesSpecificValue(p_oElement, "tr_seedlingReverseLinearSlope",

@@ -118,7 +118,7 @@ void clNCIMasterMortality::DoShellSetup(xercesc::DOMDocument * p_oDoc) {
   m_iNumTotalSpecies = p_oPop->GetNumberOfSpecies();
 
   DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
-  floatVal * p_fTempValues; //for getting species-specific values
+  doubleVal * p_fTempValues; //for getting species-specific values
   short int i; //loop counters
 
 
@@ -134,14 +134,14 @@ void clNCIMasterMortality::DoShellSetup(xercesc::DOMDocument * p_oDoc) {
       throw( stcErr );
     }
 
-  //Set up our floatVal array that will extract values only for the species
+  //Set up our doubleVal array that will extract values only for the species
   //assigned to this behavior
-  p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
   for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
     p_fTempValues[i].code = mp_iWhatSpecies[i];
 
   //Maximum survival probability
-  mp_fMaxPotentialValue = new float[p_oPop->GetNumberOfSpecies()];
+  mp_fMaxPotentialValue = new double[p_oPop->GetNumberOfSpecies()];
   FillSpeciesSpecificValue( p_oElement, "mo_nciMaxPotentialSurvival",
       "mo_nmpsVal", p_fTempValues, m_iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
@@ -220,9 +220,8 @@ void clNCIMasterMortality::PreMortCalcs( clTreePopulation * p_oPop )
     fInfectionEffect, //tree's infection effect
     fDbh, //tree's dbh
     fX, fY,
-    fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep(),
     fSurvivalProb; //amount diameter increase - intermediate
-    int iDead;
+    int iNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep(), iDead;
     short int iSpecies, iType, //type and species of a tree
     i; //loop counter
     bool bIsDead;
@@ -291,7 +290,7 @@ void clNCIMasterMortality::PreMortCalcs( clTreePopulation * p_oPop )
           //Get annual survival
           fSurvivalProb = pow( fSurvivalProb, 1/m_fMaxSurvivalPeriod);
           //Get timestep survival
-          fSurvivalProb = pow( fSurvivalProb, fNumberYearsPerTimestep );
+          fSurvivalProb = pow( fSurvivalProb, iNumberYearsPerTimestep );
 
           bIsDead = clModelMath::GetRand() >= fSurvivalProb;
 

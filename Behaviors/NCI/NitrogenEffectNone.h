@@ -22,7 +22,7 @@ public:
    * @param p_oPlot Plot object for querying for nitrogen values.
    * @param iSpecies Species for which to calculate nitrogen effect.
    */
-  float CalculateNitrogenEffect(clPlot *p_oPlot, int iSpecies) {return 1.0;};
+  double CalculateNitrogenEffect(clPlot *p_oPlot, int iSpecies) {return 1.0;};
 
   /**
    * Does any desired setup.

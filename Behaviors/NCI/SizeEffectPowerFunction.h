@@ -35,7 +35,7 @@ public:
    * @param fDiam Diameter of tree. Diameter at 10 cm for seedlings, DBH for
    * all other types.
    */
-  float CalculateSizeEffect(clTree *p_oTree, const float &fDiam);
+  double CalculateSizeEffect(clTree *p_oTree, const float &fDiam);
 
   /**
    * Does any desired setup.
@@ -48,10 +48,10 @@ public:
 
 protected:
   /**Size effect "a" parameter. Array is sized number of species.*/
-  float *mp_fA;
+  double *mp_fA;
 
   /**Size effect "b" parameter. Array is sized number of species.*/
-  float *mp_fB;
+  double *mp_fB;
 };
 
 #endif /* SIZEEFFECTPOWERFUNCTION_H_ */

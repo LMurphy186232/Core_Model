@@ -23,7 +23,7 @@ clMortalityBase( p_oSimManager ) {
     mp_fSelfThinIntercept = NULL;
     mp_fSelfThinMaxDbh = NULL;
 
-    m_fNumberYearsPerTimestep = 0;
+    m_iNumberYearsPerTimestep = 0;
   }
   catch (modelErr&err) {throw(err);}
   catch (modelMsg &msg) {throw(msg);} //non-fatal error
@@ -51,22 +51,22 @@ void clSelfThinMort::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
   try {
     clTreePopulation *p_oPop = (clTreePopulation*) mp_oSimManager->GetPopulationObject("treepopulation");
     DOMElement *p_oElement = GetParentParametersElement(p_oDoc);
-    floatVal *p_fTempValues;  //for getting species-specific values
+    doubleVal *p_fTempValues;  //for getting species-specific values
     short int iNumSpecies = mp_oMortalityOrg->GetNumberOfSpecies(),
         i; //loop counter
 
-    m_fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_iNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
     //Declare the temp array and populate it with the species to which this
     //behavior applies
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for (i = 0; i < m_iNumBehaviorSpecies; i++)
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
     //Declare the arrays for holding the variables
-    mp_fSelfThinSlope = new float[iNumSpecies];
-    mp_fSelfThinIntercept = new float[iNumSpecies];
-    mp_fSelfThinMaxDbh = new float[iNumSpecies];
+    mp_fSelfThinSlope = new double[iNumSpecies];
+    mp_fSelfThinIntercept = new double[iNumSpecies];
+    mp_fSelfThinMaxDbh = new double[iNumSpecies];
 
     //Capture the values from the parameter file
 
@@ -130,7 +130,7 @@ deadCode clSelfThinMort::DoMort(clTree *p_oTree, const float &fDiam, const short
 
   //Compound into the death probability for the whole timestep
   fTimestepDeathProb = 1 -
-      pow(1 - fAnnualDeathProb, m_fNumberYearsPerTimestep);
+      pow(1 - fAnnualDeathProb, m_iNumberYearsPerTimestep);
 
   if(fRandom < fTimestepDeathProb)
     return natural;

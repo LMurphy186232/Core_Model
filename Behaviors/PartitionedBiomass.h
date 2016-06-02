@@ -95,34 +95,34 @@ class clPartitionedBiomass : virtual public clBehaviorBase {
   clGrid* mp_oGrid;
 
   /** "a" for the DBH-based leaf biomass.  Array size is # total species.*/
-  float *mp_fDBHLeafA;
+  double *mp_fDBHLeafA;
 
   /** "b" for the DBH-based leaf biomass.  Array size is # total species.*/
-  float *mp_fDBHLeafB;
+  double *mp_fDBHLeafB;
 
   /** "a" for the DBH-based branch biomass.  Array size is # total species.*/
-  float *mp_fDBHBranchA;
+  double *mp_fDBHBranchA;
 
   /** "b" for the DBH-based branch biomass.  Array size is # total species.*/
-  float *mp_fDBHBranchB;
+  double *mp_fDBHBranchB;
 
   /** "a" for the DBH-based bole biomass.  Array size is # total species.*/
-  float *mp_fDBHBoleA;
+  double *mp_fDBHBoleA;
 
   /** "b" for the DBH-based bole biomass.  Array size is # total species.*/
-  float *mp_fDBHBoleB;
+  double *mp_fDBHBoleB;
 
   /** "a" for the height-based leaf biomass.  Array size is # total species.*/
-  float *mp_fHeightLeafA;
+  double *mp_fHeightLeafA;
 
   /** "b" for the height-based leaf biomass.  Array size is # total species.*/
-  float *mp_fHeightLeafB;
+  double *mp_fHeightLeafB;
 
   /** "a" for the height-based bole biomass.  Array size is # total species.*/
-  float *mp_fHeightBoleA;
+  double *mp_fHeightBoleA;
 
   /** "b" for the height-based bole biomass.  Array size is # total species.*/
-  float *mp_fHeightBoleB;
+  double *mp_fHeightBoleB;
 
   /**String to pass to clTreePopulation::Find() in order to get the trees for
   * which to calculate volume.  This will instigate a species/type search for

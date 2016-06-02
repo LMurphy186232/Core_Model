@@ -133,7 +133,7 @@ void clSubstrateDepSeedSurvival::SetNameData(std::string sNameString) {
 /////////////////////////////////////////////////////////////////////////////
 void clSubstrateDepSeedSurvival::GetParameterFileData(
     xercesc::DOMDocument * p_oDoc) {
-  floatVal * p_fTemp = NULL; //for getting species-specific values
+  doubleVal * p_fTemp = NULL; //for getting species-specific values
   try {
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
     clTreePopulation * p_oPop =
@@ -150,15 +150,15 @@ void clSubstrateDepSeedSurvival::GetParameterFileData(
       mp_iIndexes[mp_iWhatSpecies[i]] = i;
 
     //Declare the canopy array values
-    mp_fCanGroundScarSoilFav = new float[m_iNumBehaviorSpecies];
-    mp_fCanGroundTipUpFav = new float[m_iNumBehaviorSpecies];
-    mp_fCanGroundFreshLogFav = new float[m_iNumBehaviorSpecies];
-    mp_fCanGroundDecLogFav = new float[m_iNumBehaviorSpecies];
-    mp_fCanGroundForFlLitterFav = new float[m_iNumBehaviorSpecies];
-    mp_fCanGroundForFlMossFav = new float[m_iNumBehaviorSpecies];
+    mp_fCanGroundScarSoilFav = new double[m_iNumBehaviorSpecies];
+    mp_fCanGroundTipUpFav = new double[m_iNumBehaviorSpecies];
+    mp_fCanGroundFreshLogFav = new double[m_iNumBehaviorSpecies];
+    mp_fCanGroundDecLogFav = new double[m_iNumBehaviorSpecies];
+    mp_fCanGroundForFlLitterFav = new double[m_iNumBehaviorSpecies];
+    mp_fCanGroundForFlMossFav = new double[m_iNumBehaviorSpecies];
 
     //Set up our temp array - pre-load with this behavior's species
-    p_fTemp = new floatVal[m_iNumBehaviorSpecies];
+    p_fTemp = new doubleVal[m_iNumBehaviorSpecies];
     for (i = 0; i < m_iNumBehaviorSpecies; i++)
       p_fTemp[i].code = mp_iWhatSpecies[i];
 
@@ -224,12 +224,12 @@ void clSubstrateDepSeedSurvival::GetParameterFileData(
 
     if (m_bUsesGap) {
       //Declare the gap array values
-      mp_fGapMoundScarSoilFav = new float[m_iNumBehaviorSpecies];
-      mp_fGapMoundTipUpFav = new float[m_iNumBehaviorSpecies];
-      mp_fGapMoundFreshLogFav = new float[m_iNumBehaviorSpecies];
-      mp_fGapMoundDecLogFav = new float[m_iNumBehaviorSpecies];
-      mp_fGapMoundForFlLitterFav = new float[m_iNumBehaviorSpecies];
-      mp_fGapMoundForFlMossFav = new float[m_iNumBehaviorSpecies];
+      mp_fGapMoundScarSoilFav = new double[m_iNumBehaviorSpecies];
+      mp_fGapMoundTipUpFav = new double[m_iNumBehaviorSpecies];
+      mp_fGapMoundFreshLogFav = new double[m_iNumBehaviorSpecies];
+      mp_fGapMoundDecLogFav = new double[m_iNumBehaviorSpecies];
+      mp_fGapMoundForFlLitterFav = new double[m_iNumBehaviorSpecies];
+      mp_fGapMoundForFlMossFav = new double[m_iNumBehaviorSpecies];
 
       //Load the gap values
       //Gap scarified soil favorability
@@ -296,12 +296,12 @@ void clSubstrateDepSeedSurvival::GetParameterFileData(
     //If using microtopography...
     if (m_bUsesMicro) {
       //Declare the gap array values
-      mp_fGapMoundScarSoilFav = new float[m_iNumBehaviorSpecies];
-      mp_fGapMoundTipUpFav = new float[m_iNumBehaviorSpecies];
-      mp_fGapMoundFreshLogFav = new float[m_iNumBehaviorSpecies];
-      mp_fGapMoundDecLogFav = new float[m_iNumBehaviorSpecies];
-      mp_fGapMoundForFlLitterFav = new float[m_iNumBehaviorSpecies];
-      mp_fGapMoundForFlMossFav = new float[m_iNumBehaviorSpecies];
+      mp_fGapMoundScarSoilFav = new double[m_iNumBehaviorSpecies];
+      mp_fGapMoundTipUpFav = new double[m_iNumBehaviorSpecies];
+      mp_fGapMoundFreshLogFav = new double[m_iNumBehaviorSpecies];
+      mp_fGapMoundDecLogFav = new double[m_iNumBehaviorSpecies];
+      mp_fGapMoundForFlLitterFav = new double[m_iNumBehaviorSpecies];
+      mp_fGapMoundForFlMossFav = new double[m_iNumBehaviorSpecies];
 
       //Proportion of plot that is mound
       FillSingleValue(p_oElement, "es_moundProportion", &m_fMoundProp, true);

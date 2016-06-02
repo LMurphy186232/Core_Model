@@ -34,8 +34,8 @@ clCrowdingEffectTempDep::~clCrowdingEffectTempDep() {
 //////////////////////////////////////////////////////////////////////////////
 // CalculateCrowdingEffect
 //////////////////////////////////////////////////////////////////////////////
-float clCrowdingEffectTempDep::CalculateCrowdingEffect(clTree *p_oTree, const float &fDiam, const clNCITermBase::ncivals nci, const int &iSpecies) {
-  float fCrowdingEffect, fTerm1, fTerm2, fCT,
+double clCrowdingEffectTempDep::CalculateCrowdingEffect(clTree *p_oTree, const float &fDiam, const clNCITermBase::ncivals nci, const int &iSpecies) {
+  double fCrowdingEffect, fTerm1, fTerm2, fCT,
         fTemp = mp_oPlot->GetMeanAnnualTemp() + 273.15;
   if (!m_b2ValNCI) {
     fTerm1 = fDiam;
@@ -63,7 +63,7 @@ float clCrowdingEffectTempDep::CalculateCrowdingEffect(clTree *p_oTree, const fl
 // DoSetup
 //////////////////////////////////////////////////////////////////////////////
 void clCrowdingEffectTempDep::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, clNCIBehaviorBase *p_oNCIBase, xercesc::DOMElement *p_oElement) {
-  floatVal * p_fTempValues; //for getting species-specific values
+  doubleVal * p_fTempValues; //for getting species-specific values
   int iNumBehaviorSpecies = p_oNCI->GetNumBehaviorSpecies(),
       iNumTotalSpecies = p_oPop->GetNumberOfSpecies(), i;
 
@@ -74,15 +74,15 @@ void clCrowdingEffectTempDep::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *
   //Get a pointer to the plot object
   mp_oPlot = p_oNCI->GetSimManager()->GetPlotObject();
 
-  mp_fC = new float[iNumTotalSpecies];
-  mp_fX0 = new float[iNumTotalSpecies];
-  mp_fXb = new float[iNumTotalSpecies];
-  mp_fD = new float[iNumTotalSpecies];
-  mp_fGamma = new float[iNumTotalSpecies];
+  mp_fC = new double[iNumTotalSpecies];
+  mp_fX0 = new double[iNumTotalSpecies];
+  mp_fXb = new double[iNumTotalSpecies];
+  mp_fD = new double[iNumTotalSpecies];
+  mp_fGamma = new double[iNumTotalSpecies];
 
-  //Set up our floatVal array that will extract values only for the species
+  //Set up our doubleVal array that will extract values only for the species
   //assigned to this behavior
-  p_fTempValues = new floatVal[iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[iNumBehaviorSpecies];
   for ( i = 0; i < iNumBehaviorSpecies; i++ ) p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
 
   //Size sensitivity to NCI parameter (gamma)

@@ -77,7 +77,7 @@ clEpiphyticEstablishment::~clEpiphyticEstablishment()
 /////////////////////////////////////////////////////////////////////////////
 void clEpiphyticEstablishment::GetParameterFileData( xercesc::DOMDocument * p_oDoc )
 {
-  floatVal * p_fTemp = NULL; //for getting species-specific values
+  doubleVal * p_fTemp = NULL; //for getting species-specific values
   try {
   DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
   clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
@@ -87,16 +87,16 @@ void clEpiphyticEstablishment::GetParameterFileData( xercesc::DOMDocument * p_oD
   m_iNumTotalSpecies = p_oPop->GetNumberOfSpecies();
 
   //Set up our temp array - pre-load with this behavior's species
-  p_fTemp = new floatVal[m_iNumBehaviorSpecies];
+  p_fTemp = new doubleVal[m_iNumBehaviorSpecies];
   for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
     p_fTemp[i].code = mp_iWhatSpecies[i];
 
   //Declare arrays
-  mp_fA = new float[m_iNumTotalSpecies];
-  mp_fB = new float[m_iNumTotalSpecies];
-  mp_fC = new float[m_iNumTotalSpecies];
-  mp_fM = new float[m_iNumTotalSpecies];
-  mp_fN = new float[m_iNumTotalSpecies];
+  mp_fA = new double[m_iNumTotalSpecies];
+  mp_fB = new double[m_iNumTotalSpecies];
+  mp_fC = new double[m_iNumTotalSpecies];
+  mp_fM = new double[m_iNumTotalSpecies];
+  mp_fN = new double[m_iNumTotalSpecies];
 
   //A
   FillSpeciesSpecificValue( p_oElement, "ep_epiphyticA", "ep_eaVal", p_fTemp, m_iNumBehaviorSpecies, p_oPop, true );

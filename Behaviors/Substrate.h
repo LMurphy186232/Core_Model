@@ -107,35 +107,35 @@ class clSubstrate : virtual public clBehaviorBase {
   protected:
 
   /**Proportion of dead trees that fall. Array size is total number of species.*/
-  float *mp_fPropOfDeadThatFall;
+  double *mp_fPropOfDeadThatFall;
 
   /**Proportion of fallen dead that uproot.  Array size is total number of
   * species.*/
-  float *mp_fPropOfFallenThatUproot;
+  double *mp_fPropOfFallenThatUproot;
 
   /**Proportion of dead snags that uproot.  Array size is total number of
   * species.*/
-  float *mp_fPropOfSnagsThatUproot;
+  double *mp_fPropOfSnagsThatUproot;
 
   /**Decay proportion for each timestep for fresh logs. This is
   * @htmlonly exp( &alpha; * t <sup> &beta; </sup>) @endhtmlonly.  Array size
   * is m_iMaxDecayTimesteps + 1.*/
-  float *mp_fFLogDecayProp;
+  double *mp_fFLogDecayProp;
 
   /**Decay proportion for each timestep for scarified soil. This is
   * @htmlonly exp( &alpha; * t <sup> &beta; </sup>) @endhtmlonly.  Array size
   * is m_iMaxDecayTimesteps + 1.*/
-  float *mp_fScarSoilDecayProp;
+  double *mp_fScarSoilDecayProp;
 
   /**Decay proportion for each timestep for tip-up mounds. This is
   * @htmlonly exp( &alpha; * t <sup> &beta; </sup>) @endhtmlonly.  Array size
   * is m_iMaxDecayTimesteps + 1.*/
-  float *mp_fTipupDecayProp;
+  double *mp_fTipupDecayProp;
 
   /**Decay proportion for each timestep for decayed logs. This is
   * @htmlonly exp( &alpha; * t <sup> &beta; </sup>) @endhtmlonly.  Array size
   * is m_iMaxDecayTimesteps + 1.*/
-  float *mp_fDecLogDecayProp;
+  double *mp_fDecLogDecayProp;
 
   /**Array (species by type) of codes for the "dead" tree bool data member*/
   short int **mp_iDeadCodes;
@@ -151,94 +151,94 @@ class clSubstrate : virtual public clBehaviorBase {
   bool **mp_bSubstrateApplies;
 
   /**Scarified soil alpha decay parameter.*/
-  float m_fScarifiedSoilA;
+  double m_fScarifiedSoilA;
 
   /**Tip-up alpha decay parameter.*/
-  float m_fTipUpA;
+  double m_fTipUpA;
 
   /**Fresh log alpha decay parameter.*/
-  float m_fFreshLogA;
+  double m_fFreshLogA;
 
   /**Decayed logs alpha decay parameter.*/
-  float m_fDecayedLogA;
+  double m_fDecayedLogA;
 
   /**Scarified soil beta decay parameter.*/
-  float m_fScarifiedSoilB;
+  double m_fScarifiedSoilB;
 
   /**Tip-up beta decay parameter.*/
-  float m_fTipUpB;
+  double m_fTipUpB;
 
   /**Fresh log beta decay parameter.*/
-  float m_fFreshLogB;
+  double m_fFreshLogB;
 
   /**Decayed logs beta decay parameter.*/
-  float m_fDecayedLogB;
+  double m_fDecayedLogB;
 
   /**Scarified soil initial conditions proportion*/
-  float m_fInitScarifiedSoil;
+  double m_fInitScarifiedSoil;
 
   /**Tip-up initial conditions proportion*/
-  float m_fInitTipUp;
+  double m_fInitTipUp;
 
   /**Fresh log initial conditions proportion*/
-  float m_fInitFreshLog;
+  double m_fInitFreshLog;
 
   /**Decayed log initial conditions proportion*/
-  float m_fInitDecayedLog;
+  double m_fInitDecayedLog;
 
   /**Scarified soil partial cut proportion.  Not required if Harvest is not
   * being used.*/
-  float m_fPartCutScarifiedSoil;
+  double m_fPartCutScarifiedSoil;
 
   /**Tip-up partial cut proportion.  Not required if Harvest is not being
   * used.*/
-  float m_fPartCutTipUp;
+  double m_fPartCutTipUp;
 
   /**Fresh log partial cut proportion.  Not required if Harvest is not being
   * used.*/
-  float m_fPartCutFreshLog;
+  double m_fPartCutFreshLog;
 
   /**Decayed log partial cut proportion.  Not required if Harvest is not
   * being used.*/
-  float m_fPartCutDecayedLog;
+  double m_fPartCutDecayedLog;
 
   /**Scarified soil gap cut proportion.  Not required if Harvest is not being
   * used.*/
-  float m_fGapCutScarifiedSoil;
+  double m_fGapCutScarifiedSoil;
 
   /**Tip-up gap cut proportion.  Not required if Harvest is not being used.*/
-  float m_fGapCutTipUp;
+  double m_fGapCutTipUp;
 
   /**Fresh log gap cut proportion.  Not required if Harvest is not being
   * used.*/
-  float m_fGapCutFreshLog;
+  double m_fGapCutFreshLog;
 
   /**Decayed log gap cut proportion.  Not required if Harvest is not being
   * used.*/
-  float m_fGapCutDecayedLog;
+  double m_fGapCutDecayedLog;
 
   /**Scarified soil clear cut proportion.  Not required if Harvest is not being
   * used.*/
-  float m_fClearCutScarifiedSoil;
+  double m_fClearCutScarifiedSoil;
 
   /**Tip-up clear cut proportion.  Not required if Harvest is not being
   * used.*/
-  float m_fClearCutTipUp;
+  double m_fClearCutTipUp;
 
   /**Fresh log clear cut proportion.  Not required if Harvest is not being
   * used.*/
-  float m_fClearCutFreshLog;
+  double m_fClearCutFreshLog;
 
   /**Decayed log clear cut proportion.  Not required if Harvest is not being
   * used.*/
-  float m_fClearCutDecayedLog;
+  double m_fClearCutDecayedLog;
 
   /**Amount by which the tree radius is multiplied when calculating the tip-up
   * mound to account for the effects of root rip-out*/
-  float m_fRootTipupFactor;
+  double m_fRootTipupFactor;
 
   /**Proportion of the litter/moss pool that is moss*/
-  float m_fMossProportion;
+  double m_fMossProportion;
 
   /**Grid cell area of substrate grid*/
   float m_fGridCellArea;

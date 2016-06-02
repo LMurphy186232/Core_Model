@@ -101,7 +101,7 @@ clDimensionAnalysis::~clDimensionAnalysis()
 /////////////////////////////////////////////////////////////////////////////
 void clDimensionAnalysis::GetData( xercesc::DOMDocument * p_oDoc )
 {
-  floatVal * p_fTempValues = NULL; //for getting species-specific values
+  doubleVal * p_fTempValues = NULL; //for getting species-specific values
   intVal * p_iTempValues = NULL; //for getting species-specific values
   boolVal * p_bTempValues = NULL; //for getting species-specific values
   std::stringstream sQueryTemp;
@@ -120,7 +120,7 @@ void clDimensionAnalysis::GetData( xercesc::DOMDocument * p_oDoc )
 
     //Set up our arrays that will extract values only for the species
     //assigned to this behavior
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
     p_iTempValues = new intVal[m_iNumBehaviorSpecies];
@@ -131,14 +131,14 @@ void clDimensionAnalysis::GetData( xercesc::DOMDocument * p_oDoc )
         p_bTempValues[i].code = mp_iWhatSpecies[i];
 
     //Declare our arrays
-    mp_fA = new float[m_iNumBehaviorSpecies];
-    mp_fB = new float[m_iNumBehaviorSpecies];
-    mp_fC = new float[m_iNumBehaviorSpecies];
-    mp_fD = new float[m_iNumBehaviorSpecies];
-    mp_fE = new float[m_iNumBehaviorSpecies];
-    mp_fCorrectionFactor = new float[m_iNumBehaviorSpecies];
-    mp_fDbhConverter = new float[m_iNumBehaviorSpecies];
-    mp_fBiomassConverter = new float[m_iNumBehaviorSpecies];
+    mp_fA = new double[m_iNumBehaviorSpecies];
+    mp_fB = new double[m_iNumBehaviorSpecies];
+    mp_fC = new double[m_iNumBehaviorSpecies];
+    mp_fD = new double[m_iNumBehaviorSpecies];
+    mp_fE = new double[m_iNumBehaviorSpecies];
+    mp_fCorrectionFactor = new double[m_iNumBehaviorSpecies];
+    mp_fDbhConverter = new double[m_iNumBehaviorSpecies];
+    mp_fBiomassConverter = new double[m_iNumBehaviorSpecies];
     mp_iEquationID = new int[m_iNumBehaviorSpecies];
     mp_iWhatDia = new int[m_iNumBehaviorSpecies];
     mp_bUseCorrectionFactor = new bool[m_iNumBehaviorSpecies];

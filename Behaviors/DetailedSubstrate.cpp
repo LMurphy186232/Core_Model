@@ -278,7 +278,7 @@ void clDetailedSubstrate::GetParameterFileData(xercesc::DOMDocument * p_oDoc) {
   {
     DOMElement * p_oElement = p_oDoc->getDocumentElement();
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
-    floatVal * p_fTempValues; //for getting species-specific values
+    doubleVal * p_fTempValues; //for getting species-specific values
     intVal * p_iTempValues; //for getting species-specific values
     float fTemp;
 
@@ -290,19 +290,19 @@ void clDetailedSubstrate::GetParameterFileData(xercesc::DOMDocument * p_oDoc) {
     m_iNumTotalSpecies = p_oPop->GetNumberOfSpecies();
 
     //Declare the permanent arrays
-    mp_fPropOfFallenThatUproot = new float[m_iNumTotalSpecies];
-    mp_fPropOfSnagsThatUproot = new float[m_iNumTotalSpecies];
+    mp_fPropOfFallenThatUproot = new double[m_iNumTotalSpecies];
+    mp_fPropOfSnagsThatUproot = new double[m_iNumTotalSpecies];
     mp_iLogSpGroupAssignment = new int[m_iNumTotalSpecies];
-    mp_fPropFallenTreesLogDecayClass = new float [5];
-    mp_fPropFallenSnagsLogDecayClass = new float [5];
-    mp_fInitialLogMeanDiameter = new float [2];
-    mp_fPartCutLogMeanDiameter = new float [2];
-    mp_fGapCutLogMeanDiameter = new float [2];
-    mp_fClearCutLogMeanDiameter = new float [2];
+    mp_fPropFallenTreesLogDecayClass = new double[5];
+    mp_fPropFallenSnagsLogDecayClass = new double[5];
+    mp_fInitialLogMeanDiameter = new double[2];
+    mp_fPartCutLogMeanDiameter = new double[2];
+    mp_fGapCutLogMeanDiameter = new double[2];
+    mp_fClearCutLogMeanDiameter = new double[2];
 
     //Declare the species-specific temp array and pre-load with the species that
     //this behavior affects
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     p_iTempValues = new intVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
       p_fTempValues[i].code = mp_iWhatSpecies[i];
@@ -395,19 +395,19 @@ void clDetailedSubstrate::GetParameterFileData(xercesc::DOMDocument * p_oDoc) {
 
     //Initial conditions and decay parameters - logs
 
-    mp_fInitLog = new float **[m_iNumLogSpGroupsUsed];
-    mp_fLogDecayAlpha = new float **[m_iNumLogSpGroupsUsed];
-    mp_fLogDecayBeta = new float **[m_iNumLogSpGroupsUsed];
+    mp_fInitLog = new double **[m_iNumLogSpGroupsUsed];
+    mp_fLogDecayAlpha = new double **[m_iNumLogSpGroupsUsed];
+    mp_fLogDecayBeta = new double **[m_iNumLogSpGroupsUsed];
 
     for (i = 0; i < m_iNumLogSpGroupsUsed; i++) { //i is SpGroup (0-2)
-      mp_fInitLog[i] = new float *[2];
-      mp_fLogDecayAlpha[i] = new float *[2];
-      mp_fLogDecayBeta[i] = new float *[2];
+      mp_fInitLog[i] = new double *[2];
+      mp_fLogDecayAlpha[i] = new double *[2];
+      mp_fLogDecayBeta[i] = new double *[2];
 
       for (j = 0; j <= 1; j++) { //j is index of size class (small=0, large=1)
-        mp_fInitLog[i][j] = new float [5];
-        mp_fLogDecayAlpha[i][j] = new float [5];
-        mp_fLogDecayBeta[i][j] = new float [5];
+        mp_fInitLog[i][j] = new double [5];
+        mp_fLogDecayAlpha[i][j] = new double [5];
+        mp_fLogDecayBeta[i][j] = new double [5];
 
         for (k = 1; k <= 5; k++) { //k is decay class (1-5)
           sConcatenatedString << "su_initialLogSpGroup" << i+1 << p_sSizes[j] << "DecayClass" << k;
@@ -471,19 +471,19 @@ void clDetailedSubstrate::GetParameterFileData(xercesc::DOMDocument * p_oDoc) {
       //Gap cut conditions - logs
       //Clear cut conditions - logs
 
-      mp_fPartCutLog = new float **[m_iNumLogSpGroupsUsed];
-      mp_fGapCutLog = new float **[m_iNumLogSpGroupsUsed];
-      mp_fClearCutLog = new float **[m_iNumLogSpGroupsUsed];
+      mp_fPartCutLog = new double **[m_iNumLogSpGroupsUsed];
+      mp_fGapCutLog = new double **[m_iNumLogSpGroupsUsed];
+      mp_fClearCutLog = new double **[m_iNumLogSpGroupsUsed];
 
       for (i = 0; i < m_iNumLogSpGroupsUsed; i++) { //i is SpGroup (0-2)
-        mp_fPartCutLog[i] = new float *[2];
-        mp_fGapCutLog[i] = new float *[2];
-        mp_fClearCutLog[i] = new float *[2];
+        mp_fPartCutLog[i] = new double *[2];
+        mp_fGapCutLog[i] = new double *[2];
+        mp_fClearCutLog[i] = new double *[2];
 
         for (j = 0; j <= 1; j++) { //j is index of size class (small=0, large=1)
-          mp_fPartCutLog[i][j] = new float [5];
-          mp_fGapCutLog[i][j] = new float [5];
-          mp_fClearCutLog[i][j] = new float [5];
+          mp_fPartCutLog[i][j] = new double [5];
+          mp_fGapCutLog[i][j] = new double [5];
+          mp_fClearCutLog[i][j] = new double [5];
 
           for (k = 1; k <= 5; k++) { //k is decay class (1-5)
             sConcatenatedString << "su_partialCutLogSpGroup" << i+1
@@ -772,24 +772,22 @@ void clDetailedSubstrate::GetParameterFileData(xercesc::DOMDocument * p_oDoc) {
 void clDetailedSubstrate::CalculateDecayProportions() {
   try
   {
-    float fNumYearsPerTS = mp_oSimManager->GetNumberOfYearsPerTimestep(),
-        fTemp;
-    int i, j, k, t, u; //loop counters
+    float fTemp;
+    int iNumYearsPerTS = mp_oSimManager->GetNumberOfYearsPerTimestep(),
+        i, j, k, t, u; //loop counters
 
-    int iNumYearsPerTS = (int)(mp_oSimManager->GetNumberOfYearsPerTimestep());
+    mp_fScarSoilDecayProp = new double[m_iMaxDecayTimesteps + 1];
+    mp_fTipupDecayProp = new double[m_iMaxDecayTimesteps + 1];
 
-    mp_fScarSoilDecayProp = new float[m_iMaxDecayTimesteps + 1];
-    mp_fTipupDecayProp = new float[m_iMaxDecayTimesteps + 1];
-
-    mp_fLogDecayProp = new float ****[m_iNumLogSpGroupsUsed];
+    mp_fLogDecayProp = new double ****[m_iNumLogSpGroupsUsed];
     for (i = 0; i < m_iNumLogSpGroupsUsed; i++) { //i is SpGroup (0-2)
-      mp_fLogDecayProp[i] = new float ***[2];
+      mp_fLogDecayProp[i] = new double ***[2];
       for (j = 0; j <= 1; j++) { //j is index of size class (small=0, large=1)
-        mp_fLogDecayProp[i][j] = new float **[5];
+        mp_fLogDecayProp[i][j] = new double **[5];
         for (k = 1; k <= 5; k++) {   //k is decay class (1-5)
-          mp_fLogDecayProp[i][j][k-1] = new float *[m_iMaxDecayTimesteps];
+          mp_fLogDecayProp[i][j][k-1] = new double *[m_iMaxDecayTimesteps];
           for (t = 0; t < m_iMaxDecayTimesteps; t++) {
-            mp_fLogDecayProp[i][j][k-1][t] = new float [iNumYearsPerTS];
+            mp_fLogDecayProp[i][j][k-1][t] = new double [iNumYearsPerTS];
           }
         }
       }
@@ -806,7 +804,7 @@ void clDetailedSubstrate::CalculateDecayProportions() {
               if (0 == mp_fLogDecayBeta[i][j][k-1])
                 fTemp = 1;
               else
-                fTemp = pow((t * fNumYearsPerTS + u), mp_fLogDecayBeta[i][j][k-1]);
+                fTemp = pow((t * iNumYearsPerTS + u), mp_fLogDecayBeta[i][j][k-1]);
               mp_fLogDecayProp[i][j][k-1][t][u] = exp(mp_fLogDecayAlpha[i][j][k-1] * fTemp);
             } //end for i, j, k, u
           }
@@ -817,13 +815,13 @@ void clDetailedSubstrate::CalculateDecayProportions() {
       if (0 == m_fScarifiedSoilB)
         fTemp = 1;
       else
-        fTemp = pow((t * fNumYearsPerTS), m_fScarifiedSoilB);
+        fTemp = pow((t * iNumYearsPerTS), m_fScarifiedSoilB);
       mp_fScarSoilDecayProp[t] = exp(m_fScarifiedSoilA * fTemp);
 
       if (0 == m_fTipUpB)
         fTemp = 1;
       else
-        fTemp = pow((t * fNumYearsPerTS), m_fTipUpB);
+        fTemp = pow((t * iNumYearsPerTS), m_fTipUpB);
       mp_fTipupDecayProp[t] = exp(m_fTipUpA * fTemp);
     } //end for t
   }
@@ -1274,8 +1272,8 @@ void clDetailedSubstrate::SetInitialSubstrate() {
             }
           }
 
-          mp_oSubstrateGrid->SetValueOfCell(iX, iY, m_iFFMossCode, fForestFloor * m_fMossProportion);
-          mp_oSubstrateGrid->SetValueOfCell(iX, iY, m_iFFLitterCode, fForestFloor * (1 - m_fMossProportion));
+          mp_oSubstrateGrid->SetValueOfCell(iX, iY, m_iFFMossCode, (float)(fForestFloor * m_fMossProportion));
+          mp_oSubstrateGrid->SetValueOfCell(iX, iY, m_iFFLitterCode, (float)(fForestFloor * (1 - m_fMossProportion)));
 
         } //end else (no map)
 

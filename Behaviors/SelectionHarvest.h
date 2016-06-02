@@ -103,23 +103,23 @@ public:
 protected:
 
   /**The lower bound for each DBH size class*/
-  float *mp_fLowDBH;
+  double *mp_fLowDBH;
 
   /**The upper bound for each DBH size class*/
-  float *mp_fHighDBH;
+  double *mp_fHighDBH;
 
   /**To hold the target basal area for each size class, in m2/ha*/
-  float *mp_fTargetBA;
+  double *mp_fTargetBA;
 
   /**Holds the basal area for each size class for all species across the landscape*/
-  float *mp_fLandscapeBasalArea;
+  double *mp_fLandscapeBasalArea;
 
   /**Holds the basal area of 1 species for each size class*/
-  float *mp_fBasalArea;
+  double *mp_fBasalArea;
 
   /**Used to ensure that TargetBA does not get overwritten in the
    * CalculateBasalAreaDifference function*/
-  float *mp_fTempTargetBA;
+  double *mp_fTempTargetBA;
 
   /**Plot area, in hectares*/
   float m_fPlotArea;
@@ -372,8 +372,8 @@ protected:
    * @param p_fHiDbh Array (size m_iNumAllowedCutRanges) of upper-limit dbhs for
    * the cut ranges that have been defined.
    */
-  void GetBasalArea(clTreePopulation *p_oTreePop, float *p_fTotalBasalArea,
-      float *p_fLoDbh, float *p_fHiDbh);
+  void GetBasalArea(clTreePopulation *p_oTreePop, double *p_fTotalBasalArea,
+      double *p_fLoDbh, double *p_fHiDbh);
 
   /**
    * Gets the basal area in a cut area for a single species.  The cut area is
@@ -389,7 +389,7 @@ protected:
    * @param p_fHiDbh Array (size m_iNumAllowedCutRanges) of upper-limit dbhs for
    * the cut ranges that have been defined.
    */
-  void GetBasalArea(clTreePopulation *p_oTreePop, int iSpecies, float *p_fTotalBasalArea, float *p_fLoDbh, float *p_fHiDbh);
+  void GetBasalArea(clTreePopulation *p_oTreePop, int iSpecies, double *p_fTotalBasalArea, double *p_fLoDbh, double *p_fHiDbh);
 
   /**
    * Determines the dbh to cut in each grid cell by calculating the difference
@@ -402,7 +402,7 @@ protected:
    * @param p_fCurrentBasalArea Pointer to array containing the basal area in
    * each size class
    */
-  int CalculateBasalAreaDifference(float *p_fCurrentBasalArea);
+  int CalculateBasalAreaDifference(double *p_fCurrentBasalArea);
 
   /**
    * This function will use the values extracted from the parameter file in

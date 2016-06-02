@@ -141,43 +141,43 @@ class clVolumeCalculator : virtual public clBehaviorBase {
 
   protected:
   /** <i>a</i> in the taper equation.  Array size is # behavior species.*/
-  float *mp_fTaperA;
+  double *mp_fTaperA;
 
   /** <i>b</i> in the taper equation.  Array size is # behavior species.*/
-  float *mp_fTaperB;
+  double *mp_fTaperB;
 
   /** <i>c</i> in the taper equation.  Array size is # behavior species.*/
-  float *mp_fTaperC;
+  double *mp_fTaperC;
 
   /** <i>d</i> in the taper equation.  Array size is # behavior species.*/
-  float *mp_fTaperD;
+  double *mp_fTaperD;
 
   /** <i>f</i> in the taper equation.  Array size is # behavior species.*/
-  float *mp_fTaperF;
+  double *mp_fTaperF;
 
   /** <i>g</i> in the taper equation.  Array size is # behavior species.*/
-  float *mp_fTaperG;
+  double *mp_fTaperG;
 
   /** <i>i</i> in the taper equation.  Array size is # behavior species.*/
-  float *mp_fTaperI;
+  double *mp_fTaperI;
 
   /** <i>j</i> in the taper equation.  Array size is # behavior species.*/
-  float *mp_fTaperJ;
+  double *mp_fTaperJ;
 
   /** <i>k</i> in the taper equation.  Array size is # behavior species.*/
-  float *mp_fTaperK;
+  double *mp_fTaperK;
 
   /** <i>a</i> in the math library's AddBarkToDBH() function.  Array size is
   * # behavior species.*/
-  float *mp_fBarkA;
+  double *mp_fBarkA;
 
   /** <i>b</i> in the math library's AddBarkToDBH() function.  Array size is
   * # behavior species.*/
-  float *mp_fBarkB;
+  double *mp_fBarkB;
 
   /** <i>c</i> in the math library's AddBarkToDBH() function.  Array size is
   * # behavior species.*/
-  float *mp_fBarkC;
+  double *mp_fBarkC;
 
   /**For quick access to the other arrays.  Array size is # total species.*/
   short int *mp_iIndexes;
@@ -189,14 +189,14 @@ class clVolumeCalculator : virtual public clBehaviorBase {
 
   /**Stump height, in m.  Point at which to start summing trunk volume.  This
   * is read in as in cm, and then converted to m.*/
-  float m_fStumpHeight;
+  double m_fStumpHeight;
 
   /**Minimum usable diameter, in cm.  Point at which to stop summing trunk
   * volume.*/
-  float m_fMinUsableDiam;
+  double m_fMinUsableDiam;
 
   /**Length of tree trunk volume segments, in m*/
-  float m_fSegmentLength;
+  double m_fSegmentLength;
 
   /**Holds data member codes for "Volume" float data member.  First array index
   * is # behavior species, second is number types (3 - sapling, adult, snag)*/

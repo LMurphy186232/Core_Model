@@ -61,13 +61,13 @@ class clBCMort : virtual public clMortalityBase {
   short int **mp_iGrowthCodes;
 
   /**Mortality at zero growth - old code m1*/
-  float *mp_fMortAtZeroGrowth;
+  double *mp_fMortAtZeroGrowth;
 
   /**Light dependent mortality - old code m2*/
-  float *mp_fLightDepMort;
+  double *mp_fLightDepMort;
 
   /**Number of years per timestep*/
-  float m_fNumberYearsPerTimestep;
+  int m_iNumberYearsPerTimestep;
 
   /**
   * Queries for the return codes of the "Growth" float data member of a tree.

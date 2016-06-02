@@ -11,7 +11,7 @@ using namespace std;
 // CreateGrid
 /////////////////////////////////////////////////////////////////////////////
 clGrid* clGridManager::CreateGrid(string sGridName,
-      short int iNumIntVals, short int iNumFloatVals, short int iNumStringVals,
+      short int iNumIntVals, short int iNumdoubleVals, short int iNumStringVals,
       short int iNumBoolVals, float fXCellLength,  float fYCellLength) {
 
   clWorkerBase **p_oTempObjectArray; //for making a copy of the object array
@@ -21,7 +21,7 @@ clGrid* clGridManager::CreateGrid(string sGridName,
 
   //Create our grid
   p_oReturnGrid =
-      new clGrid(mp_oSimManager, sGridName, iNumIntVals, iNumFloatVals,
+      new clGrid(mp_oSimManager, sGridName, iNumIntVals, iNumdoubleVals,
           iNumStringVals, iNumBoolVals, fXCellLength, fYCellLength);
 
   //Special case - first grid object created - just create it and exit

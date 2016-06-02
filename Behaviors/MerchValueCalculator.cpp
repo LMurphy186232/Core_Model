@@ -134,20 +134,20 @@ clMerchValueCalculator::~clMerchValueCalculator()
 /////////////////////////////////////////////////////////////////////////////
 void clMerchValueCalculator::GetParameterFileData( xercesc::DOMDocument * p_oDoc, clTreePopulation *p_oPop )
 {
-  floatVal * p_fTempValues = NULL; //for getting species-specific values
+  doubleVal * p_fTempValues = NULL; //for getting species-specific values
   try {
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
     int i, iFormClass;
 
-    //Set up our floatVal array that will extract values only for the species
+    //Set up our doubleVal array that will extract values only for the species
     //assigned to this behavior
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
     //Declare our arrays and initialize to zeroes to avoid math problems
-    mp_fVal = new float[m_iNumTotalSpecies];
-    mp_fFormClass = new float[m_iNumTotalSpecies];
+    mp_fVal = new double[m_iNumTotalSpecies];
+    mp_fFormClass = new double[m_iNumTotalSpecies];
     for (i = 0; i < m_iNumTotalSpecies; i++) {
       mp_fVal[i] = 0;
       mp_fFormClass[i] = 0;
@@ -581,9 +581,9 @@ void clMerchValueCalculator::PopulateTables()
   // Taper table
   //***********************************
   //Allocate memory array for the table
-  mp_fTaperTable = new float*[m_iDBHIncs];
+  mp_fTaperTable = new double*[m_iDBHIncs];
   for (i = 0; i < m_iDBHIncs; i++) {
-    mp_fTaperTable[i] = new float[m_iMaxLogs];
+    mp_fTaperTable[i] = new double[m_iMaxLogs];
   }
 
   //Fill in table values

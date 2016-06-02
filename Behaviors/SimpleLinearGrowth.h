@@ -97,15 +97,15 @@ class clSimpleLinearGrowth : virtual public clGrowthBase {
   protected:
 
   /**Growth slope - b - sized number of species*/
-  float *mp_fSlope;
+  double *mp_fSlope;
 
   /**Growth intercept - a - sized number of species*/
-  float *mp_fIntercept;
+  double *mp_fIntercept;
 
   /**Conversion factor to translate the results of the function to the
   * appropriate units per timestep, depending on the type of growth behavior
   * this is*/
-  float m_fConversionFactor;
+  double m_fConversionFactor;
 
   /**
   * Calculates the value of the simple linear growth function.  The meaning of

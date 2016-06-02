@@ -66,8 +66,8 @@ class clSimManager {
    * if needed.*/
   long m_iActualSeed;
 
-  /**Number of years per timestep - could be fractional or less than 1*/
-  float m_fNumYearsPerTimestep;
+  /**Number of years per timestep*/
+  int m_iNumYearsPerTimestep;
 
   //Versions
   /**Model's major version number. For version control.*/
@@ -247,7 +247,7 @@ class clSimManager {
   * Returns the number of years per timestep.
   * @return Number of years per timestep.  Could be fractional.
   */
-  float GetNumberOfYearsPerTimestep() {return m_fNumYearsPerTimestep;};
+  int GetNumberOfYearsPerTimestep() {return m_iNumYearsPerTimestep;};
 
   /**
   * Returns the random seed as read in from the parameter file.  DON'T USE THIS

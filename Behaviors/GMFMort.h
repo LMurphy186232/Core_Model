@@ -68,10 +68,10 @@ class clGMFMort : virtual public clMortalityBase {
   short int **mp_iGrowthCodes;
 
   /**Mortality at zero growth. Old parameter m1*/
-  float *mp_fMortAtZeroGrowth;
+  double *mp_fMortAtZeroGrowth;
 
   /**Light dependent mortality. Old parameter m2*/
-  float *mp_fLightDepMort;
+  double *mp_fLightDepMort;
 
   /**
   * Queries for the return codes of the "Growth" float data member of a tree.

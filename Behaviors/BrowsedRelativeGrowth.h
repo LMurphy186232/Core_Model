@@ -94,22 +94,22 @@ class clBrowsedRelativeGrowth : virtual public clGrowthBase {
   protected:
 
   /** Slope of growth response, unbrowsed. Array size is number of species.*/
-  float *mp_fUnbrowsedS;
+  double *mp_fUnbrowsedS;
 
   /** Slope of growth response, browsed. Array size is number of species.*/
-  float *mp_fBrowsedS;
+  double *mp_fBrowsedS;
 
   /** Asymptotic diameter growth, unbrowsed. Array size is number of species.*/
-  float *mp_fUnbrowsedA;
+  double *mp_fUnbrowsedA;
 
   /** Asymptotic diameter growth, browsed. Array size is number of species.*/
-  float *mp_fBrowsedA;
+  double *mp_fBrowsedA;
 
   /** Diameter exponent, unbrowsed. Array size is number of species*/
-  float *mp_fUnbrowsedDiamExp;
+  double *mp_fUnbrowsedDiamExp;
 
   /** Diameter exponent, browsed. Array size is number of species*/
-  float *mp_fBrowsedDiamExp;
+  double *mp_fBrowsedDiamExp;
 
   /** Codes for "Light" data member. Array size is number of species by number
    * of types.*/
@@ -120,7 +120,7 @@ class clBrowsedRelativeGrowth : virtual public clGrowthBase {
   short int **mp_iBrowsedCodes;
 
   /**Number of years per timestep - from sim manager*/
-  float m_fNumberYearsPerTimestep;
+  int m_ifNumberYearsPerTimestep;
 
   /** Number of species. For destructor.*/
   short int m_iNumSpecies;

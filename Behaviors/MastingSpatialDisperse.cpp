@@ -43,7 +43,7 @@ clMastingSpatialDisperse::clMastingSpatialDisperse( clSimManager * p_oSimManager
 
     m_iMaxDistance = 0;
     m_iMaxTimesteps = 0;
-    m_fNumYearsPerTimestep = 0;
+    m_iNumYearsPerTimestep = 0;
 
     //Versions
     m_fVersionNumber = 1;
@@ -149,7 +149,7 @@ void clMastingSpatialDisperse::DoShellSetup( xercesc::DOMDocument * p_oDoc )
   {
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
     int i;
-    m_fNumYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_iNumYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
     mp_iIndexes = new short int[m_iTotalSpecies];
     for (i = 0; i < m_iTotalSpecies; i++) mp_iIndexes[i] = -1;
@@ -225,24 +225,24 @@ void clMastingSpatialDisperse::PopulateUsedTable( clTreePopulation * p_oPop )
 ///////////////////////////////////////////////////////////////////////////////
 void clMastingSpatialDisperse::GetParameterFileData( xercesc::DOMDocument * p_oDoc, clTreePopulation * p_oPop)
 {
-  floatVal * p_fTemp = NULL; //for getting species-specific values
+  doubleVal * p_fTemp = NULL; //for getting species-specific values
   intVal * p_iTemp = NULL; //for getting species-specific values
   try {
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
     short int i; //loop counter
 
     //Declare arrays
-    mp_fStrMean = new float*[numevents];
-    mp_fStrStdDev = new float*[numevents];
-    mp_fBeta = new float*[numevents];
-    mp_fFractionParticipating = new float*[numevents];
+    mp_fStrMean = new double*[numevents];
+    mp_fStrStdDev = new double*[numevents];
+    mp_fBeta = new double*[numevents];
+    mp_fFractionParticipating = new double*[numevents];
     for (i = 0; i < numevents; i++) {
-      mp_fStrMean[i] = new float[m_iNumBehaviorSpecies];
-      mp_fStrStdDev[i] = new float[m_iNumBehaviorSpecies];
-      mp_fBeta[i] = new float[m_iNumBehaviorSpecies];
-      mp_fFractionParticipating[i] = new float[m_iNumBehaviorSpecies];
+      mp_fStrMean[i] = new double[m_iNumBehaviorSpecies];
+      mp_fStrStdDev[i] = new double[m_iNumBehaviorSpecies];
+      mp_fBeta[i] = new double[m_iNumBehaviorSpecies];
+      mp_fFractionParticipating[i] = new double[m_iNumBehaviorSpecies];
     }
-    mp_fDbhForReproduction = new float[m_iNumBehaviorSpecies];
+    mp_fDbhForReproduction = new double[m_iNumBehaviorSpecies];
     mp_iGroup = new short int[m_iNumBehaviorSpecies];
     mp_iWhatPDFForSTR = new pdf[m_iNumBehaviorSpecies];
     mp_iWhatFunction = new function[m_iNumBehaviorSpecies];
@@ -255,7 +255,7 @@ void clMastingSpatialDisperse::GetParameterFileData( xercesc::DOMDocument * p_oD
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_iTemp[i].code = mp_iWhatSpecies[i];
 
-    p_fTemp = new floatVal[m_iNumBehaviorSpecies];
+    p_fTemp = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTemp[i].code = mp_iWhatSpecies[i];
 
@@ -438,7 +438,7 @@ void clMastingSpatialDisperse::CalcSeedCDF(xercesc::DOMDocument *p_oDoc, clTreeP
 {
   float *p_fDispersalX0 = new float[m_iNumBehaviorSpecies],
         *p_fThetaXb = new float[m_iNumBehaviorSpecies];
-  floatVal * p_fTemp = NULL; //for getting species-specific values
+  doubleVal * p_fTemp = NULL; //for getting species-specific values
   try {
     clPlot * p_oPlot = mp_oSimManager->GetPlotObject();
     DOMElement * p_oElement = p_oDoc->getDocumentElement();
@@ -482,7 +482,7 @@ void clMastingSpatialDisperse::CalcSeedCDF(xercesc::DOMDocument *p_oDoc, clTreeP
         iNumFunctionSpecies++;
 
     //Now declare the float temp array to match and load with these species
-    p_fTemp = new floatVal[iNumFunctionSpecies];
+    p_fTemp = new doubleVal[iNumFunctionSpecies];
     iNumFunctionSpecies = 0;
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
     {
@@ -527,7 +527,7 @@ void clMastingSpatialDisperse::CalcSeedCDF(xercesc::DOMDocument *p_oDoc, clTreeP
 
     //Now declare the float temp array to match and load with these species
     delete[] p_fTemp;
-    p_fTemp = new floatVal[iNumFunctionSpecies];
+    p_fTemp = new doubleVal[iNumFunctionSpecies];
     iNumFunctionSpecies = 0;
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
     {
@@ -576,7 +576,7 @@ void clMastingSpatialDisperse::CalcSeedCDF(xercesc::DOMDocument *p_oDoc, clTreeP
 
     //Now declare the float temp array to match and load with these species
     delete[] p_fTemp;
-    p_fTemp = new floatVal[iNumFunctionSpecies];
+    p_fTemp = new doubleVal[iNumFunctionSpecies];
     iNumFunctionSpecies = 0;
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
     {
@@ -621,7 +621,7 @@ void clMastingSpatialDisperse::CalcSeedCDF(xercesc::DOMDocument *p_oDoc, clTreeP
 
     //Now declare the float temp array to match and load with these species
     delete[] p_fTemp;
-    p_fTemp = new floatVal[iNumFunctionSpecies];
+    p_fTemp = new doubleVal[iNumFunctionSpecies];
     iNumFunctionSpecies = 0;
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
     {
@@ -794,7 +794,7 @@ void clMastingSpatialDisperse::AddSeeds()
     for (i = 0; i < m_iNumBehaviorSpecies; i++) {
       iEvent = mp_iEvent[i];
       if (deterministic_pdf == mp_iWhatPDFForSTR[i]) {
-        mp_fFecundity[i] = m_fNumYearsPerTimestep * mp_fStrMean[iEvent][i] / pow(30, mp_fBeta[iEvent][i]);
+        mp_fFecundity[i] = m_iNumYearsPerTimestep * mp_fStrMean[iEvent][i] / pow(30, mp_fBeta[iEvent][i]);
       } else if (mp_bDrawSTRPerSpecies[i]) {
         float fSTR;
         if (normal_pdf == mp_iWhatPDFForSTR[i]) {
@@ -804,7 +804,7 @@ void clMastingSpatialDisperse::AddSeeds()
           fSTR = clModelMath::LognormalRandomDraw(mp_fStrMean[iEvent][i],
                                                   mp_fStrStdDev[iEvent][i]);
         }
-        mp_fFecundity[i] = m_fNumYearsPerTimestep * fSTR / pow(30, mp_fBeta[iEvent][i]);
+        mp_fFecundity[i] = m_iNumYearsPerTimestep * fSTR / pow(30, mp_fBeta[iEvent][i]);
       }
     }
 
@@ -943,7 +943,7 @@ void clMastingSpatialDisperse::CalcMastCDF( xercesc::DOMDocument * p_oDoc )
 {
   float *p_fA = new float[m_iNumBehaviorSpecies],
         *p_fB = new float[m_iNumBehaviorSpecies];
-  floatVal * p_fTemp = NULL; //for getting species-specific values
+  doubleVal * p_fTemp = NULL; //for getting species-specific values
   try {
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
     DOMElement * p_oElement = p_oDoc->getDocumentElement();
@@ -954,7 +954,7 @@ void clMastingSpatialDisperse::CalcMastCDF( xercesc::DOMDocument * p_oDoc )
         i, j; //loop counter
 
     //Set up our temp array and pre-load with this behavior's species
-    p_fTemp = new floatVal[m_iNumBehaviorSpecies];
+    p_fTemp = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTemp[i].code = mp_iWhatSpecies[i];
 
@@ -1151,7 +1151,7 @@ void clMastingSpatialDisperse::DecideMast() {
 float clMastingSpatialDisperse::GetNumberOfSeedsNoDraw(const float &fDbh, const short int &iSp) {
   return clModelMath::RandomRound( mp_fFecundity[mp_iIndexes[iSp]]
        * pow( fDbh, mp_fBeta[mp_iEvent[mp_iIndexes[iSp]]][mp_iIndexes[iSp]] )
-       * m_fNumYearsPerTimestep );
+       * m_iNumYearsPerTimestep );
 }
 
 
@@ -1161,7 +1161,7 @@ float clMastingSpatialDisperse::GetNumberOfSeedsNoDraw(const float &fDbh, const 
 float clMastingSpatialDisperse::GetNumberOfSeedsDrawNormal(const float &fDbh, const short int &iSp) {
   float fSTR = mp_fStrMean[mp_iEvent[mp_iIndexes[iSp]]][mp_iIndexes[iSp]] +
                clModelMath::NormalRandomDraw(mp_fStrStdDev[mp_iEvent[mp_iIndexes[iSp]]][mp_iIndexes[iSp]]);
-  return fSTR * m_fNumYearsPerTimestep *
+  return fSTR * m_iNumYearsPerTimestep *
         pow( (fDbh / 30), mp_fBeta[mp_iEvent[mp_iIndexes[iSp]]][mp_iIndexes[iSp]]);
 }
 
@@ -1172,7 +1172,7 @@ float clMastingSpatialDisperse::GetNumberOfSeedsDrawLognormal(const float &fDbh,
   float fSTR = clModelMath::LognormalRandomDraw(
                 mp_fStrMean[mp_iEvent[mp_iIndexes[iSp]]][mp_iIndexes[iSp]],
                 mp_fStrStdDev[mp_iEvent[mp_iIndexes[iSp]]][mp_iIndexes[iSp]]);
-  return fSTR * m_fNumYearsPerTimestep *
+  return fSTR * m_iNumYearsPerTimestep *
         pow( (fDbh / 30), mp_fBeta[mp_iEvent[mp_iIndexes[iSp]]][mp_iIndexes[iSp]]);
 }
 

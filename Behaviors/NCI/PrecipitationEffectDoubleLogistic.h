@@ -52,7 +52,7 @@ public:
    * @param p_oPlot Plot object for querying for precipitation values.
    * @param iSpecies Species for which to calculate precipitation effect.
    */
-  float CalculatePrecipitationEffect(clPlot *p_oPlot, int iSpecies);
+  double CalculatePrecipitationEffect(clPlot *p_oPlot, int iSpecies);
 
   /**
    * Does any desired setup.
@@ -66,27 +66,27 @@ public:
 protected:
 
   /**Define a type for pointers to plot functions for getting precipitation*/
-  typedef float (clPlot::*Ptr2Precip)();
+  typedef double (clPlot::*Ptr2Precip)();
   /**Pointer for the appropriate function for getting precip.*/
   Ptr2Precip m_precip;
 
   /**Precipitation effect al. Array is sized number of species.*/
-  float *mp_fAl;
+  double *mp_fAl;
 
   /**Precipitation effect bl. Array is sized number of species.*/
-  float *mp_fBl;
+  double *mp_fBl;
 
   /**Precipitation effect cl.  Array is sized number of species.*/
-  float *mp_fCl;
+  double *mp_fCl;
 
   /**Precipitation effect ah. Array is sized number of species.*/
-  float *mp_fAh;
+  double *mp_fAh;
 
   /**Precipitation effect bh. Array is sized number of species.*/
-  float *mp_fBh;
+  double *mp_fBh;
 
   /**Precipitation effect ch.  Array is sized number of species.*/
-  float *mp_fCh;
+  double *mp_fCh;
 };
 
 #endif

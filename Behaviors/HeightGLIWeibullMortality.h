@@ -90,41 +90,41 @@ class clHeightGLIWeibullMortality : virtual public clMortalityBase {
   short int **mp_iBrowsedCodes;
 
   /** Max mortality - sized number of behavior species*/
-  float *mp_fMaxMort;
+  double *mp_fMaxMort;
 
   /** Mortality "a" parameter - sized number of behavior species*/
-  float *mp_fA;
+  double *mp_fA;
 
   /** Mortality "b" parameter - sized number of behavior species*/
-  float *mp_fB;
+  double *mp_fB;
 
   /** Mortality "c" parameter - sized number of behavior species*/
-  float *mp_fC;
+  double *mp_fC;
 
   /** Mortality "d" parameter - sized number of behavior species*/
-  float *mp_fD;
+  double *mp_fD;
 
   /** Browsed max mortality - sized number of behavior species*/
-  float *mp_fBrowsedMaxMort;
+  double *mp_fBrowsedMaxMort;
 
   /** Browsed "a" parameter - sized number of behavior species*/
-  float *mp_fBrowsedA;
+  double *mp_fBrowsedA;
 
   /** Browsed "b" parameter - sized number of behavior species*/
-  float *mp_fBrowsedB;
+  double *mp_fBrowsedB;
 
   /** Browsed "c" parameter - sized number of behavior species*/
-  float *mp_fBrowsedC;
+  double *mp_fBrowsedC;
 
   /** Browsed "d" parameter - sized number of behavior species*/
-  float *mp_fBrowsedD;
+  double *mp_fBrowsedD;
 
   /** To help access the other arrays*/
   int *mp_iIndexes;
 
   /** Number of years per timestep - for converting probabilities for multi-
   * year timesteps */
-  float m_fYearsPerTimestep;
+  int m_iYearsPerTimestep;
 
   /**
   * Queries for the return codes of the "Light", "Browsed", and "Height" tree

@@ -62,10 +62,10 @@ public:
   deadCode DoMort(clTree *p_oTree, const float &fDiam, const short int &iSpecies);
 
 protected:
-  float *mp_fSelfThinSlope; /**<Slope of self-thinning function*/
-  float *mp_fSelfThinIntercept; /**<Intercept of self-thinning function*/
-  float *mp_fSelfThinMaxDbh; /**<Max DBH for self-thinning.*/
-  float m_fNumberYearsPerTimestep; /**<Number years/timestep-from sim manager*/
+  double *mp_fSelfThinSlope; /**<Slope of self-thinning function*/
+  double *mp_fSelfThinIntercept; /**<Intercept of self-thinning function*/
+  double *mp_fSelfThinMaxDbh; /**<Max DBH for self-thinning.*/
+  int m_iNumberYearsPerTimestep; /**<Number years/timestep-from sim manager*/
 };
 //---------------------------------------------------------------------------
 #endif

@@ -126,19 +126,19 @@ class clDensityLight : virtual public clLightBase {
   clGrid *mp_oLightGrid;
 
   /**The "a" parameter for the mean light function.*/
-  float m_fA;
+  double m_fA;
 
   /**The "b" parameter for the mean light function.*/
-  float m_fB;
+  double m_fB;
 
   /**The "c" parameter for the mean light function.*/
-  float m_fC;
+  double m_fC;
 
   /**The sigma parameter of the lognormal PDF function.*/
-  float m_fSigma;
+  double m_fSigma;
 
   /**The minimum DBH for trees to count towards density in a cell.*/
-  float m_fMinDbh;
+  double m_fMinDbh;
 
   /**The number by which the density in a cell has to change in order to
   * trigger a new light calculation.*/

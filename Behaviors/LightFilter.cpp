@@ -124,7 +124,7 @@ void clLightFilter::GetData(xercesc::DOMDocument * p_oDoc)
     const char * cCounterLabel = "lf_count",
          * cZLabel = "z",
          * cLightLabel = "Light";
-    float fTemp;
+    double fTemp;
     short int iNumTypes = p_oPop->GetNumberOfTypes(), i, j;
 
     m_iNumSpecies = p_oPop->GetNumberOfSpecies();
@@ -234,7 +234,7 @@ void clLightFilter::Action()
          fHeight, //tree's height
          fPercentTransmission; //percentage of light transmitted
     int iCounter, //tree's respite counter value
-        iNumYearsPerTimestep = (int)mp_oSimManager->GetNumberOfYearsPerTimestep(),
+        iNumYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep(),
          iEffectiveHeight, //tree height plus z, in mm
          iPathLength, //path length of light transmission = thickness
          //of filter, in mm

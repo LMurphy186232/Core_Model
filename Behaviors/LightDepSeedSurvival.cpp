@@ -93,8 +93,8 @@ clLightDepSeedSurvival::~clLightDepSeedSurvival()
 /////////////////////////////////////////////////////////////////////////////
 void clLightDepSeedSurvival::GetParameterFileData( xercesc::DOMDocument * p_oDoc )
 {
-  floatVal * p_fTemp = NULL; //for getting species-specific values
-  float * p_fTempAll = NULL;;
+  doubleVal * p_fTemp = NULL; //for getting species-specific values
+  double * p_fTempAll = NULL;
   try {
   DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
   clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
@@ -103,7 +103,7 @@ void clLightDepSeedSurvival::GetParameterFileData( xercesc::DOMDocument * p_oDoc
   m_iNumTotalSpecies = p_oPop->GetNumberOfSpecies();
 
   //Set up our temp array - pre-load with this behavior's species
-  p_fTemp = new floatVal[m_iNumBehaviorSpecies];
+  p_fTemp = new doubleVal[m_iNumBehaviorSpecies];
   for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
     p_fTemp[i].code = mp_iWhatSpecies[i];
 
@@ -117,9 +117,9 @@ void clLightDepSeedSurvival::GetParameterFileData( xercesc::DOMDocument * p_oDoc
   // Parameters used for both GLI situations
   //*******************
   //Declare arrays
-  mp_fOptimumGLI = new float[m_iNumBehaviorSpecies];
-  mp_fLowGLISlope = new float[m_iNumBehaviorSpecies];
-  mp_fHighGLISlope = new float[m_iNumBehaviorSpecies];
+  mp_fOptimumGLI = new double[m_iNumBehaviorSpecies];
+  mp_fLowGLISlope = new double[m_iNumBehaviorSpecies];
+  mp_fHighGLISlope = new double[m_iNumBehaviorSpecies];
 
   //Optimum GLI
   FillSpeciesSpecificValue( p_oElement, "es_optimumGLI", "es_ogVal", p_fTemp, m_iNumBehaviorSpecies, p_oPop, true );
@@ -159,13 +159,13 @@ void clLightDepSeedSurvival::GetParameterFileData( xercesc::DOMDocument * p_oDoc
   if ( !m_bUseStormLight )
   {
 
-    p_fTempAll = new float[m_iNumTotalSpecies];
+    p_fTempAll = new double[m_iNumTotalSpecies];
 
     //Declare arrays
-    mp_fLightExtCoeff = new float * [m_iNumTotalSpecies];
+    mp_fLightExtCoeff = new double * [m_iNumTotalSpecies];
     for ( i = 0; i < m_iNumTotalSpecies; i++ )
     {
-      mp_fLightExtCoeff[i] = new float[3];
+      mp_fLightExtCoeff[i] = new double[3];
     }
 
     FillSingleValue( p_oElement, "li_numAltGrids", & m_iNumAltAng, true );

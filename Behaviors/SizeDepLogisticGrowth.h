@@ -114,26 +114,26 @@ class clSizeDepLogisticGrowth : virtual public clGrowthBase {
   protected:
 
   /**Growth slope - b - sized number of behavior species*/
-  float *mp_fSlope;
+  double *mp_fSlope;
 
   /**Growth intercept - a - sized number of behavior species*/
-  float *mp_fIntercept;
+  double *mp_fIntercept;
 
   /**Shape parameter 1 - c - sized number of behavior species*/
-  float *mp_fShape1;
+  double *mp_fShape1;
 
   /**Shape parameter 2 - d - sized number of behavior species*/
-  float *mp_fShape2;
+  double *mp_fShape2;
 
   /**For accessing the other arrays*/
   short int *mp_iIndexes;
 
   /**Conversion factor to translate the results of the function to the
   * appropriate units, depending on the type of growth behavior this is*/
-  float m_fConversionFactor;
+  double m_fConversionFactor;
 
   /**Number of years per timestep*/
-  float m_fNumberOfYearsPerTimestep;
+  int m_iNumberOfYearsPerTimestep;
 
   /**
   * Calculates the value of the size dependent logistic growth function for one

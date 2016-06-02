@@ -81,15 +81,15 @@ class clWeibullSnagMort : virtual public clMortalityBase {
   float ***mp_fProbabilityOfDeath; /**<Pre-calculated probabilities of death.
   Array is m_iNumSizeClasses by number of behavior species by
   m_iMaxPrecalcAge.*/
-  float **mp_fAParameter; /**<Parameter "a" in Weibull function.  Array size
+  double **mp_fAParameter; /**<Parameter "a" in Weibull function.  Array size
   is m_iNumSizeClasses by number of behavior species.*/
-  float **mp_fBParameter; /**<Parameter "b" in Weibull function.  Array size
+  double **mp_fBParameter; /**<Parameter "b" in Weibull function.  Array size
   is m_iNumSizeClasses by number of behavior species.*/
-  float **mp_fSnagSizeClasses; /**<Upper limit of DBH in each snag size class.
+  double **mp_fSnagSizeClasses; /**<Upper limit of DBH in each snag size class.
   This array is sized m_iNumSizeClasses by number of behavior species.  The
   value in the third size class bucket for each species is ignored since it is
   always effectively infinity.*/
-  float m_fNumYearsPerTimestep; /**<Number of years per timestep*/
+  int m_iNumYearsPerTimestep; /**<Number of years per timestep*/
   short int *mp_iAgeCodes; /**<Data member codes for "age" snag member for
                              each behavior species*/
   short int *mp_iIndexes; /**<For accessing arrays.  One per species.*/

@@ -23,9 +23,9 @@
   *
   * The naming convention rules are being ignored for these so that they can
   * all use the same internal names - making coding and type-changing easier.*/
- struct floatVal {float val; /**<Value.*/
-                  short int code; /**<Species code.*/
-                  };
+// struct floatVal {float val; /**<Value.*/
+//                 short int code; /**<Species code.*/
+//                  };
 
  /**
   * Structure for holding species-specific integer values. An object which does

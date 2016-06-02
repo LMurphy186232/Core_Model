@@ -43,7 +43,7 @@ clMortalityBase(p_oSimManager) {
     m_iTimeCode = -1;
     m_iNumYCells = 0;
     m_iLastUpdated = 0;
-    m_fNumberYearsPerTimestep = 0;
+    m_iNumberYearsPerTimestep = 0;
     m_iNumXCells = 0;
     m_fCrowdingEffectRadius = 0;
     m_iNumSpecies = 0;
@@ -92,31 +92,31 @@ clPostHarvestSkiddingMort::~clPostHarvestSkiddingMort() {
 void clPostHarvestSkiddingMort::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
   clTreePopulation *p_oPop = (clTreePopulation*) mp_oSimManager->GetPopulationObject("treepopulation");
   DOMElement *p_oElement = GetParentParametersElement(p_oDoc);
-  floatVal *p_fTempValues;  //for getting species-specific values
+  doubleVal *p_fTempValues;  //for getting species-specific values
   short int i, j; //loop counter
 
   m_iNumSpecies = p_oPop->GetNumberOfSpecies();
 
   //Declare the temp array and populate it with the species to which this
   //behavior applies
-  p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
 
   for (i = 0; i < m_iNumBehaviorSpecies; i++)
     p_fTempValues[i].code = mp_iWhatSpecies[i];
 
   //Declare the arrays for holding the variables
-  mp_fPreHarvestBackgroundMort = new float[m_iNumTotalSpecies];
-  mp_fWindthrowHarvestBasicProb = new float[m_iNumTotalSpecies];
-  mp_fSnagRecruitHarvestBasicProb = new float[m_iNumTotalSpecies];
-  mp_fWindthrowSizeEffect = new float[m_iNumTotalSpecies];
-  mp_fWindthrowHarvestIntensityEffect = new float[m_iNumTotalSpecies];
-  mp_fSnagRecruitHarvestIntensityEffect = new float[m_iNumTotalSpecies];
-  mp_fWindthrowCrowdingEffect = new float[m_iNumTotalSpecies];
-  mp_fSnagRecruitCrowdingEffect = new float[m_iNumTotalSpecies];
-  mp_fWindthrowHarvestRateParam = new float[m_iNumTotalSpecies];
-  mp_fSnagRecruitHarvestRateParam = new float[m_iNumTotalSpecies];
-  mp_fWindthrowBackgroundProb = new float[m_iNumTotalSpecies];
-  mp_fSnagRecruitBackgroundProb = new float[m_iNumTotalSpecies];
+  mp_fPreHarvestBackgroundMort = new double[m_iNumTotalSpecies];
+  mp_fWindthrowHarvestBasicProb = new double[m_iNumTotalSpecies];
+  mp_fSnagRecruitHarvestBasicProb = new double[m_iNumTotalSpecies];
+  mp_fWindthrowSizeEffect = new double[m_iNumTotalSpecies];
+  mp_fWindthrowHarvestIntensityEffect = new double[m_iNumTotalSpecies];
+  mp_fSnagRecruitHarvestIntensityEffect = new double[m_iNumTotalSpecies];
+  mp_fWindthrowCrowdingEffect = new double[m_iNumTotalSpecies];
+  mp_fSnagRecruitCrowdingEffect = new double[m_iNumTotalSpecies];
+  mp_fWindthrowHarvestRateParam = new double[m_iNumTotalSpecies];
+  mp_fSnagRecruitHarvestRateParam = new double[m_iNumTotalSpecies];
+  mp_fWindthrowBackgroundProb = new double[m_iNumTotalSpecies];
+  mp_fSnagRecruitBackgroundProb = new double[m_iNumTotalSpecies];
 
   //Create and initialize time since harvest grid
   SetupTimeSinceHarvestGrid();
@@ -400,7 +400,7 @@ void clPostHarvestSkiddingMort::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
   }
 
 
-  m_fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+  m_iNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
   delete[] p_fTempValues; p_fTempValues = NULL;
 
@@ -455,7 +455,7 @@ deadCode clPostHarvestSkiddingMort::DoMort(clTree *p_oTree, const float &fDbh, c
                                                                 + mp_fSnagRecruitHarvestIntensityEffect[iSpecies]*fHarvestIntensity
                                                                 + mp_fSnagRecruitCrowdingEffect[iSpecies]*fLocalBasalArea;
 
-    for (i=0;i<m_fNumberYearsPerTimestep;i++) {
+    for (i=0;i<m_iNumberYearsPerTimestep;i++) {
 
       iTimeSinceHarvest++;
 
@@ -491,7 +491,7 @@ deadCode clPostHarvestSkiddingMort::DoMort(clTree *p_oTree, const float &fDbh, c
 
   else {  //no harvesting in this cell yet
 
-    fBackgroundMort = 1.0 - pow(1.0-mp_fPreHarvestBackgroundMort[iSpecies],m_fNumberYearsPerTimestep);
+    fBackgroundMort = 1.0 - pow(1.0-mp_fPreHarvestBackgroundMort[iSpecies],m_iNumberYearsPerTimestep);
 
     fRandom = clModelMath::GetRand();
     if (fRandom < fBackgroundMort)
@@ -575,8 +575,8 @@ void clPostHarvestSkiddingMort::CalcTimeSinceHarvest() {
     int i, j,
     iHarvestedThisTimestep, //a value other than -1 if a grid cell was harvested this timestep
     iNewTimeSinceHarvest, //updated time since harvest
-    iTimestepLength = (int)mp_oSimManager->GetNumberOfYearsPerTimestep(),
-    iCurrentTimestep = (int)mp_oSimManager->GetCurrentTimestep(),
+    iTimestepLength = mp_oSimManager->GetNumberOfYearsPerTimestep(),
+    iCurrentTimestep = mp_oSimManager->GetCurrentTimestep(),
     iLastUpdated;
 
     //bool bAnyRecentHarvesting = false;

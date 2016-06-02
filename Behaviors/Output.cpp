@@ -1107,7 +1107,7 @@ void clOutput::ExtractSubplotInfo( xercesc::DOMDocument * p_oDoc )
     * p_oElement; //generic element object
     XMLCh *sVal;
     char *cData;
-    float fTemp;
+    double fTemp;
     int iX, iY; //grid cell X and Y coordinate numbers
     short int iNumSubplots, //number of subplots found
     iNumCells, //number of grid cells found for one subplot

@@ -98,7 +98,7 @@ void clSailLight::DoShellSetup(xercesc::DOMDocument * p_oDoc) {
     PopulateSailLightBrightnessArray();
 
     //Declare the array - sized at number of altitude angles
-    mp_fAltTans = new float[m_iNumAltAng];
+    mp_fAltTans = new double[m_iNumAltAng];
 
     //Populate altitude tangents array
     //For each array bucket, calculate the tangent to the degree that forms its

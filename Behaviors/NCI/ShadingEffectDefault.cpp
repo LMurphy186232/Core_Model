@@ -30,8 +30,9 @@ clShadingEffectDefault::~clShadingEffectDefault() {
 //////////////////////////////////////////////////////////////////////////////
 // CalculateShadingEffect
 //////////////////////////////////////////////////////////////////////////////
-float clShadingEffectDefault::CalculateShadingEffect(clTree *p_oTree) {
-  float fAmountShade, fShadingEffect;
+double clShadingEffectDefault::CalculateShadingEffect(clTree *p_oTree) {
+  float fAmountShade;
+  double fShadingEffect;
   int iSpecies = p_oTree->GetSpecies();
 
   //Get the tree's shading
@@ -49,18 +50,18 @@ float clShadingEffectDefault::CalculateShadingEffect(clTree *p_oTree) {
 //////////////////////////////////////////////////////////////////////////////
 void clShadingEffectDefault::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) {
   stcSpeciesTypeCombo c;
-  floatVal * p_fTempValues; //for getting species-specific values
+  doubleVal * p_fTempValues; //for getting species-specific values
   int iNumBehaviorSpecies = p_oNCI->GetNumBehaviorSpecies(),
       iNumTypes = p_oPop->GetNumberOfTypes(),
       i, j;
 
   m_iNumberTotalSpecies = p_oPop->GetNumberOfSpecies();
-  mp_fShadingCoefficient = new float[m_iNumberTotalSpecies];
-  mp_fShadingExponent = new float[m_iNumberTotalSpecies];
+  mp_fShadingCoefficient = new double[m_iNumberTotalSpecies];
+  mp_fShadingExponent = new double[m_iNumberTotalSpecies];
 
-  //Set up our floatVal array that will extract values only for the species
+  //Set up our doubleVal array that will extract values only for the species
   //assigned to this behavior
-  p_fTempValues = new floatVal[iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[iNumBehaviorSpecies];
   for ( i = 0; i < iNumBehaviorSpecies; i++ ) p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
 
   //Shading coefficient (m)

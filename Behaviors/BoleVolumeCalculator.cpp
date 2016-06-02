@@ -100,7 +100,7 @@ clBoleVolumeCalculator::~clBoleVolumeCalculator()
 /////////////////////////////////////////////////////////////////////////////
 void clBoleVolumeCalculator::GetParameterFileData( xercesc::DOMDocument * p_oDoc )
 {
-  floatVal * p_fTempValues = NULL;
+  doubleVal * p_fTempValues = NULL;
   try {
 
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
@@ -108,20 +108,20 @@ void clBoleVolumeCalculator::GetParameterFileData( xercesc::DOMDocument * p_oDoc
     clTreePopulation * p_oPop = ( clTreePopulation * ) p_oTemp;
     int i;
 
-    //Set up our floatVal array that will extract values only for the species
+    //Set up our doubleVal array that will extract values only for the species
     //assigned to this behavior
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
     //Declare our arrays
-    mp_fB0 = new float[m_iNumBehaviorSpecies];
-    mp_fB1 = new float[m_iNumBehaviorSpecies];
-    mp_fB2 = new float[m_iNumBehaviorSpecies];
-    mp_fB3 = new float[m_iNumBehaviorSpecies];
-    mp_fB4 = new float[m_iNumBehaviorSpecies];
-    mp_fB5 = new float[m_iNumBehaviorSpecies];
-    mp_fFormClass = new float[m_iNumBehaviorSpecies];
+    mp_fB0 = new double[m_iNumBehaviorSpecies];
+    mp_fB1 = new double[m_iNumBehaviorSpecies];
+    mp_fB2 = new double[m_iNumBehaviorSpecies];
+    mp_fB3 = new double[m_iNumBehaviorSpecies];
+    mp_fB4 = new double[m_iNumBehaviorSpecies];
+    mp_fB5 = new double[m_iNumBehaviorSpecies];
+    mp_fFormClass = new double[m_iNumBehaviorSpecies];
 
     //Get the parameter file values
 

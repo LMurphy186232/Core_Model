@@ -84,23 +84,23 @@ class clPRSemiStochGrowth : virtual public clGrowthBase {
 
   /**Height threshold between deterministic and stochastic growth - in m -
   * sized number of behavior species*/
-  float *mp_fHeightThreshold;
+  double *mp_fHeightThreshold;
 
   /**"a" parameter for deterministic growth - sized number of behavior
   * species*/
-  float *mp_fA;
+  double *mp_fA;
 
   /**"b" parameter for deterministic growth - sized number of behavior
   * species*/
-  float *mp_fB;
+  double *mp_fB;
 
   /**Mean diameter (cm) for stochastic growth - sized number of behavior
   * species*/
-  float *mp_fMeanDiam;
+  double *mp_fMeanDiam;
 
   /**Diameter standard deviation (cm) for stochastic growth - sized number of
   * behavior species*/
-  float *mp_fDiamStdDev;
+  double *mp_fDiamStdDev;
 
   /**For accessing the other arrays*/
   short int *mp_iIndexes;

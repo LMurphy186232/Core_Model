@@ -124,19 +124,19 @@ void clStormDamageApplier::GetParameterFileData( xercesc::DOMDocument * p_oDoc )
 {
   clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
   DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
-  floatVal * p_fTempValues; //for getting species-specific values
+  doubleVal * p_fTempValues; //for getting species-specific values
   int i, iNumSpecies = p_oPop->GetNumberOfSpecies();
 
   //Declare our arrays
-  mp_fMinStormDBH = new float[iNumSpecies];
-  mp_fStmDmgInterceptMed = new float[iNumSpecies];
-  mp_fStmDmgInterceptFull = new float[iNumSpecies];
-  mp_fStmIntensityCoeff = new float[iNumSpecies];
-  mp_fStmDBHCoeff = new float[iNumSpecies];
+  mp_fMinStormDBH = new double[iNumSpecies];
+  mp_fStmDmgInterceptMed = new double[iNumSpecies];
+  mp_fStmDmgInterceptFull = new double[iNumSpecies];
+  mp_fStmIntensityCoeff = new double[iNumSpecies];
+  mp_fStmDBHCoeff = new double[iNumSpecies];
 
-  //Set up our floatVal array that will extract values only for the species
+  //Set up our doubleVal array that will extract values only for the species
   //assigned to this behavior
-  p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
   for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
     p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -312,7 +312,7 @@ void clStormDamageApplier::Action()
          fMediumDmgProb, //probability of medium tree damage
          fFullDmgProb; //probability of full tree damage
     int iTreeDamage, iYearsToHeal, iThisDamage,
-        iNumYearsPerTimestep = (int)mp_oSimManager->GetNumberOfYearsPerTimestep();
+        iNumYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
     int iSp, iTp;
 
     //Get the trees that apply to this behavior

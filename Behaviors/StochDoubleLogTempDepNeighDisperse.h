@@ -90,49 +90,49 @@ class clStochDoubleLogTempDepNeighDisperse : virtual public clDisperseBase {
   protected:
 
   /**Colonization a - sized number of species.*/
-  float *mp_fPA;
+  double *mp_fPA;
 
   /**Colonization b - sized number of species.*/
-  float *mp_fPB;
+  double *mp_fPB;
 
   /**Colonization m - sized number of species.*/
-  float *mp_fPM;
+  double *mp_fPM;
 
   /** Temperature dependence of fecundity al - sized number of species.*/
-  float *mp_fAl;
+  double *mp_fAl;
 
   /** Temperature dependence of fecundity bl - sized number of species.*/
-  float *mp_fBl;
+  double *mp_fBl;
 
   /** Temperature dependence of fecundity cl - sized number of species.*/
-  float *mp_fCl;
+  double *mp_fCl;
 
   /** Temperature dependence of fecundity ah - sized number of species.*/
-  float *mp_fAh;
+  double *mp_fAh;
 
   /** Temperature dependence of fecundity bh - sized number of species.*/
-  float *mp_fBh;
+  double *mp_fBh;
 
   /** Temperature dependence of fecundity ch - sized number of species.*/
-  float *mp_fCh;
+  double *mp_fCh;
 
   /** A parameter - sized number of species.*/
-  float *mp_fA;
+  double *mp_fA;
 
   /** B parameter - sized number of species.*/
-  float *mp_fB;
+  double *mp_fB;
 
   /** Neighborhood search radius.*/
-  float m_fRadius;
+  double m_fRadius;
 
   /** Minimum sapling height. For doing neighbor searches.*/
   float m_fMinSaplingHeight;
 
   /** Original analysis plot size, square meters.*/
-  float m_fAnalysisPlotSize;
+  double m_fAnalysisPlotSize;
 
   /** T, in years, to go from cumulative to annualized probability*/
-  float m_fAnnualizePeriod;
+  double m_fAnnualizePeriod;
 
   /** If true, seed number is deterministic. If false, Poisson-distributed. */
   bool m_bDeterministic;

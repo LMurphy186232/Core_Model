@@ -40,7 +40,7 @@ public:
    * Calculates infection effect for a particular species.
    * @param p_oTree Tree for which to calculate infection effect.
    */
-  float CalculateInfectionEffect(clTree *p_oTree);
+  double CalculateInfectionEffect(clTree *p_oTree);
 
   /**
    * Does setup.
@@ -60,10 +60,10 @@ protected:
   short int **mp_iYearsInfestedCodes;
 
   /**Infection effect a. Array is sized number of species.*/
-  float *mp_fA;
+  double *mp_fA;
 
   /**Infection effect b. Array is sized number of species.*/
-  float *mp_fB;
+  double *mp_fB;
 
   /** Total number of species. Primarily for the destructor. */
   int m_iTotalNumSpecies;

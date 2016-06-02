@@ -23,7 +23,7 @@ clBCMort::clBCMort(clSimManager *p_oSimManager) :
    mp_fLightDepMort = NULL;
    mp_iGrowthCodes = NULL;
 
-   m_fNumberYearsPerTimestep = 0;
+   m_iNumberYearsPerTimestep = 0;
 
  }
  catch (modelErr&err) {throw(err);}
@@ -61,18 +61,18 @@ void clBCMort::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
  try {
    clTreePopulation *p_oPop = (clTreePopulation*) mp_oSimManager->GetPopulationObject("treepopulation");
    DOMElement *p_oElement = GetParentParametersElement(p_oDoc);
-   floatVal *p_fTempValues;  //for getting species-specific values
+   doubleVal *p_fTempValues;  //for getting species-specific values
    short int i; //loop counter
 
    //Declare the temp array and populate it with the species to which this
    //behavior applies
-   p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+   p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
    for (i = 0; i < m_iNumBehaviorSpecies; i++)
      p_fTempValues[i].code = mp_iWhatSpecies[i];
 
    //Declare the arrays for holding the variables
-   mp_fMortAtZeroGrowth = new float[m_iNumTotalSpecies];
-   mp_fLightDepMort = new float[m_iNumTotalSpecies];
+   mp_fMortAtZeroGrowth = new double[m_iNumTotalSpecies];
+   mp_fLightDepMort = new double[m_iNumTotalSpecies];
 
    //Capture the values from the parameter file
 
@@ -90,7 +90,7 @@ void clBCMort::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
    for (i = 0; i < m_iNumBehaviorSpecies; i++)
      mp_fLightDepMort[p_fTempValues[i].code] = p_fTempValues[i].val;
 
-   m_fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+   m_iNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
    //Get array codes for each "Growth" value
    GetGrowthVariableCodes();
@@ -166,8 +166,7 @@ deadCode clBCMort::DoMort(clTree *p_oTree, const float &fDbh, const short int &i
 
   p_oTree->GetValue(mp_iGrowthCodes[p_oTree->GetSpecies()][p_oTree->GetType()], &fGrowth);
 
-  fDeathProb = 1 - exp(-m_fNumberYearsPerTimestep *
-      mp_fMortAtZeroGrowth[iSpecies] *
+  fDeathProb = 1 - exp(-m_iNumberYearsPerTimestep * mp_fMortAtZeroGrowth[iSpecies] *
       exp(-(mp_fLightDepMort[iSpecies] * fGrowth)));
 
   //If the probability of death is greater than the random number, kill the

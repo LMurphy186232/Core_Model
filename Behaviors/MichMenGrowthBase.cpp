@@ -63,16 +63,16 @@ void clMichMenBase::GetParameterFileData(DOMDocument *p_oDoc) {
   try {
     clTreePopulation *p_oPop = (clTreePopulation*) mp_oSimManager->GetPopulationObject("treepopulation");
     DOMElement *p_oElement = GetParentParametersElement(p_oDoc);
-    floatVal *p_fTempValues;
-    float fConversionFactor, //for scaling values from per year to per timestep
-    fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    doubleVal *p_fTempValues;
+    float fConversionFactor; //for scaling values from per year to per timestep
+    int iNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
     short int i; //loop counter
 
     //Diameter and height growth sort themselves out automatically by which
     //arrays are declared.
 
     //Set up the temp array
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for (i = 0; i < m_iNumBehaviorSpecies; i++)
     p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -141,7 +141,7 @@ void clMichMenBase::GetParameterFileData(DOMDocument *p_oDoc) {
     //cm of diameter growth per timestep.
     //'*2'=>convert radius to dbh; '/10'=>convert mm to cm; *number of years
     //per timestep
-    fConversionFactor = 0.2 * fNumberYearsPerTimestep;
+    fConversionFactor = 0.2 * iNumberYearsPerTimestep;
 
     if (mp_fAdultConstRadInc) {
       for (i = 0; i < m_iNumBehaviorSpecies; i++)
@@ -151,7 +151,7 @@ void clMichMenBase::GetParameterFileData(DOMDocument *p_oDoc) {
 
     //Scale basal area from square cm/year to sqare mm/timestep.
     //*100=>convert from square cm to square mm
-    fConversionFactor = 100 * fNumberYearsPerTimestep;
+    fConversionFactor = 100.0 * iNumberYearsPerTimestep;
 
     if (mp_fAdultConstBAInc) {
       for (i = 0; i < m_iNumBehaviorSpecies; i++)

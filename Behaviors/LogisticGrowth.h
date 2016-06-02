@@ -97,13 +97,13 @@ class clLogisticGrowth : virtual public clGrowthBase {
   protected:
 
   /**Asymptotic growth at full light - a - sized number of behavior species*/
-  float *mp_fAsympGrowthAtFullLight;
+  double *mp_fAsympGrowthAtFullLight;
 
   /**Shape parameter 1 - b - sized number of behavior species*/
-  float *mp_fShape1;
+  double *mp_fShape1;
 
   /**Shape parameter 2 - c - sized number of behavior species*/
-  float *mp_fShape2;
+  double *mp_fShape2;
 
   /**For accessing the other arrays*/
   short int *mp_iIndexes;

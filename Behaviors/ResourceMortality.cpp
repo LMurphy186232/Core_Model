@@ -31,7 +31,7 @@ clWorkerBase( p_oSimManager ), clBehaviorBase( p_oSimManager ), clMortalityBase(
     mp_iYCodes = NULL;
 
     m_iResourceCode = -1;
-    m_fNumberYearsPerTimestep = 0;
+    m_iNumberYearsPerTimestep = 0;
     mp_oResourceGrid = NULL;
   }
   catch ( modelErr & err )
@@ -97,12 +97,12 @@ void clResourceMortality::ReadParameterFileData( xercesc::DOMDocument * p_oDoc )
 {
   clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
   DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
-  floatVal * p_fTempValues; //for getting species-specific values
+  doubleVal * p_fTempValues; //for getting species-specific values
   short int i; //loop counter
 
   //Declare the temp array and populate it with the species to which this
   //behavior applies
-  p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
   for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
     p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -114,10 +114,10 @@ void clResourceMortality::ReadParameterFileData( xercesc::DOMDocument * p_oDoc )
     mp_iIndexes[mp_iWhatSpecies[i]] = i;
 
   //Declare the arrays for holding the variables
-  mp_fRho = new float[m_iNumBehaviorSpecies];
-  mp_fMu = new float[m_iNumBehaviorSpecies];
-  mp_fDelta = new float[m_iNumBehaviorSpecies];
-  mp_fSigma = new float[m_iNumBehaviorSpecies];
+  mp_fRho = new double[m_iNumBehaviorSpecies];
+  mp_fMu = new double[m_iNumBehaviorSpecies];
+  mp_fDelta = new double[m_iNumBehaviorSpecies];
+  mp_fSigma = new double[m_iNumBehaviorSpecies];
 
   //Capture the values from the parameter file
 
@@ -159,7 +159,7 @@ void clResourceMortality::DoShellSetup( xercesc::DOMDocument * p_oDoc )
 {
   try
   {
-    m_fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_iNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
     ReadParameterFileData( p_oDoc );
     GetTreeDataMemberCodes();
@@ -305,7 +305,7 @@ deadCode clResourceMortality::DoMort(clTree * p_oTree, const float & fDbh, const
                             / ( 2 * ( pow( mp_fDelta[mp_iIndexes[iSpecies]] * fGrowth + mp_fSigma[mp_iIndexes[iSpecies]], 2 ) ) ) ) );
 
   //Compound over the number of years per timestep
-  fSurvProb = pow(fSurvProb, m_fNumberYearsPerTimestep);
+  fSurvProb = pow(fSurvProb, m_iNumberYearsPerTimestep);
 
   //If the probability of death is greater than the random number, kill the
   //tree

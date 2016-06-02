@@ -112,28 +112,28 @@ class clClimateCompDepNeighborhoodSurvival : virtual public clMortalityBase {
   clGrid* mp_oGrid;
 
   /**Temperature function M - sized number of species.*/
-  float *mp_fM;
+  double *mp_fM;
 
   /**Temperature function N - sized number of species.*/
-  float *mp_fN;
+  double *mp_fN;
 
   /**Water deficit function C - sized number of species.*/
-  float *mp_fC;
+  double *mp_fC;
 
   /**Water deficit function D - sized number of species.*/
-  float *mp_fD;
+  double *mp_fD;
 
   /**Crowding function A parameter - sized number of species.*/
-  float *mp_fA;
+  double *mp_fA;
 
   /**Crowding function B parameter - sized number of species.*/
-  float *mp_fB;
+  double *mp_fB;
 
   /**Temperature portion of the survival function - sized number of species.*/
-  float *mp_fTempFunction;
+  double *mp_fTempFunction;
 
   /**Water deficit portion of the survival function - sized number of species.*/
-  float *mp_fWDFunction;
+  double *mp_fWDFunction;
 
   /** Holds data member codes for the "survival_x" data members of the
    * "Climate Comp Dep Neighborhood Survival" grid. Array size is total
@@ -141,7 +141,7 @@ class clClimateCompDepNeighborhoodSurvival : virtual public clMortalityBase {
   short int *mp_iGridSurvivalCodes;
 
   /**Neighborhood search radius.*/
-  float m_fRadius;
+  double m_fRadius;
 
   /**Minimum sapling height. For doing neighbor searches.*/
   float m_fMinSaplingHeight;

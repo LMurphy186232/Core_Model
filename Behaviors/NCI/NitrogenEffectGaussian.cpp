@@ -23,8 +23,8 @@ clNitrogenEffectGaussian::~clNitrogenEffectGaussian() {
 ////////////////////////////////////////////////////////////////////////////
 // CalculateNitrogenEffect
 ////////////////////////////////////////////////////////////////////////////
-float clNitrogenEffectGaussian::CalculateNitrogenEffect(clPlot *p_oPlot, int iSpecies) {
-  float fEffect,
+double clNitrogenEffectGaussian::CalculateNitrogenEffect(clPlot *p_oPlot, int iSpecies) {
+  double fEffect,
   fNDep = p_oPlot->GetNDeposition();
   fEffect = (fNDep - mp_fX0[iSpecies]) / mp_fXb[iSpecies];
   fEffect *= fEffect;
@@ -38,14 +38,14 @@ float clNitrogenEffectGaussian::CalculateNitrogenEffect(clPlot *p_oPlot, int iSp
 // DoSetup
 //////////////////////////////////////////////////////////////////////////////
 void clNitrogenEffectGaussian::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) {
-  floatVal * p_fTempValues; //for getting species-specific values
+  doubleVal * p_fTempValues; //for getting species-specific values
   int iNumBehaviorSpecies = p_oNCI->GetNumBehaviorSpecies(),
       iNumTotalSpecies = p_oPop->GetNumberOfSpecies(), i;
 
-  mp_fX0 = new float[iNumTotalSpecies];
-  mp_fXb = new float[iNumTotalSpecies];
+  mp_fX0 = new double[iNumTotalSpecies];
+  mp_fXb = new double[iNumTotalSpecies];
 
-  p_fTempValues = new floatVal[iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[iNumBehaviorSpecies];
   for ( i = 0; i < iNumBehaviorSpecies; i++ ) {
     p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
   }

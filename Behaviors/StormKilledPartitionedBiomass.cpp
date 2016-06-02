@@ -138,13 +138,13 @@ void clStormKilledPartitionedBiomass::SetNameData(std::string sNameString) {
 void clStormKilledPartitionedBiomass::GetParameterFileData( xercesc::DOMDocument * p_oDoc, clTreePopulation *p_oPop )
 {
   DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
-  floatVal * p_fTempValues; //for getting species-specific values
+  doubleVal * p_fTempValues; //for getting species-specific values
   int iNumTotalSpecies = p_oPop->GetNumberOfSpecies(),
       i;
 
-  //Set up our floatVal array that will extract values only for the species
+  //Set up our doubleVal array that will extract values only for the species
   //assigned to this behavior
-  p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
   for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
     p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -154,12 +154,12 @@ void clStormKilledPartitionedBiomass::GetParameterFileData( xercesc::DOMDocument
     //*******************
 
     //Declare the appropriate arrays
-    mp_fDBHLeafA = new float[iNumTotalSpecies];
-    mp_fDBHLeafB = new float[iNumTotalSpecies];
-    mp_fDBHBranchA = new float[iNumTotalSpecies];
-    mp_fDBHBranchB = new float[iNumTotalSpecies];
-    mp_fDBHBoleA = new float[iNumTotalSpecies];
-    mp_fDBHBoleB = new float[iNumTotalSpecies];
+    mp_fDBHLeafA = new double[iNumTotalSpecies];
+    mp_fDBHLeafB = new double[iNumTotalSpecies];
+    mp_fDBHBranchA = new double[iNumTotalSpecies];
+    mp_fDBHBranchB = new double[iNumTotalSpecies];
+    mp_fDBHBoleA = new double[iNumTotalSpecies];
+    mp_fDBHBoleB = new double[iNumTotalSpecies];
 
     FillSpeciesSpecificValue( p_oElement, "an_partBioDbhLeafA", "an_pbdlaVal", p_fTempValues, m_iNumBehaviorSpecies, p_oPop, false );
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
@@ -191,10 +191,10 @@ void clStormKilledPartitionedBiomass::GetParameterFileData( xercesc::DOMDocument
     //This is Height biomass
     //*******************
     //Declare the appropriate arrays
-    mp_fHeightLeafA = new float[iNumTotalSpecies];
-    mp_fHeightLeafB = new float[iNumTotalSpecies];
-    mp_fHeightBoleA = new float[iNumTotalSpecies];
-    mp_fHeightBoleB = new float[iNumTotalSpecies];
+    mp_fHeightLeafA = new double[iNumTotalSpecies];
+    mp_fHeightLeafB = new double[iNumTotalSpecies];
+    mp_fHeightBoleA = new double[iNumTotalSpecies];
+    mp_fHeightBoleB = new double[iNumTotalSpecies];
 
     FillSpeciesSpecificValue( p_oElement, "an_partBioHeightLeafA", "an_pbhlaVal", p_fTempValues, m_iNumBehaviorSpecies, p_oPop, false );
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {

@@ -126,9 +126,9 @@ void clSnagDecomp::GetData(xercesc::DOMDocument * p_oDoc) {
     int i,j,k; //loop counters
     const static char * cDCArrayCodes[] = {"Live","1", "2", "3", "4", "5"}; //correspond to tags in parameter file
     char cConcatenatedCode[50]; //strings holding names of XML tags
-    floatVal *p_fTempValues; //for getting species-specific values
+    doubleVal *p_fTempValues; //for getting species-specific values
     float fCumulativeProb; //column totals for parameter validation
-    float fYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    int iYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
     float * p_fProbGEk; //for holding cumulative transition probabilities during timestep rescaling
 
     float fPopGridCellArea; //the area of each cell in the tree population grid (used as a basis for cut basal area grid)
@@ -142,7 +142,7 @@ void clSnagDecomp::GetData(xercesc::DOMDocument * p_oDoc) {
 
     //Declare the temp array and populate it with the species to which this
     //behavior applies
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for (i = 0; i < m_iNumBehaviorSpecies; i++)
     p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -151,13 +151,13 @@ void clSnagDecomp::GetData(xercesc::DOMDocument * p_oDoc) {
     //*************************
 
 
-    //Set up our floatVal array that will extract values only for the species
+    //Set up our doubleVal array that will extract values only for the species
     //assigned to this behavior
-    mp_fTreefallBeta = new float [m_iNumBehaviorSpecies];
-    mp_fSnagfallBeta = new float [m_iNumBehaviorSpecies];
+    mp_fTreefallBeta = new double[m_iNumBehaviorSpecies];
+    mp_fSnagfallBeta = new double[m_iNumBehaviorSpecies];
 
     //Declare our arrays
-    mp_fSnagfallGamma = new float [6];
+    mp_fSnagfallGamma = new double[6];
 
     //Get the parameter file values
     FillSingleValue( p_oElement, "sd_snagDecompTreefallAlpha", & m_fTreefallAlpha, true );
@@ -250,7 +250,7 @@ void clSnagDecomp::GetData(xercesc::DOMDocument * p_oDoc) {
        * re-scale transition matrix for timestep
        * other than 5 years
        * *************************************/
-      if (fabs((fYearsPerTimestep)-5.0)>0.1) {
+      if (fabs((iYearsPerTimestep)-5.0)>0.1) {
         p_fProbGEk = new float [7];
         //calculate cumulative transition probabilities
         p_fProbGEk[6]=0.0;
@@ -260,7 +260,7 @@ void clSnagDecomp::GetData(xercesc::DOMDocument * p_oDoc) {
         //for (k=j;k<=5;k++) {
         for (k=5;k>=j;k--) {
           //re-scale cumulative probabilities
-          p_fProbGEk[k] = 1 - pow((1 - p_fProbGEk[k]),fYearsPerTimestep/5.0);
+          p_fProbGEk[k] = 1 - pow((1 - p_fProbGEk[k]),iYearsPerTimestep/5.0);
           //calculate probabilities for each state
           mp_fSnagTransProb[j][k] = p_fProbGEk[k] - p_fProbGEk[k+1];
         }

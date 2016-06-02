@@ -126,23 +126,23 @@ class clStormDamageApplier : virtual public clBehaviorBase {
 
   /**The minimum DBH, in cm, for trees that can be damaged by storms.  Array
   * size is total number of species.  From the parameter file.*/
-  float *mp_fMinStormDBH;
+  double *mp_fMinStormDBH;
 
   /**Storm damage intercept for medium damage (a).  Array size is total number
   * of species.  From the parameter file.*/
-  float *mp_fStmDmgInterceptMed;
+  double *mp_fStmDmgInterceptMed;
 
   /**Storm damage intercept for complete damage (a).  Array size is total
   * number of species.  From the parameter file.*/
-  float *mp_fStmDmgInterceptFull;
+  double *mp_fStmDmgInterceptFull;
 
   /**Storm intensity coefficient (b). Array size is total number of species.
   * From the parameter file.*/
-  float *mp_fStmIntensityCoeff;
+  double *mp_fStmIntensityCoeff;
 
   /**Storm DBH coefficient (d). Array size is total number of species.  From
   * the parameter file.*/
-  float *mp_fStmDBHCoeff;
+  double *mp_fStmDBHCoeff;
 
   /**Return codes for the "stm_dmg" int tree data member.  This is the data
   * member that this behavior is adding.  Array index one is sized m_iNumTypes;

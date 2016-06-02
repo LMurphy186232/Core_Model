@@ -111,9 +111,9 @@ void clSelectionHarvest::GetData(DOMDocument *p_oDoc) {
     short int i;      //loop counters
 
     //initialize array
-    mp_fBasalArea = new float[m_iNumAllowedCutRanges];
-    mp_fLandscapeBasalArea = new float[m_iNumAllowedCutRanges];
-    mp_fTempTargetBA = new float[m_iNumAllowedCutRanges];
+    mp_fBasalArea = new double[m_iNumAllowedCutRanges];
+    mp_fLandscapeBasalArea = new double[m_iNumAllowedCutRanges];
+    mp_fTempTargetBA = new double[m_iNumAllowedCutRanges];
 
     //p_oInitialAgeElement = p_oDoc->getDocumentElement();
     FillSingleValue(p_oElement, "sha_InitialAge", &m_iInitialAge, false);
@@ -126,9 +126,9 @@ void clSelectionHarvest::GetData(DOMDocument *p_oDoc) {
     m_iNumAllowedCutRanges = p_oSelectionHarvest->getLength();
 
     //initialize the arrays
-    mp_fLowDBH = new float[m_iNumAllowedCutRanges];
-    mp_fHighDBH = new float[m_iNumAllowedCutRanges];
-    mp_fTargetBA = new float[m_iNumAllowedCutRanges];
+    mp_fLowDBH = new double[m_iNumAllowedCutRanges];
+    mp_fHighDBH = new double[m_iNumAllowedCutRanges];
+    mp_fTargetBA = new double[m_iNumAllowedCutRanges];
 
     //if the user specified zero size classes, i'd better throw an error
     if(0 == m_iNumAllowedCutRanges) {
@@ -207,7 +207,7 @@ void clSelectionHarvest::GetData(DOMDocument *p_oDoc) {
 /////////////////////////////////////////////////////////////////////////////
 // CalculateBasalAreaDifference()
 /////////////////////////////////////////////////////////////////////////////
-int clSelectionHarvest::CalculateBasalAreaDifference(float *mp_fLandscapeBasalArea)
+int clSelectionHarvest::CalculateBasalAreaDifference(double *mp_fLandscapeBasalArea)
 {
   int i;    //counter
   short int iTemp = 0;
@@ -419,15 +419,15 @@ void clSelectionHarvest::CreateMasterCutPackage(int iSpecies)
   //Set the cut ranges.
   for (j = 0; j < m_iNumAllowedCutRanges; j++)
   {
-    mp_oNewPackage->SetValue(mp_iRangeMinCodes[j], mp_fLowDBH[j]);
-    mp_oNewPackage->SetValue(mp_iRangeMaxCodes[j], mp_fHighDBH[j]);
+    mp_oNewPackage->SetValue(mp_iRangeMinCodes[j], (float)mp_fLowDBH[j]);
+    mp_oNewPackage->SetValue(mp_iRangeMaxCodes[j], (float)mp_fHighDBH[j]);
   }
 
   //I'm going to have to set an absolute basal area to cut for each size
   //class, so loop once for each size class
   for (k = 0; k < m_iNumAllowedCutRanges; k++)
   {
-    mp_oNewPackage->SetValue(mp_iRangeAmountCodes[k], mp_fBasalArea[k]);
+    mp_oNewPackage->SetValue(mp_iRangeAmountCodes[k], (float)mp_fBasalArea[k]);
   }
 
   //I use the species # for the selection harvest ID, so that each species
@@ -484,8 +484,8 @@ void clSelectionHarvest::CreateMasterCutPackage(int iSpecies)
 //////////////////////////////////////////////////////////////////////////////
 // GetBasalArea()
 //////////////////////////////////////////////////////////////////////////////
-void clSelectionHarvest::GetBasalArea(clTreePopulation *p_oTreePop, float *p_fTotalBasalArea,
-    float *p_fLoDbh, float *p_fHiDbh)
+void clSelectionHarvest::GetBasalArea(clTreePopulation *p_oTreePop, double *p_fTotalBasalArea,
+    double *p_fLoDbh, double *p_fHiDbh)
 {
   try {
     clTree *p_oTree;                   //tree whose basal area we're getting
@@ -531,8 +531,8 @@ void clSelectionHarvest::GetBasalArea(clTreePopulation *p_oTreePop, float *p_fTo
 //////////////////////////////////////////////////////////////////////////////
 // GetBasalArea()
 //////////////////////////////////////////////////////////////////////////////
-void clSelectionHarvest::GetBasalArea(clTreePopulation *p_oTreePop,  int iSpecies, float * p_fTotalBasalArea,
-    float * p_fLoDbh, float * p_fHiDbh )
+void clSelectionHarvest::GetBasalArea(clTreePopulation *p_oTreePop,  int iSpecies, double * p_fTotalBasalArea,
+    double * p_fLoDbh, double * p_fHiDbh )
 {
   try {
     clTree *p_oTree;                   //tree whose basal area we're getting
@@ -772,7 +772,7 @@ void clSelectionHarvest::GetTimeSinceHarvest()
     i, j;
     int iHarvestType, iTime, iInitialResult = -1;
     int iTimestep = mp_oSimManager->GetCurrentTimestep();
-    int iTimestepLength = (int)mp_oSimManager->GetNumberOfYearsPerTimestep();
+    int iTimestepLength = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
     float fCellLength = mp_oPop->GetGridCellSize();
 

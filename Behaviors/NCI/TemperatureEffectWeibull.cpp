@@ -27,9 +27,9 @@ clTemperatureEffectWeibull::~clTemperatureEffectWeibull() {
 ////////////////////////////////////////////////////////////////////////////
 // CalculateTemperatureEffect
 ////////////////////////////////////////////////////////////////////////////
-float clTemperatureEffectWeibull::CalculateTemperatureEffect(clPlot *p_oPlot, int iSpecies) {
-  float fEffect,
-        fTemperature = p_oPlot->GetMeanAnnualTemp();
+double clTemperatureEffectWeibull::CalculateTemperatureEffect(clPlot *p_oPlot, int iSpecies) {
+  double fEffect,
+         fTemperature = p_oPlot->GetMeanAnnualTemp();
   fEffect = exp(-0.5*pow(fabs(fTemperature - mp_fTempC[iSpecies])/mp_fTempA[iSpecies], mp_fTempB[iSpecies]));
   if (fEffect < 0) fEffect = 0;
   if (fEffect > 1) fEffect = 1;
@@ -40,17 +40,17 @@ float clTemperatureEffectWeibull::CalculateTemperatureEffect(clPlot *p_oPlot, in
 // DoSetup
 ////////////////////////////////////////////////////////////////////////////
 void clTemperatureEffectWeibull::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) {
-  floatVal * p_fTempValues; //for getting species-specific values
+  doubleVal * p_fTempValues; //for getting species-specific values
   int iNumBehaviorSpecies = p_oNCI->GetNumBehaviorSpecies(),
       iNumTotalSpecies = p_oPop->GetNumberOfSpecies(), i;
 
-  mp_fTempA = new float[iNumTotalSpecies];
-  mp_fTempB = new float[iNumTotalSpecies];
-  mp_fTempC = new float[iNumTotalSpecies];
+  mp_fTempA = new double[iNumTotalSpecies];
+  mp_fTempB = new double[iNumTotalSpecies];
+  mp_fTempC = new double[iNumTotalSpecies];
 
-  //Set up our floatVal array that will extract values only for the species
+  //Set up our doubleVal array that will extract values only for the species
   //assigned to this behavior
-  p_fTempValues = new floatVal[iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[iNumBehaviorSpecies];
   for ( i = 0; i < iNumBehaviorSpecies; i++ ) p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
 
   //Temperature effect a

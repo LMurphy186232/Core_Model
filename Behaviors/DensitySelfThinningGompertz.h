@@ -67,13 +67,13 @@ class clDensitySelfThinningGompertz : virtual public clMortalityBase {
   deadCode DoMort(clTree *p_oTree, const float &fDbh, const short int &iSpecies);
 
   protected:
-   float * mp_fG; /**<G parameter*/
-   float * mp_fH; /**<H parameter*/
-   float * mp_fI; /**<I parameter*/
-   float * mp_fMinHeight; /**<Minimum height for neighborhood trees*/
+   double * mp_fG; /**<G parameter*/
+   double * mp_fH; /**<H parameter*/
+   double * mp_fI; /**<I parameter*/
+   double * mp_fMinHeight; /**<Minimum height for neighborhood trees*/
    short int * mp_iIndexes; /**<Speeds access to the arrays*/
-   float m_fRadius; /**<Radius that defines the neighborhood size (meters)*/
-   float m_fNumberYearsPerTimestep; /**<Number of years per timestep*/
+   double m_fRadius; /**<Radius that defines the neighborhood size (meters)*/
+   int m_iNumberYearsPerTimestep; /**<Number of years per timestep*/
 };
 //---------------------------------------------------------------------------
 #endif //DensitySelfThinningGompertz

@@ -124,10 +124,10 @@ class clRipleysKCalculator : virtual public clBehaviorBase {
   float *mp_fIncs;
 
   /** The max distance to which to calculate Ripley's K. */
-  float m_fMaxDistance;
+  double m_fMaxDistance;
 
   /** The distance increment used to step out to the max distance. */
-  float m_fIncrement;
+  double m_fIncrement;
 
   /** Number of increments for which to calculate Ripley's K.*/
   int m_iNumIncs;

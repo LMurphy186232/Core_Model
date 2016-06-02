@@ -119,25 +119,25 @@ class clResourceMortality : virtual public clMortalityBase {
 
   /**Scaling factor - @htmlonly &rho; @endhtmlonly in equation above.  Array
   * size is number of behavior species.*/
-  float *mp_fRho;
+  double *mp_fRho;
 
   /**Function mode - @htmlonly &mu; @endhtmlonly in equation above.  Array
   * size is number of behavior species.*/
-  float *mp_fMu;
+  double *mp_fMu;
 
   /**Increase in survival due to growth - @htmlonly &delta; @endhtmlonly in
   * equation above.  Array size is number of behavior species.*/
-  float *mp_fDelta;
+  double *mp_fDelta;
 
   /**Shape of function in low-growth conditions - @htmlonly &sigma; @endhtmlonly
   * in equation above.  Array size is number of behavior species.*/
-  float *mp_fSigma;
+  double *mp_fSigma;
 
   /**For array access*/
   short int *mp_iIndexes;
 
   /**Number of years per timestep*/
-  float m_fNumberYearsPerTimestep;
+  int m_iNumberYearsPerTimestep;
 
   /**Index for "Resource" data member of the "Resource" grid*/
   short int m_iResourceCode;

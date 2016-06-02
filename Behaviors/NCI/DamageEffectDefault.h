@@ -26,7 +26,7 @@ public:
    * Calculates damage effect.
    * @param p_oTree Tree for which to calculate damage effect.
    */
-  float CalculateDamageEffect(clTree *p_oTree);
+  double CalculateDamageEffect(clTree *p_oTree);
 
   /**
    * Does any desired setup.
@@ -45,11 +45,11 @@ protected:
 
   /**Damage Effect parameter for target trees with medium damage. Array is sized
    * number of species.*/
-  float *mp_fMedDamageStormEff;
+  double *mp_fMedDamageStormEff;
 
   /**Damage Effect parameter for target trees with full damage. Array is sized
    * number of species.*/
-  float *mp_fFullDamageStormEff;
+  double *mp_fFullDamageStormEff;
 
   /**
    * Number of total species. For the destructor.

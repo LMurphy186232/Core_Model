@@ -79,25 +79,25 @@ class clClimateChange : virtual public clBehaviorBase {
  protected:
 
   /** Time, in years, elapsed since the beginning of the run.*/
-  float m_fTimeElapsed;
+  long m_iTimeElapsed;
 
   /** Length of timestep, in years.*/
-  float m_fTimestepLength;
+  int m_iTimestepLength;
 
   /** B parameter.*/
-  float m_fB;
+  double m_fB;
 
   /** C parameter.*/
-  float m_fC;
+  double m_fC;
 
   /** Starting value, either temperature or precipitation.*/
-  float m_fStartingValue;
+  double m_fStartingValue;
 
   /** Lower bound.*/
-  float m_fMin;
+  double m_fMin;
 
   /** Upper bound.*/
-  float m_fMax;
+  double m_fMax;
 
   /** Whether this is for temperature (True) or precipitation (False).*/
   bool m_bIsTemp;

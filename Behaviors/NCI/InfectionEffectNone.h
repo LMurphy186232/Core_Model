@@ -21,7 +21,7 @@ public:
    * Calculates infection effect for a particular species.
    * @param p_oTree Tree for which to calculate infection effect.
    */
-  float CalculateInfectionEffect(clTree *p_oTree) {return 1.0;};
+  double CalculateInfectionEffect(clTree *p_oTree) {return 1.0;};
 
   /**
    * Does any desired setup.

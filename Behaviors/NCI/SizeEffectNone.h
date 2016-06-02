@@ -8,7 +8,7 @@
  */
 class clSizeEffectNone: virtual public clSizeEffectBase {
 public:
-  float CalculateSizeEffect(clTree *p_oTree, const float &fDiam) {return 1;};
+  double CalculateSizeEffect(clTree *p_oTree, const float &fDiam) {return 1;};
   void DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) {;};
 };
 

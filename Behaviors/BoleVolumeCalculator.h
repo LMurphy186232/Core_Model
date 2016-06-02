@@ -150,28 +150,28 @@ class clBoleVolumeCalculator : virtual public clBehaviorBase {
 
   protected:
   /** <i>b0</i> in the volume equation.  Array size is # behavior species.*/
-  float *mp_fB0;
+  double *mp_fB0;
 
   /** <i>b1</i> in the volume equation.  Array size is # behavior species.*/
-  float *mp_fB1;
+  double *mp_fB1;
 
   /** <i>b2</i> in the volume equation.  Array size is # behavior species.*/
-  float *mp_fB2;
+  double *mp_fB2;
 
   /** <i>b3</i> in the volume equation.  Array size is # behavior species.*/
-  float *mp_fB3;
+  double *mp_fB3;
 
   /** <i>b4</i> in the volume equation.  Array size is # behavior species.*/
-  float *mp_fB4;
+  double *mp_fB4;
 
   /** <i>b5</i> in the volume equation.  Array size is # behavior species.*/
-  float *mp_fB5;
+  double *mp_fB5;
 
   /** Form classes.  This is the proportion of DBH that the diameter is at the
   * top of the first log.  This is entered by the user as a percentage between
   * 60 and 100 but to save math we convert to a proportion and subtract it from
   * 1 so it's the inverse.  Array size is # behavior species.*/
-  float *mp_fFormClass;
+  double *mp_fFormClass;
 
   /** Taper table.  This is the amount by which diameter is reduced,
   * in inches, at the top of the last log in a 2-, 3-, 4-, 5-, or 6-log tree.

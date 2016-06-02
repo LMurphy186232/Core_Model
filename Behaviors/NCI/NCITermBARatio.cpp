@@ -117,7 +117,7 @@ clNCITermBase::ncivals clNCITermBARatio::CalculateNCITerm(clTree * p_oTree, clTr
 // DoSetup
 //////////////////////////////////////////////////////////////////////////////
 void clNCITermBARatio::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) {
-  floatVal * p_fTempValues; //for getting species-specific values
+  doubleVal * p_fTempValues; //for getting species-specific values
   int iNumBehaviorSpecies = p_oNCI->GetNumBehaviorSpecies(),
       iNumTotalSpecies = p_oPop->GetNumberOfSpecies(),
       i;
@@ -133,13 +133,13 @@ void clNCITermBARatio::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI,
     }
   }
 
-  mp_fMaxAdultRadius = new float[iNumTotalSpecies];
-  mp_fMaxSaplingRadius = new float[iNumTotalSpecies];
-  mp_fMaxCrowdingRadius = new float[iNumTotalSpecies];
+  mp_fMaxAdultRadius = new double[iNumTotalSpecies];
+  mp_fMaxSaplingRadius = new double[iNumTotalSpecies];
+  mp_fMaxCrowdingRadius = new double[iNumTotalSpecies];
 
-  //Set up our floatVal array that will extract values only for the species
+  //Set up our doubleVal array that will extract values only for the species
   //assigned to this behavior
-  p_fTempValues = new floatVal[iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[iNumBehaviorSpecies];
   for ( i = 0; i < iNumBehaviorSpecies; i++ ) p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
 
   //Max crowding radius

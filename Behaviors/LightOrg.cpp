@@ -111,17 +111,6 @@ void clLightOrg::DoSetup( clSimManager * p_oSimManager, xercesc::DOMDocument * p
       throw( stcErr );
     }
 
-    //If the number of years per timestep is not an integer, throw an error
-    float fNumYearsPerTimestep = p_oSimManager->GetNumberOfYearsPerTimestep();
-    if ( fabs( clModelMath::Round( fNumYearsPerTimestep, 0 ) - fNumYearsPerTimestep ) > 0 )
-    {
-      modelErr stcErr;
-      stcErr.sFunction = "clLightOrg::DoSetup" ;
-      stcErr.sMoreInfo = "Light cannot be used if there is not an integer number of years per timestep.";
-      stcErr.iErrorCode = BAD_DATA;
-      throw( stcErr );
-    }
-
     //Get the tree population object, and from it the numbers of species and types
     mp_oPop = ( clTreePopulation * ) p_oSimManager->GetPopulationObject( "treepopulation" );
 
@@ -129,13 +118,13 @@ void clLightOrg::DoSetup( clSimManager * p_oSimManager, xercesc::DOMDocument * p
     m_iTotalTypes = mp_oPop->GetNumberOfTypes();
 
     //Declare the light variable arrays
-    mp_fLightExtCoef = new float[m_iTotalSpecies];
+    mp_fLightExtCoef = new double[m_iTotalSpecies];
     if ( mp_oPop->GetUsesSnags() )
     {
       mp_iSnagAgeClasses = new int[m_iNumSnagAgeClasses];
-      mp_fSnagLightExtCoef = new float * [m_iNumSnagAgeClasses];
+      mp_fSnagLightExtCoef = new double * [m_iNumSnagAgeClasses];
       for ( i = 0; i < m_iNumSnagAgeClasses; i++ )
-        mp_fSnagLightExtCoef[i] = new float[m_iTotalSpecies];
+        mp_fSnagLightExtCoef[i] = new double[m_iTotalSpecies];
     }
 
     //Get needed data from the parameter file

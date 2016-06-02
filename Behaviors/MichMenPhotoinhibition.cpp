@@ -27,7 +27,7 @@ clMichMenPhotoinhibition::clMichMenPhotoinhibition( clSimManager * p_oSimManager
     mp_fD = NULL;
     mp_iIndexes = NULL;
 
-    m_fYearsPerTimestep = 0;
+    m_iYearsPerTimestep = 0;
   }
   catch ( modelErr & err )
   {
@@ -63,7 +63,7 @@ clMichMenPhotoinhibition::~clMichMenPhotoinhibition()
 /////////////////////////////////////////////////////////////////////////////*/
 void clMichMenPhotoinhibition::DoShellSetup( DOMDocument * p_oDoc )
 {
-  floatVal * p_fTempValues = NULL; //for getting species-specific values
+  doubleVal * p_fTempValues = NULL; //for getting species-specific values
   try
   {
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
@@ -71,13 +71,13 @@ void clMichMenPhotoinhibition::DoShellSetup( DOMDocument * p_oDoc )
     short int i;
 
     //Get number of years per timestep
-    m_fYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_iYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
     //Declare the arrays we'd like read
-    mp_fAlpha = new float[m_iNumBehaviorSpecies];
-    mp_fBeta = new float[m_iNumBehaviorSpecies];
-    mp_fPhi = new float[m_iNumBehaviorSpecies];
-    mp_fD = new float[m_iNumBehaviorSpecies];
+    mp_fAlpha = new double[m_iNumBehaviorSpecies];
+    mp_fBeta = new double[m_iNumBehaviorSpecies];
+    mp_fPhi = new double[m_iNumBehaviorSpecies];
+    mp_fD = new double[m_iNumBehaviorSpecies];
     mp_iIndexes = new int[p_oPop->GetNumberOfSpecies()];
 
     //Set up the array indexes
@@ -86,7 +86,7 @@ void clMichMenPhotoinhibition::DoShellSetup( DOMDocument * p_oDoc )
 
     //Declare the species-specific temp array and pre-load with the species that
     //this behavior affects
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -199,7 +199,7 @@ float clMichMenPhotoinhibition::CalcHeightGrowthValue(clTree *p_oTree, clTreePop
       (1+(mp_fAlpha[ind]/(mp_fBeta[ind]*fGli)))) - mp_fD[ind]*fGli ;
 
   //Compound the relative growth over the number of years/time step
-  for (iYr = 0; iYr < m_fYearsPerTimestep; iYr++) {
+  for (iYr = 0; iYr < m_iYearsPerTimestep; iYr++) {
     fNewHeight += (fAnnualRelGrowth * pow(fNewHeight, mp_fPhi[ind]));
   }
   //Don't allow a negative new height - set to 10 cm

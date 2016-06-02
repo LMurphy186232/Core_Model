@@ -107,28 +107,28 @@ void clVolumeCalculator::GetData( xercesc::DOMDocument * p_oDoc )
   {
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
-    floatVal * p_fTempValues; //for getting species-specific values
+    doubleVal * p_fTempValues; //for getting species-specific values
     int i;
 
-    //Set up our floatVal array that will extract values only for the species
+    //Set up our doubleVal array that will extract values only for the species
     //assigned to this behavior
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
     //Declare our arrays
-    mp_fTaperA = new float[m_iNumBehaviorSpecies];
-    mp_fTaperB = new float[m_iNumBehaviorSpecies];
-    mp_fTaperC = new float[m_iNumBehaviorSpecies];
-    mp_fTaperD = new float[m_iNumBehaviorSpecies];
-    mp_fTaperF = new float[m_iNumBehaviorSpecies];
-    mp_fTaperG = new float[m_iNumBehaviorSpecies];
-    mp_fTaperI = new float[m_iNumBehaviorSpecies];
-    mp_fTaperJ = new float[m_iNumBehaviorSpecies];
-    mp_fTaperK = new float[m_iNumBehaviorSpecies];
-    mp_fBarkA = new float[m_iNumBehaviorSpecies];
-    mp_fBarkB = new float[m_iNumBehaviorSpecies];
-    mp_fBarkC = new float[m_iNumBehaviorSpecies];
+    mp_fTaperA = new double[m_iNumBehaviorSpecies];
+    mp_fTaperB = new double[m_iNumBehaviorSpecies];
+    mp_fTaperC = new double[m_iNumBehaviorSpecies];
+    mp_fTaperD = new double[m_iNumBehaviorSpecies];
+    mp_fTaperF = new double[m_iNumBehaviorSpecies];
+    mp_fTaperG = new double[m_iNumBehaviorSpecies];
+    mp_fTaperI = new double[m_iNumBehaviorSpecies];
+    mp_fTaperJ = new double[m_iNumBehaviorSpecies];
+    mp_fTaperK = new double[m_iNumBehaviorSpecies];
+    mp_fBarkA = new double[m_iNumBehaviorSpecies];
+    mp_fBarkB = new double[m_iNumBehaviorSpecies];
+    mp_fBarkC = new double[m_iNumBehaviorSpecies];
 
     //Get the parameter file values
 

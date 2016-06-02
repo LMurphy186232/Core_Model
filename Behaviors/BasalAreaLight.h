@@ -145,32 +145,32 @@ class clBasalAreaLight : virtual public clLightBase {
   float *mp_fStatus;
 
   /**The "a" parameter for the mean light function.*/
-  float m_fA;
+  double m_fA;
 
   /**The conifer "b" parameter for the mean light function.*/
-  float m_fConiferB;
+  double m_fConiferB;
 
   /**The angiosperm "b" parameter for the mean light function.*/
-  float m_fAngiospermB;
+  double m_fAngiospermB;
 
   /**The conifer "c" parameter for the mean light function.*/
-  float m_fConiferC;
+  double m_fConiferC;
 
   /**The angiosperm "c" parameter for the mean light function.*/
-  float m_fAngiospermC;
+  double m_fAngiospermC;
 
   /**The sigma parameter of the lognormal PDF function.*/
-  float m_fSigma;
+  double m_fSigma;
 
   /**The minimum DBH for trees to count towards density in a cell.*/
-  float m_fMinDbh;
+  double m_fMinDbh;
 
   /**The search radius for trees.*/
-  float m_fRadius;
+  double m_fRadius;
 
   /**The amount by which total basal area in a cell has to change in order to
   * trigger a new light calculation.*/
-  float m_fChangeThreshold;
+  double m_fChangeThreshold;
 
   /**Return code for the "Light" data member of the "Basal Area Light" grid.*/
   short int m_iGridLightCode;

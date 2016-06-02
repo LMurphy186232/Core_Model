@@ -82,15 +82,15 @@ protected:
 
   /**Xa for lamba. Array sized number of total species by number of total
    * species.*/
-  float **mp_fXa;
+  double **mp_fXa;
 
   /**X0 for lamba. Array sized number of total species by number of total
    * species.*/
-  float **mp_fX0;
+  double **mp_fX0;
 
   /**Xb for lamba. Array sized number of total species by number of total
    * species.*/
-  float **mp_fXb;
+  double **mp_fXb;
 };
 
 #endif /* NCITERMNCITEMPDEPBARATIO_H_ */

@@ -501,9 +501,9 @@ void clShortOutput::ExtractSubplotInfo( xercesc::DOMDocument * p_oDoc )
     DOMNode * p_oDocNode; //for retrieving data
     DOMElement * p_oSubplot, //one subplot element
          * p_oElement; //generic element object
-    float fPlotLengthX = mp_oSimManager->GetPlotObject()->GetXPlotLength(),
-          fPlotLengthY = mp_oSimManager->GetPlotObject()->GetYPlotLength(),
-          fXLength, fYLength;
+    double fPlotLengthX = mp_oSimManager->GetPlotObject()->GetXPlotLength(),
+           fPlotLengthY = mp_oSimManager->GetPlotObject()->GetYPlotLength(),
+           fXLength, fYLength;
     int iX, iY; //grid cell X and Y coordinate numbers
     short int iNumSubplots, //number of subplots found
          iNumCells, //number of grid cells found for one subplot

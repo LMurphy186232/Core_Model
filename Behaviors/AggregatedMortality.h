@@ -144,13 +144,13 @@ class clAggregatedMortality : virtual public clMortalityBase {
    * from the parameter file as a return interval, then this value is
    * calculated as T/RI, where T is the number of years per timestep and RI is
    * the return interval in years.*/
-  float m_fMortalityEpisodeProbability;
+  double m_fMortalityEpisodeProbability;
 
   /** Per-timestep proportion of trees to kill, 0 - 1.  Read from the parameter
    * file as an annual amount, then this value is calculated as (1-(1-AD)^X)/C,
    * where AD is the amount of damage, X is the number of years per
    * timestep, and C is the clump size.*/
-  float m_fMortalityProb;
+  double m_fMortalityProb;
 
   /** Number of trees to kill together in a clump.  This is either a
    * deterministic value or the mean of the negative binomial probability
@@ -159,7 +159,7 @@ class clAggregatedMortality : virtual public clMortalityBase {
 
   /** Clumping parameter for the negative binomial distribution, if
    * applicable. */
-  float m_fClumpingParameter;
+  double m_fClumpingParameter;
 
   /** Total number of species.  Primarily for the destructor. */
   int m_iTotalNumSpecies;

@@ -99,31 +99,31 @@ class clLinearBiLevelGrowth : virtual public clGrowthBase {
 
   /**Slope of growth equation in low light - b - sized number of behavior
   * species*/
-  float *mp_fLoLightSlope;
+  double *mp_fLoLightSlope;
 
   /**Intercept of growth equation in low light - a - sized number of behavior
   * species*/
-  float *mp_fLoLightIntercept;
+  double *mp_fLoLightIntercept;
 
   /**Slope of growth equation in high light - b - sized number of behavior
   * species*/
-  float *mp_fHiLightSlope;
+  double *mp_fHiLightSlope;
 
   /**Intercept of growth equation in high light - a - sized number of behavior
   * species*/
-  float *mp_fHiLightIntercept;
+  double *mp_fHiLightIntercept;
 
   /**Threshold between low light and high light growth, as a value between 0
   * and 100 - sized number of behavior species
   */
-  float *mp_fHiLightThreshold;
+  double *mp_fHiLightThreshold;
 
   /**To help access the other arrays*/
   int *mp_iIndexes;
 
   /**Conversion factor to translate the results of the function to the
   * appropriate units per timestep*/
-  float m_fYearsPerTimestep;
+  int m_iYearsPerTimestep;
 
   /**Code for the "Light" data member of the "Storm Light" grid*/
   int m_iLightCode;

@@ -27,7 +27,7 @@ clDensitySelfThinning::clDensitySelfThinning(clSimManager *p_oSimManager) :
    mp_fSelfThinDensityEffect = NULL;
    mp_iIndexes = NULL;
 
-   m_fNumberYearsPerTimestep = 0;
+   m_iNumberYearsPerTimestep = 0;
 
  }
  catch (modelErr&err) {throw(err);}
@@ -58,15 +58,15 @@ clDensitySelfThinning::~clDensitySelfThinning() {
 // DoShellSetup()
 ////////////////////////////////////////////////////////////////////////////
 void clDensitySelfThinning::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
-  floatVal *p_fTempValues = NULL;
+  doubleVal *p_fTempValues = NULL;
   try {
     clTreePopulation *p_oPop = (clTreePopulation*) mp_oSimManager->GetPopulationObject("treepopulation");
     DOMElement *p_oElement = GetParentParametersElement(p_oDoc);
     short int i; //loop counter
 
-    m_fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_iNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
     //This behavior can only be applied with a one year timestep, therefore throw error if timestep is not 1.
-    if ( m_fNumberYearsPerTimestep != 1 )
+    if ( m_iNumberYearsPerTimestep != 1 )
     {
       modelErr stcErr;
       stcErr.iErrorCode = BAD_DATA;
@@ -95,16 +95,16 @@ void clDensitySelfThinning::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
 
     //Declare the temp array and populate it with the species to which this
     //behavior applies
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for (i = 0; i < m_iNumBehaviorSpecies; i++)
            p_fTempValues[i].code = mp_iWhatSpecies[i];
 
     //Declare the arrays for holding the variables and initilize to null
-    mp_fSelfThinRadius = new float[m_iNumBehaviorSpecies];
-    mp_fMinDensityForMort = new float[m_iNumBehaviorSpecies];
-    mp_fSelfThinAsymptote = new float[m_iNumBehaviorSpecies];
-    mp_fSelfThinDiamEffect = new float[m_iNumBehaviorSpecies];
-    mp_fSelfThinDensityEffect = new float[m_iNumBehaviorSpecies];
+    mp_fSelfThinRadius = new double[m_iNumBehaviorSpecies];
+    mp_fMinDensityForMort = new double[m_iNumBehaviorSpecies];
+    mp_fSelfThinAsymptote = new double[m_iNumBehaviorSpecies];
+    mp_fSelfThinDiamEffect = new double[m_iNumBehaviorSpecies];
+    mp_fSelfThinDensityEffect = new double[m_iNumBehaviorSpecies];
 
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
     {

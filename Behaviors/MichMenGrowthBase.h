@@ -46,21 +46,21 @@ class clMichMenBase : virtual public clGrowthBase {
 
   /**Slope of diameter growth response. Array size is number of species. Old
    * parameter g2.*/
-  float *mp_fSlopeDiamGrowthResponse;
+  double *mp_fSlopeDiamGrowthResponse;
   /**Slope of height growth response. Array size is number of species.*/
-  float *mp_fSlopeHeightGrowthResponse;
+  double *mp_fSlopeHeightGrowthResponse;
   /**Adult constant basal area increment in cm2/timestep (parameter file value
    * is expected in cm2/yr). Array size is number of species.*/
-  float *mp_fAdultConstBAInc;
+  double *mp_fAdultConstBAInc;
   /**Adult constant radial increment in cm/timestep (parameter file value is
    * expected in mm/yr). Old parameter g4. Array size is number of species.*/
-  float *mp_fAdultConstRadInc;
+  double *mp_fAdultConstRadInc;
   /**Asymptotic diameter growth. Old parameter g1.  Array size is number of
    * species.*/
-  float *mp_fAsympDiamGrowth;
+  double *mp_fAsympDiamGrowth;
   /**Asymptotic height growth. Old parameter g1.  Array size is number of
    * species.*/
-  float *mp_fAsympHeightGrowth;
+  double *mp_fAsympHeightGrowth;
 
   /**Whether or not growth is limited to constant radial increment*/
   bool m_bConstRadialLimited;

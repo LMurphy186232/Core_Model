@@ -191,20 +191,20 @@ void clSubstrate::GetParameterFileData( xercesc::DOMDocument * p_oDoc )
   {
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
-    floatVal * p_fTempValues; //for getting species-specific values
+    doubleVal * p_fTempValues; //for getting species-specific values
     float fTemp;
     short int i; //loop counter
 
     m_iNumTotalSpecies = p_oPop->GetNumberOfSpecies();
 
     //Declare the permanent arrays
-    mp_fPropOfDeadThatFall = new float[m_iNumTotalSpecies];
-    mp_fPropOfFallenThatUproot = new float[m_iNumTotalSpecies];
-    mp_fPropOfSnagsThatUproot = new float[m_iNumTotalSpecies];
+    mp_fPropOfDeadThatFall = new double[m_iNumTotalSpecies];
+    mp_fPropOfFallenThatUproot = new double[m_iNumTotalSpecies];
+    mp_fPropOfSnagsThatUproot = new double[m_iNumTotalSpecies];
 
     //Declare the species-specific temp array and pre-load with the species that
     //this behavior affects
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -666,21 +666,21 @@ void clSubstrate::PopulateInitialConditions()
       for ( j = 0; j < iNumYCells; j++ )
       {
 
-        mp_oSubstrateGrid->SetValueOfCell( i, j, m_iScarSoilCode, m_fInitScarifiedSoil );
-        mp_oSubstrateGrid->SetValueOfCell( i, j, m_iFFMossCode, fInitForestFloor * m_fMossProportion );
-        mp_oSubstrateGrid->SetValueOfCell( i, j, m_iFFLitterCode, fInitForestFloor * (1 - m_fMossProportion) );
-        mp_oSubstrateGrid->SetValueOfCell( i, j, m_iTipupCode, m_fInitTipUp );
-        mp_oSubstrateGrid->SetValueOfCell( i, j, m_iFreshLogCode, m_fInitFreshLog );
-        mp_oSubstrateGrid->SetValueOfCell( i, j, m_iDecLogCode, m_fInitDecayedLog );
+        mp_oSubstrateGrid->SetValueOfCell( i, j, m_iScarSoilCode, (float)m_fInitScarifiedSoil );
+        mp_oSubstrateGrid->SetValueOfCell( i, j, m_iFFMossCode, (float)(fInitForestFloor * m_fMossProportion));
+        mp_oSubstrateGrid->SetValueOfCell( i, j, m_iFFLitterCode, (float)(fInitForestFloor * (1 - m_fMossProportion)));
+        mp_oSubstrateGrid->SetValueOfCell( i, j, m_iTipupCode, (float)m_fInitTipUp );
+        mp_oSubstrateGrid->SetValueOfCell( i, j, m_iFreshLogCode, (float)m_fInitFreshLog );
+        mp_oSubstrateGrid->SetValueOfCell( i, j, m_iDecLogCode, (float)m_fInitDecayedLog );
 
         //Create a new package with the initial substrate proportions
         p_oPackage = mp_oSubstrateGrid->CreatePackageOfCell( i, j );
 
         //Package will be incremented in DecaySubstrate, first timestep
         p_oPackage->SetValue( m_iPkgAgeCode, 0 );
-        p_oPackage->SetValue( m_iPkgScarSoilCode, m_fInitScarifiedSoil );
-        p_oPackage->SetValue( m_iPkgTipupCode, m_fInitTipUp );
-        p_oPackage->SetValue( m_iPkgFreshLogCode, m_fInitFreshLog );
+        p_oPackage->SetValue( m_iPkgScarSoilCode, (float)m_fInitScarifiedSoil );
+        p_oPackage->SetValue( m_iPkgTipupCode, (float)m_fInitTipUp );
+        p_oPackage->SetValue( m_iPkgFreshLogCode, (float)m_fInitFreshLog );
       } //end of for (j = 0; j < iNumYCells; j++)
   }
   catch ( modelErr & err )
@@ -1514,8 +1514,8 @@ void clSubstrate::DecaySubstrate()
           //Calculate the forest floor litter and moss values as the remainder
           //needed to make the total substrate proportions add up to 1 and
           //assign
-          mp_oSubstrateGrid->SetValueOfCell( iX, iY, m_iFFMossCode, (1 - fTotalSubstrate) * m_fMossProportion );
-          mp_oSubstrateGrid->SetValueOfCell( iX, iY, m_iFFLitterCode, (1 - fTotalSubstrate) * (1 - m_fMossProportion) );
+          mp_oSubstrateGrid->SetValueOfCell( iX, iY, m_iFFMossCode, (float)((1 - fTotalSubstrate) * m_fMossProportion));
+          mp_oSubstrateGrid->SetValueOfCell( iX, iY, m_iFFLitterCode, (float)((1 - fTotalSubstrate) * (1 - m_fMossProportion)));
 
         } else
         {
@@ -1529,8 +1529,8 @@ void clSubstrate::DecaySubstrate()
           mp_oSubstrateGrid->SetValueOfCell( iX, iY, m_iScarSoilCode, fScarSoil );
           mp_oSubstrateGrid->SetValueOfCell( iX, iY, m_iTipupCode, fTipup );
           mp_oSubstrateGrid->SetValueOfCell( iX, iY, m_iFreshLogCode, fFreshLogs );
-          mp_oSubstrateGrid->SetValueOfCell( iX, iY, m_iFFMossCode, (1 - fTotalSubstrate) * m_fMossProportion );
-          mp_oSubstrateGrid->SetValueOfCell( iX, iY, m_iFFLitterCode, (1 - fTotalSubstrate) * (1 - m_fMossProportion) );
+          mp_oSubstrateGrid->SetValueOfCell( iX, iY, m_iFFMossCode, (float)((1 - fTotalSubstrate) * m_fMossProportion));
+          mp_oSubstrateGrid->SetValueOfCell( iX, iY, m_iFFLitterCode, (float)((1 - fTotalSubstrate) * (1 - m_fMossProportion)));
         }
       } //end of for (iY = 0; iY < iNumYCells; iY++)
   }
@@ -1588,31 +1588,30 @@ void clSubstrate::UpdateSubstrateAges()
 ////////////////////////////////////////////////////////////////////////////
 void clSubstrate::CalculateDecayProportions()
 {
-  float fNumYearsPerTS = mp_oSimManager->GetNumberOfYearsPerTimestep(),
-      fTemp;
-  int i;
+  float fTemp;
+  int iNumYearsPerTS = mp_oSimManager->GetNumberOfYearsPerTimestep(), i;
 
-  mp_fFLogDecayProp = new float[m_iMaxDecayTimesteps + 1];
-  mp_fScarSoilDecayProp = new float[m_iMaxDecayTimesteps + 1];
-  mp_fTipupDecayProp = new float[m_iMaxDecayTimesteps + 1];
-  mp_fDecLogDecayProp = new float[m_iMaxDecayTimesteps + 1];
+  mp_fFLogDecayProp = new double[m_iMaxDecayTimesteps + 1];
+  mp_fScarSoilDecayProp = new double[m_iMaxDecayTimesteps + 1];
+  mp_fTipupDecayProp = new double[m_iMaxDecayTimesteps + 1];
+  mp_fDecLogDecayProp = new double[m_iMaxDecayTimesteps + 1];
 
   for (i = 0; i < m_iMaxDecayTimesteps + 1; i++) {
     //Make sure we don't crash if beta = 0 when t = 0 - we know the intention
     if (0 == m_fFreshLogB) fTemp = 1;
-    else fTemp = pow((i * fNumYearsPerTS), m_fFreshLogB);
+    else fTemp = pow((i * iNumYearsPerTS), m_fFreshLogB);
     mp_fFLogDecayProp[i] = exp(m_fFreshLogA * fTemp);
 
     if (0 == m_fScarifiedSoilB) fTemp = 1;
-    else fTemp = pow((i * fNumYearsPerTS), m_fScarifiedSoilB);
+    else fTemp = pow((i * iNumYearsPerTS), m_fScarifiedSoilB);
     mp_fScarSoilDecayProp[i] = exp(m_fScarifiedSoilA * fTemp);
 
     if (0 == m_fTipUpB) fTemp = 1;
-    else fTemp = pow((i * fNumYearsPerTS), m_fTipUpB);
+    else fTemp = pow((i * iNumYearsPerTS), m_fTipUpB);
     mp_fTipupDecayProp[i] = exp(m_fTipUpA * fTemp);
 
     if (0 == m_fDecayedLogB) fTemp = 1;
-    else fTemp = pow((i * fNumYearsPerTS), m_fDecayedLogB);
+    else fTemp = pow((i * iNumYearsPerTS), m_fDecayedLogB);
     mp_fDecLogDecayProp[i] = exp(m_fDecayedLogA * fTemp);
   }
 }

@@ -88,12 +88,11 @@ void clAggregatedMortality::DoShellSetup( xercesc::DOMDocument * p_oDoc )
     SetUpAppliesTo( p_oPop );
 
     //Calculate probability of a mortality episode
-    float fNumYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
-    m_fMortalityEpisodeProbability =
-                  fNumYearsPerTimestep / m_fMortalityEpisodeProbability;
+    int iNumYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_fMortalityEpisodeProbability = iNumYearsPerTimestep / m_fMortalityEpisodeProbability;
 
     //Calculate the per-timestep amount to kill
-    m_fMortalityProb = 1 - pow(1 - m_fMortalityProb, fNumYearsPerTimestep);
+    m_fMortalityProb = 1 - pow(1 - m_fMortalityProb, iNumYearsPerTimestep);
     m_fMortalityProb /= m_iNumTreesToClump;
 
   }

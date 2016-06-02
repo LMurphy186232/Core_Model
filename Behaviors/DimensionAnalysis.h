@@ -134,36 +134,36 @@ class clDimensionAnalysis : virtual public clBehaviorBase {
   protected:
   /** <i>a</i> in a biomass equation.  Array size is # species to which this
   * behavior applies.*/
-  float *mp_fA;
+  double *mp_fA;
 
   /** <i>b</i> in a biomass equation.  Array size is # species to which this
   * behavior applies.*/
-  float *mp_fB;
+  double *mp_fB;
 
   /** <i>c</i> in a biomass equation.  Array size is # species to which this
   * behavior applies.*/
-  float *mp_fC;
+  double *mp_fC;
 
   /** <i>d</i> in a biomass equation.  Array size is # species to which this
   * behavior applies.*/
-  float *mp_fD;
+  double *mp_fD;
 
   /** <i>e</i> in a biomass equation.  Array size is # species to which this
   * behavior applies.*/
-  float *mp_fE;
+  double *mp_fE;
 
   /** Correction factor for a biomass equation.  This value, if desired by the
   * user, is multiplied by the finished biomass.  Array size is # species to
   * which this behavior applies.*/
-  float *mp_fCorrectionFactor;
+  double *mp_fCorrectionFactor;
 
   /** Converts DBH values to the appropriate units.  Array size is # species to
   * which this behavior applies.*/
-  float *mp_fDbhConverter;
+  double *mp_fDbhConverter;
 
   /** Converts biomass values to metric tons.  Array size is # species to
   * which this behavior applies.*/
-  float *mp_fBiomassConverter;
+  double *mp_fBiomassConverter;
 
   /** Equation ID, as a value from 1 to 9. Array size is # species to which
   * this behavior applies.*/

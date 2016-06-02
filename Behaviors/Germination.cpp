@@ -72,16 +72,16 @@ void clGermination::GetData(DOMDocument * p_oDoc)
 
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
     clTreePopulation * p_oPop = (clTreePopulation *) mp_oSimManager->GetPopulationObject("treepopulation");
-    floatVal * p_fTemp = NULL; //for getting species-specific values
+    doubleVal * p_fTemp = NULL; //for getting species-specific values
     std::stringstream sLabel;
     short int iNumSpecies = p_oPop->GetNumberOfSpecies(), i;
 
     //Declare our arrays
-    mp_fProportionGerminating = new float[iNumSpecies];
+    mp_fProportionGerminating = new double[iNumSpecies];
     mp_iSeedGridCode = new short int[iNumSpecies];
 
     //Set up our temp array - pre-load with this behavior's species
-    p_fTemp = new floatVal[m_iNumBehaviorSpecies];
+    p_fTemp = new doubleVal[m_iNumBehaviorSpecies];
     for (i = 0; i < m_iNumBehaviorSpecies; i++)
       p_fTemp[i].code = mp_iWhatSpecies[i];
 

@@ -79,8 +79,8 @@ void clGrowthBase::GetData(DOMDocument *p_oDoc) {
    //the lgm value for growth-based mortality's use
    //multiply by 10 to get from cm to mm, divide by 2 to get from diameter to
    //radius, divide by number of years per timestep
-   m_fConvertCmPerTSToMmPerYr = 5 / mp_oSimManager->GetNumberOfYearsPerTimestep();
-   m_fConvertMmPerYearToCmPerTS = 1/m_fConvertCmPerTSToMmPerYr;
+   m_fConvertCmPerTSToMmPerYr = 5.0 / mp_oSimManager->GetNumberOfYearsPerTimestep();
+   m_fConvertMmPerYearToCmPerTS = 1.0/m_fConvertCmPerTSToMmPerYr;
 
    DoShellSetup(p_oDoc);
  }

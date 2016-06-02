@@ -101,7 +101,7 @@ protected:
 
   /**The light extinction coefficient of the filter.  In the parameter file
   * the units are 1/m but it will be stored here as 1/mm by dividing by 1000*/
-  float m_fLightExtinctionCoefficient;
+  double m_fLightExtinctionCoefficient;
 
   /**The height of the filter, in mm; will be converted from the value in the
   parameter file in meters*/

@@ -119,20 +119,20 @@ class clInsectInfestation : virtual public clBehaviorBase {
 
   /** Intercept parameter - rate of infestation at time 1.  Array size is
    * total # species. */
-  float *mp_fIntercept;
+  double *mp_fIntercept;
 
   /** Maximum infestation rate for each species.  Array size is total #
    * species. */
-  float *mp_fMax;
+  double *mp_fMax;
 
   /** The "X0" parameter for each species.  Array size is total # species. */
-  float *mp_fX0;
+  double *mp_fX0;
 
   /** The "Xb" parameter for each species.  Array size is total # species. */
-  float *mp_fXb;
+  double *mp_fXb;
 
   /** Minimum DBH for trees to be infested.  Array size is total # species. */
-  float *mp_fMinDBH;
+  double *mp_fMinDBH;
 
   /**String to pass to clTreePopulation::Find() in order to get the trees to
   * apply damage to.  This will instigate a species/type search for all the

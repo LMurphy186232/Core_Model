@@ -24,8 +24,8 @@ clCrowdingEffectNoSize::~clCrowdingEffectNoSize() {
 //////////////////////////////////////////////////////////////////////////////
 // CalculateCrowdingEffect
 //////////////////////////////////////////////////////////////////////////////
-float clCrowdingEffectNoSize::CalculateCrowdingEffect(clTree *p_oTree, const float &fDiam, const clNCITermBase::ncivals nci, const int &iSpecies) {
-  float fCrowdingEffect, fNCI;
+double clCrowdingEffectNoSize::CalculateCrowdingEffect(clTree *p_oTree, const float &fDiam, const clNCITermBase::ncivals nci, const int &iSpecies) {
+  double fCrowdingEffect, fNCI;
   if (!m_b2ValNCI) {
     fNCI = nci.fNCI1;
   } else {
@@ -45,7 +45,7 @@ float clCrowdingEffectNoSize::CalculateCrowdingEffect(clTree *p_oTree, const flo
 // DoSetup
 //////////////////////////////////////////////////////////////////////////////
 void clCrowdingEffectNoSize::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, clNCIBehaviorBase *p_oNCIBase, xercesc::DOMElement *p_oElement) {
-  floatVal * p_fTempValues; //for getting species-specific values
+  doubleVal * p_fTempValues; //for getting species-specific values
   int iNumBehaviorSpecies = p_oNCI->GetNumBehaviorSpecies(),
       iNumTotalSpecies = p_oPop->GetNumberOfSpecies(), i;
 
@@ -53,12 +53,12 @@ void clCrowdingEffectNoSize::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p
   clNCITermBase *p_oNCITerm = p_oNCIBase->GetNCITerm();
   if (p_oNCITerm->GetNumberNCIs() == 2) m_b2ValNCI = true;
 
-  mp_fC = new float[iNumTotalSpecies];
-  mp_fD = new float[iNumTotalSpecies];
+  mp_fC = new double[iNumTotalSpecies];
+  mp_fD = new double[iNumTotalSpecies];
 
-  //Set up our floatVal array that will extract values only for the species
+  //Set up our doubleVal array that will extract values only for the species
   //assigned to this behavior
-  p_fTempValues = new floatVal[iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[iNumBehaviorSpecies];
   for ( i = 0; i < iNumBehaviorSpecies; i++ ) p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
 
   //Crowding Slope (C)

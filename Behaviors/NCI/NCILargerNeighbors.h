@@ -42,11 +42,11 @@ public:
 protected:
   /**Maximum search radius, in meters, in which to look for crowding
    * neighbors. Array is sized number of species.*/
-  float *mp_fMaxCrowdingRadius;
+  double *mp_fMaxCrowdingRadius;
 
   /**The minimum DBH, in cm, of neighbors to be included in the neighbor count.
    * Array is sized number of species.*/
-  float *mp_fMinimumNeighborDBH;
+  double *mp_fMinimumNeighborDBH;
 
   /**Minimum sapling height. For doing neighbor searches.*/
   float m_fMinSaplingHeight;

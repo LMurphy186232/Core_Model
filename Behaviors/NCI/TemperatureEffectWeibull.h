@@ -42,7 +42,7 @@ public:
    * @param p_oPlot Plot object for querying for temperature values.
    * @param iSpecies Species for which to calculate temperature effect.
    */
-  float CalculateTemperatureEffect(clPlot *p_oPlot, int iSpecies);
+  double CalculateTemperatureEffect(clPlot *p_oPlot, int iSpecies);
 
   /**
    * Does any desired setup.
@@ -56,13 +56,13 @@ public:
 protected:
 
   /**Temperature effect A. Array is sized number of species.*/
-  float *mp_fTempA;
+  double *mp_fTempA;
 
   /**Temperature effect B. Array is sized number of species.*/
-  float *mp_fTempB;
+  double *mp_fTempB;
 
   /**Temperature effect C.  Array is sized number of species.*/
-  float *mp_fTempC;
+  double *mp_fTempC;
 };
 
 #endif /* WEIBULLTEMPERATUREEFFECT_H_ */

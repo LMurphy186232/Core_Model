@@ -76,44 +76,44 @@ protected:
 
   /**Lambas. Array sized number of total species by number of total
    * species.*/
-  float **mp_fLambda;
+  double **mp_fLambda;
 
   /**Neighbor DBH effect. @htmlonly &alpha; @endhtmlonly variable in
    * equation above. Array sized number of species.*/
-  float *mp_fAlpha;
+  double *mp_fAlpha;
 
   /**Neighbor distance effect. @htmlonly &beta; @endhtmlonly variable in
    * equation above. Array sized number of species.*/
-  float *mp_fBeta;
+  double *mp_fBeta;
 
   /**The minimum DBH, in cm, of neighbors to be included in NCI calculations.
    * Array assumed to be sized total number of species.*/
-  float *mp_fMinimumNeighborDBH;
+  double *mp_fMinimumNeighborDBH;
 
   /**List of distinct species.*/
   short int *mp_iWhatSpecies;
 
   /**Maximum search radius, in meters, in which to look for
    * neighbors.*/
-  float m_fMaxCrowdingRadius;
+  double m_fMaxCrowdingRadius;
 
   /**Maximum search radius, in meters, in which to look for crowding adult
    * neighbors.*/
-  float m_fMaxAdultRadius;
+  double m_fMaxAdultRadius;
 
   /**Maximum search radius, in meters, in which to look for crowding sapling
    * neighbors.*/
-  float m_fMaxSaplingRadius;
+  double m_fMaxSaplingRadius;
 
   /**The units adjustment factor for DBH in NCI. <i>q</i> in the NCI equation
    * above. May be set to 1.*/
-  float m_fDbhAdjustor;
+  double m_fDbhAdjustor;
 
   /**Minimum sapling height.  For doing neighbor searches.*/
   float m_fMinSaplingHeight;
 
   /**Basal area for default size, if m_bUseDefaultBA = true.*/
-  float m_fDefaultBA;
+  double m_fDefaultBA;
 
   /**Number of behavior species.*/
   int m_iNumBehaviorSpecies;

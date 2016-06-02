@@ -23,8 +23,8 @@ clSizeEffectDefault::~clSizeEffectDefault() {
 ////////////////////////////////////////////////////////////////////////////
 // CalculateSizeEffect
 ////////////////////////////////////////////////////////////////////////////
-float clSizeEffectDefault::CalculateSizeEffect(clTree *p_oTree, const float &fDiam) {
-  float fSizeEffect;
+double clSizeEffectDefault::CalculateSizeEffect(clTree *p_oTree, const float &fDiam) {
+  double fSizeEffect;
   int iSpecies = p_oTree->GetSpecies();
 
   fSizeEffect = exp(-0.5 * pow(log(fDiam / mp_fX0[iSpecies] ) / mp_fXb[iSpecies], 2));
@@ -45,7 +45,7 @@ void clSizeEffectDefault::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oN
   mp_fX0 = new double[iNumTotalSpecies];
   mp_fXb = new double[iNumTotalSpecies];
 
-  //Set up our floatVal array that will extract values only for the species
+  //Set up our doubleVal array that will extract values only for the species
   //assigned to this behavior
   p_dTempValues = new doubleVal[iNumBehaviorSpecies];
   for ( i = 0; i < iNumBehaviorSpecies; i++ ) p_dTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);

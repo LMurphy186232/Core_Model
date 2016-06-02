@@ -144,31 +144,31 @@ class clDensDepInfestation : virtual public clBehaviorBase {
   short int **mp_iDensDepResistanceStatusCodes;
 
   /** Minimum DBH for trees to be infested. Array size is total # species. */
-  float *mp_fMinDBH;
+  double *mp_fMinDBH;
 
   /** Cohort cutoff DBH. Trees above this size are infested before trees below
    * it. Array size is total # species. */
-  float *mp_fCohortDBH;
+  double *mp_fCohortDBH;
 
   /** Probability that a tree is resistant, 0-1. Array size is total #
    * species. */
-  float *mp_fProbResistant;
+  double *mp_fProbResistant;
 
   /** Probability that a tree is conditionally susceptible, 0-1. Array size is
    * total # species. */
-  float *mp_fProbConditionallySusceptible;
+  double *mp_fProbConditionallySusceptible;
 
   /** Maximum infestation rate parameter. */
-  float m_fMax;
+  double m_fMax;
 
   /** The "a" parameter. */
-  float m_fA;
+  double m_fA;
 
   /** The "bx" parameter. */
-  float m_fBx;
+  double m_fBx;
 
   /** The "by" parameter. */
-  float m_fBy;
+  double m_fBy;
 
   /** Total plot BA. */
   double m_fPlotBA;

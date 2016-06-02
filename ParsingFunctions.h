@@ -71,9 +71,9 @@ class clTreePopulation;
  * @throw Error if the value is required and it is not found, or if it is found
  * and not all species are present (whether or not it is required).
  */
-void FillSpeciesSpecificValue(xercesc::DOMElement *p_oParent, std::string sTagName,
-    std::string sSubTagName, floatVal *p_array, int iNumSpecies,
-    clTreePopulation *p_oPop, bool bRequired);
+//void FillSpeciesSpecificValue(xercesc::DOMElement *p_oParent, std::string sTagName,
+//    std::string sSubTagName, floatVal *p_array, int iNumSpecies,
+//    clTreePopulation *p_oPop, bool bRequired);
 
 /**
  * Fills species-specific double values from a DOM tree.
@@ -260,9 +260,9 @@ void FillSpeciesSpecificValue(xercesc::DOMElement *p_oParent, std::string sTagNa
  * @throw Error if the value is required and it is not found, or if it is found
  * and not all species are present (whether or not it is required).
  */
-void FillSpeciesSpecificValue(xercesc::DOMElement *p_oParent, std::string sTagName,
-    std::string sSubTagName, float *p_fArray, clTreePopulation *p_oPop,
-    bool bRequired);
+//void FillSpeciesSpecificValue(xercesc::DOMElement *p_oParent, std::string sTagName,
+//    std::string sSubTagName, float *p_fArray, clTreePopulation *p_oPop,
+//    bool bRequired);
 
 /**
  * Fills species-specific double values from a DOM tree.
@@ -287,7 +287,7 @@ void FillSpeciesSpecificValue(xercesc::DOMElement *p_oParent, std::string sTagNa
  * is thrown.
  *
  * This function provides a shortcut if you need values for every species and
- * don't need to bother with the floatVal array type.
+ * don't need to bother with the doubleVal array type.
  *
  * This function is currently not protected against overflow. I could not
  * successfully trap for the error codes the documentation says are supposed to
@@ -409,8 +409,8 @@ void FillSingleValue(xercesc::DOMElement *p_oParent, std::string sTagName,
  * @param bRequired Whether or not this value is required.
  * @throw Error if the value is required and it is not found.
  */
-void FillSingleValue(xercesc::DOMElement *p_oParent, std::string sTagName,
-    float *p_fValToFill, bool bRequired);
+//void FillSingleValue(xercesc::DOMElement *p_oParent, std::string sTagName,
+//    float *p_fValToFill, bool bRequired);
 
 /**
  * Extracts a single double value from a parsed XML file.

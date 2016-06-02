@@ -508,23 +508,23 @@ void clFuncResponseSeedPredation::DoModel() {
 // GetParameterFileData
 /////////////////////////////////////////////////////////////////////////////
 void clFuncResponseSeedPredation::GetParameterFileData(DOMDocument * p_oDoc) {
-  floatVal *p_fTempValues = NULL;  //for getting species-specific values
+  doubleVal *p_fTempValues = NULL;  //for getting species-specific values
   try
   {
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
     int i;
 
-    mp_fMaxInstantaneousDeclineRate = new float[2];
-    mp_fDemographicEfficiency = new float[2];
-    mp_fDensityDependentCoefficient = new float[2];
+    mp_fMaxInstantaneousDeclineRate = new double[2];
+    mp_fDemographicEfficiency = new double[2];
+    mp_fDensityDependentCoefficient = new double[2];
 
-    mp_fForagingEfficiency = new float[m_iNumBehaviorSpecies];
-    mp_fMaxIntakeRate = new float[m_iNumBehaviorSpecies];
+    mp_fForagingEfficiency = new double[m_iNumBehaviorSpecies];
+    mp_fMaxIntakeRate = new double[m_iNumBehaviorSpecies];
 
     //Declare the temp array and populate it with the species to which this
     //behavior applies
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for (i = 0; i < m_iNumBehaviorSpecies; i++)
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 

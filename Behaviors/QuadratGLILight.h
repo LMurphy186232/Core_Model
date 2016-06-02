@@ -107,10 +107,10 @@ protected:
    */
   clGrid *mp_oQuadrats;
 
-  float m_fLightHeight; /**<The height above the ground, in m, at which the
+  double m_fLightHeight; /**<The height above the ground, in m, at which the
    quadrat light values are calculated.  Defaults to
    0.675 m.*/
-  float m_fMaxSearchRad; /**<The maximum distance, in m, to search for shading
+  double m_fMaxSearchRad; /**<The maximum distance, in m, to search for shading
    neighbors.*/
   short int m_iGridGliCode;/**<Return code for the quadrats grid to get and set
    GLI in the cells.*/

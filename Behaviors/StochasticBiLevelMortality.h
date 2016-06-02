@@ -93,16 +93,16 @@ class clStochasticBiLevelMortality : virtual public clMortalityBase {
   /**Probability of mortality at low light - sized number of behavior species.
   * This value comes from the parameter file as an annual probability, which
   * is transformed in DoShellSetup() to a timestep probability.*/
-  float *mp_fLoLightMortProb;
+  double *mp_fLoLightMortProb;
 
   /**Probability of mortality at low light - sized number of behavior species.
   * This value comes from the parameter file as an annual probability, which
   * is transformed in DoShellSetup() to a timestep probability.*/
-  float *mp_fHiLightMortProb;
+  double *mp_fHiLightMortProb;
 
   /**Threshold between low light and high light mortality, as a value between 0
   * and 100 - sized number of behavior species*/
-  float *mp_fHiLightThreshold;
+  double *mp_fHiLightThreshold;
 
   /**To help access the other arrays*/
   int *mp_iIndexes;

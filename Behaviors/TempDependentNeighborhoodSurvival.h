@@ -108,16 +108,16 @@ class clTempDependentNeighborhoodSurvival : virtual public clMortalityBase {
   clGrid* mp_oGrid;
 
   /**Temperature function M - sized number of species.*/
-  float *mp_fM;
+  double *mp_fM;
 
   /**Temperature function N - sized number of species.*/
-  float *mp_fN;
+  double *mp_fN;
 
   /**A parameter - sized number of species.*/
-  float *mp_fA;
+  double *mp_fA;
 
   /**B parameter - sized number of species.*/
-  float *mp_fB;
+  double *mp_fB;
 
   /**Temperature portion of the survival function - sized number of species.*/
   float *mp_fTempFunction;
@@ -128,10 +128,10 @@ class clTempDependentNeighborhoodSurvival : virtual public clMortalityBase {
   short int *mp_iGridSurvivalCodes;
 
   /**Neighborhood search radius.*/
-  float m_fRadius;
+  double m_fRadius;
 
   /**Minimum sapling height. For doing neighbor searches.*/
-  float m_fMinSaplingHeight;
+  double m_fMinSaplingHeight;
 
   /**Return code for the "BAT" grid data member.*/
   short int m_iBATCode;

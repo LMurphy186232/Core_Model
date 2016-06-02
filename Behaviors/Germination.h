@@ -64,7 +64,7 @@ protected:
   clGrid *mp_oSeedGrid;
 
   /**Substrate proportion.  Size is # total species.*/
-  float *mp_fProportionGerminating;
+  double *mp_fProportionGerminating;
 
   /**Data member codes for seed grid for number of seeds.  Array size is #
    * total species.*/

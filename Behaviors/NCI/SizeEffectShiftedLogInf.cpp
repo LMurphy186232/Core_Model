@@ -45,8 +45,8 @@ clSizeEffectShiftedLogInf::~clSizeEffectShiftedLogInf() {
 ////////////////////////////////////////////////////////////////////////////
 // CalculateSizeEffect
 ////////////////////////////////////////////////////////////////////////////
-float clSizeEffectShiftedLogInf::CalculateSizeEffect(clTree *p_oTree, const float &fDiam) {
-  float fSizeEffect = 0, fDiam2;
+double clSizeEffectShiftedLogInf::CalculateSizeEffect(clTree *p_oTree, const float &fDiam) {
+  double fSizeEffect = 0, fDiam2;
   int iSpecies = p_oTree->GetSpecies(), iYrsInfested;
 
   //Get the infestation status for this tree
@@ -84,7 +84,7 @@ void clSizeEffectShiftedLogInf::DoSetup(clTreePopulation *p_oPop, clBehaviorBase
   mp_fXpInf = new double[m_iNumSpecies];
   mp_fMinDiam = new double[m_iNumSpecies];
 
-  //Set up our floatVal array that will extract values only for the species
+  //Set up our doubleVal array that will extract values only for the species
   //assigned to this behavior
   p_dTempValues = new doubleVal[iNumBehaviorSpecies];
   for ( i = 0; i < iNumBehaviorSpecies; i++ ) p_dTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);

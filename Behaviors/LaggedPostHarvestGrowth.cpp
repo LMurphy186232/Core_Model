@@ -50,7 +50,7 @@ clLaggedPostHarvestGrowth::clLaggedPostHarvestGrowth( clSimManager * p_oSimManag
    m_iHarvestTypeCode = 0;
    m_iTimeCode = 0;
    m_iLastUpdated = 0;
-   m_fNumberYearsPerTimestep = 0;
+   m_iNumberYearsPerTimestep = 0;
    m_fNciDistanceRadius = 0;
 
   }
@@ -121,18 +121,18 @@ void clLaggedPostHarvestGrowth::ReadParameterFile( xercesc::DOMDocument * p_oDoc
   {
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
-    floatVal * p_fTempValues; //for getting species-specific values
+    doubleVal * p_fTempValues; //for getting species-specific values
 
     short int i; //loop counters
 
     mp_iIndexes = new short int[m_iNumTotalSpecies];
 
     //The rest are sized number of species to which this behavior applies
-    mp_fMaxGrowthConstant = new float[m_iNumBehaviorSpecies];
-    mp_fMaxGrowthDbhEffect = new float[m_iNumBehaviorSpecies];
-    mp_fNciConstant = new float[m_iNumBehaviorSpecies];
-    mp_fNciDbhEffect = new float[m_iNumBehaviorSpecies];
-    mp_fTimeSinceHarvestRateParam = new float[m_iNumBehaviorSpecies];
+    mp_fMaxGrowthConstant = new double[m_iNumBehaviorSpecies];
+    mp_fMaxGrowthDbhEffect = new double[m_iNumBehaviorSpecies];
+    mp_fNciConstant = new double[m_iNumBehaviorSpecies];
+    mp_fNciDbhEffect = new double[m_iNumBehaviorSpecies];
+    mp_fTimeSinceHarvestRateParam = new double[m_iNumBehaviorSpecies];
 
 
     //If any of the types is seedling, error out
@@ -151,9 +151,9 @@ void clLaggedPostHarvestGrowth::ReadParameterFile( xercesc::DOMDocument * p_oDoc
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       mp_iIndexes[mp_iWhatSpecies[i]] = i;
 
-    //Set up our floatVal array that will extract values only for the species
+    //Set up our doubleVal array that will extract values only for the species
     //assigned to this behavior
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -339,7 +339,7 @@ void clLaggedPostHarvestGrowth::DoShellSetup( xercesc::DOMDocument * p_oDoc )
 
     clTreePopulation *p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
 
-    m_fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_iNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
     AssembleUniqueTypes();
 
@@ -602,7 +602,7 @@ void clLaggedPostHarvestGrowth::PreGrowthCalcs( clTreePopulation * p_oPop )
           //convert from mm radius to cm diameter
           fAmountDiamIncrease *= 2.0/10.0;
           //Multiply by the number of years per timestep
-          fAmountDiamIncrease *= m_fNumberYearsPerTimestep;
+          fAmountDiamIncrease *= m_iNumberYearsPerTimestep;
 
           //Prevent negative growth
           if (fAmountDiamIncrease < 0.0)

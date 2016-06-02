@@ -70,7 +70,7 @@ clNonSpatialDispersal::~clNonSpatialDispersal()
 ////////////////////////////////////////////////////////////////////////////
 void clNonSpatialDispersal::DoShellSetup( DOMDocument * p_oDoc )
 {
-  floatVal * p_fTempValues = NULL; //for getting species-specific values
+  doubleVal * p_fTempValues = NULL; //for getting species-specific values
   try
   {
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
@@ -80,16 +80,16 @@ void clNonSpatialDispersal::DoShellSetup( DOMDocument * p_oDoc )
 
     //Declare the temp array and populate it with the species to which this
     //behavior applies
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
     m_fAreaOfPlotInHa = mp_oSimManager->GetPlotObject()->GetPlotArea();
 
     //Declare the arrays for holding the variables
-    mp_fSlopeOfLambda = new float[iNumTotalSpecies];
-    mp_fInterceptOfLambda = new float[iNumTotalSpecies];
-    mp_fDbhForReproduction = new float[iNumTotalSpecies];
+    mp_fSlopeOfLambda = new double[iNumTotalSpecies];
+    mp_fInterceptOfLambda = new double[iNumTotalSpecies];
+    mp_fDbhForReproduction = new double[iNumTotalSpecies];
 
     //Capture the values from the parameter file
 
@@ -152,7 +152,6 @@ void clNonSpatialDispersal::AddSeeds()
     float fBasalArea, //basal area in sq. m./ha for a species
           fNumGridSeeds, //seeds already in one grid cell
           fLambda, //lambda - mean number of seeds per grid cell
-          fNumYrs = mp_oSimManager->GetNumberOfYearsPerTimestep(),
           //grid cell lengths in the middle of the grid
           fMidX = mp_oSeedGrid->GetLengthXCells(),
           fMidY = mp_oSeedGrid->GetLengthYCells(),
@@ -162,6 +161,7 @@ void clNonSpatialDispersal::AddSeeds()
           fEndY = p_oPlot->GetYPlotLength() - ((iNumYCells - 1)*fMidY),
           fArea, //one cell's area
           fCellX, fCellY; //one cell's X and Y dimensions
+    int iNumYrs = mp_oSimManager->GetNumberOfYearsPerTimestep();
     short int i, iSpecies, iX, iY;
 
     p_fNumNewSeeds = new float[m_iNumBehaviorSpecies];
@@ -181,7 +181,7 @@ void clNonSpatialDispersal::AddSeeds()
       fLambda = clModelMath::CalcPointValue( fBasalArea, mp_fSlopeOfLambda[iSpecies], mp_fInterceptOfLambda[iSpecies] );
 
       //Scale from seeds per year to seeds per timestep
-      p_fNumNewSeeds[i] = fLambda * fNumYrs;
+      p_fNumNewSeeds[i] = fLambda * iNumYrs;
     }
 
     //Loop through the grid cells of the seed grid and put seeds in each

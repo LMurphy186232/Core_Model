@@ -71,11 +71,11 @@ void clSenescenceMort::DoShellSetup( xercesc::DOMDocument * p_oDoc )
 
     m_iNumTotalSpecies = p_oPop->GetNumberOfSpecies();
 
-    //Declare the floatVal arrays and populate with the species to which this
+    //Declare the doubleVal arrays and populate with the species to which this
     //behavior applies
-    mp_fRandomAlpha = new floatVal[m_iNumBehaviorSpecies];
-    mp_fRandomBeta = new floatVal[m_iNumBehaviorSpecies];
-    mp_fDbhAtOnset = new floatVal[m_iNumBehaviorSpecies];
+    mp_fRandomAlpha = new doubleVal[m_iNumBehaviorSpecies];
+    mp_fRandomBeta = new doubleVal[m_iNumBehaviorSpecies];
+    mp_fDbhAtOnset = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
     {
       mp_fRandomAlpha[i].code = mp_iWhatSpecies[i];
@@ -170,7 +170,8 @@ void clSenescenceMort::CalculateMortalityProbability()
 {
   try
   {
-    float fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep(), fDeathProb;
+    float fDeathProb;
+    int iNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
     short int iSpecies, //the species that we're working with
          i, iDbh; //loop counters
 
@@ -196,7 +197,7 @@ void clSenescenceMort::CalculateMortalityProbability()
              / ( 1 + exp( mp_fRandomAlpha[i].val + mp_fRandomBeta[i].val * ( iDbh - mp_fDbhAtOnset[i].val ) ) );
 
 
-        mp_fMortProb[iSpecies] [iDbh] = 1 - pow( 1 - fDeathProb, fNumberYearsPerTimestep );
+        mp_fMortProb[iSpecies] [iDbh] = 1 - pow( 1 - fDeathProb, iNumberYearsPerTimestep );
       }
     }
   }

@@ -153,7 +153,7 @@ clNCITermBase::ncivals clNCITermWithNeighborDamage::CalculateNCITerm(clTree * p_
 // DoSetup
 //////////////////////////////////////////////////////////////////////////////
 void clNCITermWithNeighborDamage::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) {
-  floatVal * p_fTempValues; //for getting species-specific values
+  doubleVal * p_fTempValues; //for getting species-specific values
   std::stringstream sLabel;
   int iNumTypes = p_oPop->GetNumberOfTypes(),
       iNumBehaviorSpecies = p_oNCI->GetNumBehaviorSpecies(),
@@ -176,18 +176,18 @@ void clNCITermWithNeighborDamage::DoSetup(clTreePopulation *p_oPop, clBehaviorBa
 
   }
 
-  mp_fAlpha = new float[m_iNumTotalSpecies];
-  mp_fBeta = new float[m_iNumTotalSpecies];
-  mp_fMaxCrowdingRadius = new float[m_iNumTotalSpecies];
-  mp_fMinimumNeighborDBH = new float[m_iNumTotalSpecies];
-  mp_fMedDamageEta = new float[m_iNumTotalSpecies];
-  mp_fFullDamageEta = new float[m_iNumTotalSpecies];
-  mp_fLambda = new float*[m_iNumTotalSpecies];
-  for (i = 0; i < m_iNumTotalSpecies; i++) mp_fLambda[i] = new float[m_iNumTotalSpecies];
+  mp_fAlpha = new double[m_iNumTotalSpecies];
+  mp_fBeta = new double[m_iNumTotalSpecies];
+  mp_fMaxCrowdingRadius = new double[m_iNumTotalSpecies];
+  mp_fMinimumNeighborDBH = new double[m_iNumTotalSpecies];
+  mp_fMedDamageEta = new double[m_iNumTotalSpecies];
+  mp_fFullDamageEta = new double[m_iNumTotalSpecies];
+  mp_fLambda = new double*[m_iNumTotalSpecies];
+  for (i = 0; i < m_iNumTotalSpecies; i++) mp_fLambda[i] = new double[m_iNumTotalSpecies];
 
-  //Set up our floatVal array that will extract values only for the species
+  //Set up our doubleVal array that will extract values only for the species
   //assigned to this behavior
-  p_fTempValues = new floatVal[iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[iNumBehaviorSpecies];
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
     p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
 

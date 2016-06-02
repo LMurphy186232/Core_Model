@@ -127,22 +127,22 @@ protected:
 
   /**Non-masting "p0" parameter. Array size is number of species to which this
    * behavior applies.*/
-  float *mp_fNonMastingP0;
+  double *mp_fNonMastingP0;
 
   /**Non-masting pn. Array size is number of behavior species by
    * number of total species.*/
-  float **mp_fNonMastingPn;
+  double **mp_fNonMastingPn;
 
   /**Masting "p0" parameter. Array size is number of species to which this
    * behavior applies.*/
-  float *mp_fMastingP0;
+  double *mp_fMastingP0;
 
   /**Minimum neighbor DBH.*/
-  float *mp_fMinNeighDBH;
+  double *mp_fMinNeighDBH;
 
   /**Masting pn. Array size is number of behavior species by
    * number of total species.*/
-  float **mp_fMastingPn;
+  double **mp_fMastingPn;
 
   /**Data member codes for seed grid for number of seeds. Array size is number
    * of species to which this behavior applies.*/
@@ -167,12 +167,12 @@ protected:
   float m_fPlotArea;
 
   /**Radius of neighborhoods.*/
-  float m_fRadius;
+  double m_fRadius;
 
   /**Threshold of seeds per square meter for a masting timestep. This comes as
    * an annual amount in the parameter file and is converted to a timestep
    * amount. Only necessary if m_bUseThresholdToDecideMast is true. */
-  float m_fMastingThreshold;
+  double m_fMastingThreshold;
 
   /**Whether this is the linked (true) or standalone (false) version*/
   bool m_bIsLinked;
@@ -214,8 +214,8 @@ protected:
    * @param iY Seed grid Y cell number.
    * @return Array of offtakes sized m_iNumBehaviorSpecies.
    */
-    void GetOfftakes(clTreePopulation * p_oPop, const float* p_fP0,
-        float **p_fPn, float *p_fOfftake, const int &iX, const int &iY);
+    void GetOfftakes(clTreePopulation * p_oPop, const double* p_fP0,
+        double **p_fPn, float *p_fOfftake, const int &iX, const int &iY);
 
     /**
      * Gets a pointer to the "Dispersed Seeds" grid, and sets up the output

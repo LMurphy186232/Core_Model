@@ -58,7 +58,7 @@ void clGMFMort::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
  try {
    clTreePopulation *p_oPop = (clTreePopulation*) mp_oSimManager->GetPopulationObject("treepopulation");
    DOMElement *p_oElement = GetParentParametersElement(p_oDoc);
-   floatVal *p_fTempValues;  //for getting species-specific values
+   doubleVal *p_fTempValues;  //for getting species-specific values
    short int i; //loop counter
 
    //Throw an error if the timestep length is not 5 years
@@ -72,13 +72,13 @@ void clGMFMort::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
 
    //Declare the temp array and populate it with the species to which this
    //behavior applies
-   p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+   p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
    for (i = 0; i < m_iNumBehaviorSpecies; i++)
      p_fTempValues[i].code = mp_iWhatSpecies[i];
 
    //Declare the arrays for holding the variables
-   mp_fMortAtZeroGrowth = new float[m_iNumTotalSpecies];
-   mp_fLightDepMort = new float[m_iNumTotalSpecies];
+   mp_fMortAtZeroGrowth = new double[m_iNumTotalSpecies];
+   mp_fLightDepMort = new double[m_iNumTotalSpecies];
 
    //Capture the values from the parameter file
 

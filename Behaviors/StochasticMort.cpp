@@ -44,14 +44,14 @@ void clStochasticMort::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
  try {
    clTreePopulation *p_oPop = (clTreePopulation*) mp_oSimManager->GetPopulationObject("treepopulation");
    DOMElement *p_oElement = GetParentParametersElement(p_oDoc);
-   floatVal *p_fTempValues;  //for getting species-specific values
-   float fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+   doubleVal *p_fTempValues;  //for getting species-specific values
+   int iNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
    short int iNumSpecies = mp_oMortalityOrg->GetNumberOfSpecies(),
              i; //loop counter
 
    //Declare the temp array and populate it with the species to which this
    //behavior applies
-   p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+   p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
    for (i = 0; i < m_iNumBehaviorSpecies; i++)
      p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -66,7 +66,7 @@ void clStochasticMort::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
    //Transfer to the appropriate array buckets and compound by the number
    //of years per timestep
    for (i = 0; i < m_iNumBehaviorSpecies; i++) {
-     mp_fRandomMort[p_fTempValues[i].code] = 1 - pow(1 - p_fTempValues[i].val, fNumberYearsPerTimestep);
+     mp_fRandomMort[p_fTempValues[i].code] = 1 - pow(1 - p_fTempValues[i].val, iNumberYearsPerTimestep);
    }
 
    delete[] p_fTempValues;

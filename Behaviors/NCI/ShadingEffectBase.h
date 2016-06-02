@@ -18,7 +18,7 @@ public:
    * Calculates shading effect.
    * @param p_oTree Tree for which to calculate shading effect.
    */
-  virtual float CalculateShadingEffect(clTree *p_oTree) = 0;
+  virtual double CalculateShadingEffect(clTree *p_oTree) = 0;
 
   /**
    * Does any desired setup.

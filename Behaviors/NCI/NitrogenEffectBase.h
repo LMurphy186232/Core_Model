@@ -29,7 +29,7 @@ public:
    * @param p_oPlot Plot object for querying for nitrogen values.
    * @param iSpecies Species for which to calculate nitrogen effect.
    */
-  virtual float CalculateNitrogenEffect(clPlot *p_oPlot, int iSpecies) = 0;
+  virtual double CalculateNitrogenEffect(clPlot *p_oPlot, int iSpecies) = 0;
 
   /**
    * Does any desired setup.

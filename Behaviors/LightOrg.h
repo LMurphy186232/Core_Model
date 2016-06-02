@@ -173,9 +173,9 @@ class clLightOrg {
   //read in from the parameter file.  These must be provided for all species
   //whether or not they themselves use light.
 
-  float *mp_fLightExtCoef;/**<Light extinction coefficient of live tree crowns.
+  double *mp_fLightExtCoef;/**<Light extinction coefficient of live tree crowns.
   One for each species.*/
-  float **mp_fSnagLightExtCoef; /**<Light extinction coefficient of snag
+  double **mp_fSnagLightExtCoef; /**<Light extinction coefficient of snag
   crowns.  First index is sized m_iNumSnagAgeClasses, second is sized
   number of total species.  This is only required from the parameter file if
   the tree population indicates that snags will be made this run.*/
@@ -187,9 +187,9 @@ class clLightOrg {
   infinity.*/
 
   //Single common values - from the parameter file
-  float m_fBeamFracGlobRad;    /**<Beam fraction of global radiation.  Old
+  double m_fBeamFracGlobRad;    /**<Beam fraction of global radiation.  Old
   parameter kt.*/
-  float m_fClearSkyTransCoeff; /**<Clear sky transmission coefficient.  Old
+  double m_fClearSkyTransCoeff; /**<Clear sky transmission coefficient.  Old
   parameter tran*/
   int m_iFirstJulDay;  /**<First julian day of growing season.  Old parameter jdb*/
   int m_iLastJulDay;   /**<Last julian day of growing season.  Old parameter jde*/

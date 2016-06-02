@@ -189,8 +189,8 @@ void clNeighborhoodSeedPredation::DoStandalonePredation() {
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
     clTreeSearch *p_oAllTrees = p_oPop->Find("type=3");
     clTree *p_oTree = p_oAllTrees->NextTree();
-    float *p_fP0, **p_fPn, //stand-in for parameter arrays
-    fNumSeeds = 0, fNewSeeds;
+    double *p_fP0, **p_fPn; //stand-in for parameter arrays
+    float fNumSeeds = 0, fNewSeeds;
     int iNumXCells = mp_oSeedGrid->GetNumberXCells(),
     iNumYCells = mp_oSeedGrid->GetNumberYCells(),
     iX, iY, iSp;
@@ -403,7 +403,7 @@ void clNeighborhoodSeedPredation::DoLinkedPredation() {
 // GetOfftakes()
 //////////////////////////////////////////////////////////////////////////////
 void clNeighborhoodSeedPredation::GetOfftakes(clTreePopulation * p_oPop,
-    const float* p_fP0, float **p_fPn, float *p_fOfftake, const int &iX,
+    const double* p_fP0, double **p_fPn, float *p_fOfftake, const int &iX,
     const int &iY) {
 
   clTreeSearch * p_oTrees;             //saplings and adults
@@ -600,7 +600,7 @@ void clNeighborhoodSeedPredation::SetupGrids()
 // ReadParameterFileData()
 ////////////////////////////////////////////////////////////////////////////
 void clNeighborhoodSeedPredation::ReadParameterFileData(xercesc::DOMDocument *p_oDoc) {
-  floatVal * p_fTemp= NULL; //for getting species-specific values
+  doubleVal * p_fTemp= NULL; //for getting species-specific values
   boolVal * p_bTemp= NULL; //for getting species-specific values
   try
   {
@@ -616,12 +616,12 @@ void clNeighborhoodSeedPredation::ReadParameterFileData(xercesc::DOMDocument *p_
     mp_iIndexes[mp_iWhatSpecies[i]] = i;
 
     //Declare our arrays
-    mp_fMinNeighDBH = new float[iNumSpecies];
-    mp_fNonMastingP0 = new float[m_iNumBehaviorSpecies];
-    mp_fNonMastingPn = new float * [m_iNumBehaviorSpecies];
+    mp_fMinNeighDBH = new double[iNumSpecies];
+    mp_fNonMastingP0 = new double[m_iNumBehaviorSpecies];
+    mp_fNonMastingPn = new double * [m_iNumBehaviorSpecies];
 
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
-      mp_fNonMastingPn[i] = new float[iNumSpecies];
+      mp_fNonMastingPn[i] = new double[iNumSpecies];
       for ( j = 0; j < iNumSpecies; j++ ) {
         mp_fNonMastingPn[i] [j] = 0;
       }
@@ -629,10 +629,10 @@ void clNeighborhoodSeedPredation::ReadParameterFileData(xercesc::DOMDocument *p_
 
     //Standalone version needs masting too
     if (false == m_bIsLinked) {
-      mp_fMastingP0 = new float[m_iNumBehaviorSpecies];
-      mp_fMastingPn = new float * [m_iNumBehaviorSpecies];
+      mp_fMastingP0 = new double[m_iNumBehaviorSpecies];
+      mp_fMastingPn = new double * [m_iNumBehaviorSpecies];
       for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
-        mp_fMastingPn[i] = new float[iNumSpecies];
+        mp_fMastingPn[i] = new double[iNumSpecies];
         for ( j = 0; j < iNumSpecies; j++ ) {
           mp_fMastingPn[i] [j] = 0;
         }
@@ -640,7 +640,7 @@ void clNeighborhoodSeedPredation::ReadParameterFileData(xercesc::DOMDocument *p_
     }
 
     //Set up our temp array - pre-load with this behavior's species
-    p_fTemp = new floatVal[m_iNumBehaviorSpecies];
+    p_fTemp = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
     p_fTemp[i].code = mp_iWhatSpecies[i];
 

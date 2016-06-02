@@ -118,17 +118,17 @@ friend class clTestMastingSpatialDisperse;
   /**STR mean (or STR value if deterministic). The array is 2D - the first
    * index is masting or non-masting. The second index is species. This value
    * comes from the parameter file.*/
-  float **mp_fStrMean;
+  double **mp_fStrMean;
 
   /**STR standard deviation. The array is 2D - the first index is masting or
    * non-masting. The second index is species. This value comes from the
    * parameter file.*/
-  float **mp_fStrStdDev;
+  double **mp_fStrStdDev;
 
   /**Beta parameter. The array is 2D - the first index is masting or
    * non-masting. The second index is species. This value comes from the
    * parameter file.*/
-  float **mp_fBeta;
+  double **mp_fBeta;
 
   /**Masting cumulative distribution function. Array size is number of species
    * by m_iMaxYears.*/
@@ -137,7 +137,7 @@ friend class clTestMastingSpatialDisperse;
   /** Fraction participating in disperse. Array is 2D. First index is masting
    * or non-masting. The second index is species. This value comes from the
    * parameter file.*/
-  float **mp_fFractionParticipating;
+  double **mp_fFractionParticipating;
 
   /**Whether this behavior is used by a species/type combo.  First array index
    * is species, second is type.*/
@@ -147,7 +147,7 @@ friend class clTestMastingSpatialDisperse;
   float *mp_fFecundity;
 
   /**Array of species with each one's dbh for reproduction*/
-  float *mp_fDbhForReproduction;
+  double *mp_fDbhForReproduction;
 
   /** Number of years since the last mast for each species */
   int *mp_iTimestepsSinceLastMast;
@@ -187,7 +187,7 @@ friend class clTestMastingSpatialDisperse;
   Ptr2GetNumberOfSeeds* mp_GetSeeds;
 
   /**Number of years per timestep*/
-  float m_fNumYearsPerTimestep;
+  int m_iNumYearsPerTimestep;
 
   /**Maximum distance, in meters, a seed can disperse - which is the maximum
    * dimension of the grid with max of 1000 m*/

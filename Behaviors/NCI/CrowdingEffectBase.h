@@ -35,7 +35,7 @@ public:
    * @param iSpecies Species for which to calculate effect. This is separate
    * in case p_oTree is NULL because there is no target.
    */
-  virtual float CalculateCrowdingEffect(clTree *p_oTree, const float &fDiam, const clNCITermBase::ncivals nci, const int &iSpecies) = 0;
+  virtual double CalculateCrowdingEffect(clTree *p_oTree, const float &fDiam, const clNCITermBase::ncivals nci, const int &iSpecies) = 0;
 
   /**
    * Does any desired setup.

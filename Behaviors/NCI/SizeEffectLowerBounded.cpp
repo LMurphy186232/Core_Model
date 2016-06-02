@@ -26,8 +26,8 @@ clSizeEffectLowerBounded::~clSizeEffectLowerBounded() {
 ////////////////////////////////////////////////////////////////////////////
 // CalculateSizeEffect
 ////////////////////////////////////////////////////////////////////////////
-float clSizeEffectLowerBounded::CalculateSizeEffect(clTree *p_oTree, const float &fDiam) {
-  float fSizeEffect, fDiam2;
+double clSizeEffectLowerBounded::CalculateSizeEffect(clTree *p_oTree, const float &fDiam) {
+  double fSizeEffect, fDiam2;
   int iSpecies = p_oTree->GetSpecies();
 
   //Make sure the diameter is above the minimum
@@ -51,7 +51,7 @@ void clSizeEffectLowerBounded::DoSetup(clTreePopulation *p_oPop, clBehaviorBase 
   mp_fXb = new double[iNumTotalSpecies];
   mp_fMinDiam = new double[iNumTotalSpecies];
 
-  //Set up our floatVal array that will extract values only for the species
+  //Set up our doubleVal array that will extract values only for the species
   //assigned to this behavior
   p_dTempValues = new doubleVal[iNumBehaviorSpecies];
   for ( i = 0; i < iNumBehaviorSpecies; i++ ) p_dTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);

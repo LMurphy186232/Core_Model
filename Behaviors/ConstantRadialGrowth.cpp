@@ -73,7 +73,7 @@ void clConstantRadialGrowth::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
   try {
     short int iNumSpecies = mp_oGrowthOrg->GetNumberOfSpecies();
 
-    mp_fAdultConstRadInc = new float[iNumSpecies];
+    mp_fAdultConstRadInc = new double[iNumSpecies];
 
     //Read the base variables
     GetParameterFileData(p_oDoc);

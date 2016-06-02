@@ -31,7 +31,7 @@ clDamageEffectDefault::~clDamageEffectDefault() {
 ////////////////////////////////////////////////////////////////////////////
 // CalculateDamageEffect
 ////////////////////////////////////////////////////////////////////////////
-float clDamageEffectDefault::CalculateDamageEffect(clTree *p_oTree) {
+double clDamageEffectDefault::CalculateDamageEffect(clTree *p_oTree) {
   int iDamage;
   if (-1 == mp_iDamageCodes[p_oTree->GetSpecies()] [p_oTree->GetType()]) return 1;
 
@@ -49,17 +49,17 @@ float clDamageEffectDefault::CalculateDamageEffect(clTree *p_oTree) {
 ////////////////////////////////////////////////////////////////////////////
 void clDamageEffectDefault::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) {
   stcSpeciesTypeCombo c;
-  floatVal * p_fTempValues; //for getting species-specific values
+  doubleVal * p_fTempValues; //for getting species-specific values
   int iNumBehaviorSpecies = p_oNCI->GetNumBehaviorSpecies(),
       iNumTypes = p_oPop->GetNumberOfTypes(), i, j;
 
   m_iNumberTotalSpecies = p_oPop->GetNumberOfSpecies();
-  mp_fMedDamageStormEff = new float[m_iNumberTotalSpecies];
-  mp_fFullDamageStormEff = new float[m_iNumberTotalSpecies];
+  mp_fMedDamageStormEff = new double[m_iNumberTotalSpecies];
+  mp_fFullDamageStormEff = new double[m_iNumberTotalSpecies];
 
-  //Set up our floatVal array that will extract values only for the species
+  //Set up our doubleVal array that will extract values only for the species
   //assigned to this behavior
-  p_fTempValues = new floatVal[iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[iNumBehaviorSpecies];
   for ( i = 0; i < iNumBehaviorSpecies; i++ ) p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
 
   //Storm effect - medium damage

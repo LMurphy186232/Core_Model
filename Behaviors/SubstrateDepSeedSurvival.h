@@ -136,30 +136,30 @@ class clSubstrateDepSeedSurvival : virtual public clBehaviorBase {
   clGrid *mp_oSeedGrid;
 
   /**Canopy / ground scarified soil favorability - one per behavior species*/
-  float *mp_fCanGroundScarSoilFav;
+  double *mp_fCanGroundScarSoilFav;
   /**Canopy / ground tip-up mounds favorability - one per behavior species*/
-  float *mp_fCanGroundTipUpFav;
+  double *mp_fCanGroundTipUpFav;
   /**Canopy / ground fresh logs favorability - one per behavior species*/
-  float *mp_fCanGroundFreshLogFav;
+  double *mp_fCanGroundFreshLogFav;
   /**Canopy / ground decayed logs favorability - one per behavior species*/
-  float *mp_fCanGroundDecLogFav;
+  double *mp_fCanGroundDecLogFav;
   /**Canopy / ground forest floor litter favorability - one per behavior species*/
-  float *mp_fCanGroundForFlLitterFav;
+  double *mp_fCanGroundForFlLitterFav;
   /**Canopy / ground forest floor moss favorability - one per behavior species*/
-  float *mp_fCanGroundForFlMossFav;
+  double *mp_fCanGroundForFlMossFav;
 
   /**Gap / mound scarified soil favorability - one per behavior species*/
-  float *mp_fGapMoundScarSoilFav;
+  double *mp_fGapMoundScarSoilFav;
   /**Gap / mound tip-up mounds favorability - one per behavior species*/
-  float *mp_fGapMoundTipUpFav;
+  double *mp_fGapMoundTipUpFav;
   /**Gap / mound fresh logs favorability - one per behavior species*/
-  float *mp_fGapMoundFreshLogFav;
+  double *mp_fGapMoundFreshLogFav;
   /**Gap / mound decayed logs favorability - one per behavior species*/
-  float *mp_fGapMoundDecLogFav;
+  double *mp_fGapMoundDecLogFav;
   /**Gap / mound forest floor litter favorability - one per behavior species*/
-  float *mp_fGapMoundForFlLitterFav;
+  double *mp_fGapMoundForFlLitterFav;
   /**Gap / mound forest floor moss favorability - one per behavior species*/
-  float *mp_fGapMoundForFlMossFav;
+  double *mp_fGapMoundForFlMossFav;
 
   /**Speeds access to favorability arrays*/
   short int *mp_iIndexes;
@@ -173,7 +173,7 @@ class clSubstrateDepSeedSurvival : virtual public clBehaviorBase {
   short int *mp_iSeedGridCode;
 
   /**Proportion of plot that is mound, if using microtopography - 0 - 1*/
-  float m_fMoundProp;
+  double m_fMoundProp;
 
   /**Data member code for gap status in dispersed seed grid*/
   short int m_iIsGapCode;

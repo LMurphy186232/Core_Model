@@ -59,7 +59,7 @@ void clConstantBAGrowth::SetNameData(std::string sNameString) {
 void clConstantBAGrowth::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
   short int iNumSpecies = mp_oGrowthOrg->GetNumberOfSpecies();
 
-  mp_fAdultConstBAInc = new float[iNumSpecies];
+  mp_fAdultConstBAInc = new double[iNumSpecies];
 
   //Read the base variables
   GetParameterFileData(p_oDoc);

@@ -33,7 +33,7 @@ clPRStormBiLevelGrowth::clPRStormBiLevelGrowth( clSimManager * p_oSimManager ) :
     m_iGrowthMethod = diameter_auto;
     m_iLightCode = -1;
     m_iStormtimeCode = -1;
-    m_fYearsPerTimestep = 0;
+    m_iYearsPerTimestep = 0;
 
     m_sNameString = "prstormbilevelgrowthshell";
     m_sXMLRoot = "PRStormBilevelGrowth";
@@ -73,7 +73,7 @@ clPRStormBiLevelGrowth::~clPRStormBiLevelGrowth()
 /////////////////////////////////////////////////////////////////////////////*/
 void clPRStormBiLevelGrowth::DoShellSetup( DOMDocument * p_oDoc )
 {
-  floatVal * p_fTempValues = NULL; //for getting species-specific values
+  doubleVal * p_fTempValues = NULL; //for getting species-specific values
   try
   {
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
@@ -81,14 +81,14 @@ void clPRStormBiLevelGrowth::DoShellSetup( DOMDocument * p_oDoc )
     short int iNumSpecies = p_oPop->GetNumberOfSpecies(), i;
 
     //Get number of years per timestep
-    m_fYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_iYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
     //Declare the arrays we'd like read
-    mp_fLoLightSlope = new float[m_iNumBehaviorSpecies];
-    mp_fLoLightIntercept = new float[m_iNumBehaviorSpecies];
-    mp_fHiLightA = new float[m_iNumBehaviorSpecies];
-    mp_fHiLightB = new float[m_iNumBehaviorSpecies];
-    mp_fHiLightThreshold = new float[m_iNumBehaviorSpecies];
+    mp_fLoLightSlope = new double[m_iNumBehaviorSpecies];
+    mp_fLoLightIntercept = new double[m_iNumBehaviorSpecies];
+    mp_fHiLightA = new double[m_iNumBehaviorSpecies];
+    mp_fHiLightB = new double[m_iNumBehaviorSpecies];
+    mp_fHiLightThreshold = new double[m_iNumBehaviorSpecies];
     mp_iIndexes = new int[iNumSpecies];
 
     //Set up the array indexes
@@ -133,7 +133,7 @@ void clPRStormBiLevelGrowth::DoShellSetup( DOMDocument * p_oDoc )
 
     //Declare the species-specific temp array and pre-load with the species that
     //this behavior affects
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -224,7 +224,7 @@ float clPRStormBiLevelGrowth::CalcDiameterGrowthValue(clTree *p_oTree, clTreePop
 
   //Calculate the function value according to the light level
   if (fLightLevel < mp_fHiLightThreshold[mp_iIndexes[iSp]]) {
-    fGrowth = m_fYearsPerTimestep * clModelMath::CalcPointValue(fDiam, mp_fLoLightSlope[mp_iIndexes[iSp]], mp_fLoLightIntercept[mp_iIndexes[iSp]]);
+    fGrowth = m_iYearsPerTimestep * clModelMath::CalcPointValue(fDiam, mp_fLoLightSlope[mp_iIndexes[iSp]], mp_fLoLightIntercept[mp_iIndexes[iSp]]);
     if (fDiam + fGrowth < MINDIAM) fGrowth = fDiam - MINDIAM;
     return fGrowth;
   }
@@ -238,7 +238,7 @@ float clPRStormBiLevelGrowth::CalcDiameterGrowthValue(clTree *p_oTree, clTreePop
   p_oTree->GetValue(p_oPop->GetHeightCode(iSp, iTp), &fHeight);
 
   //Calculate the new tree height
-  fHeightGrowth = m_fYearsPerTimestep * fDiam * mp_fHiLightA[mp_iIndexes[iSp]]
+  fHeightGrowth = m_iYearsPerTimestep * fDiam * mp_fHiLightA[mp_iIndexes[iSp]]
                                                              * exp(-mp_fHiLightB[mp_iIndexes[iSp]] * fNumYears);
   fHeight += fHeightGrowth;
   //Make sure it's not higher than species max - dangerously reuse

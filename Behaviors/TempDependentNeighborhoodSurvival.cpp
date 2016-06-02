@@ -79,7 +79,7 @@ void clTempDependentNeighborhoodSurvival::ReadParameterFile( xercesc::DOMDocumen
   try
   {
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
-    floatVal * p_fTempValues; //for getting species-specific values
+    doubleVal * p_fTempValues; //for getting species-specific values
     short int i, //loop counter
       iNumTotalSpecies = p_oPop->GetNumberOfSpecies();
 
@@ -90,14 +90,14 @@ void clTempDependentNeighborhoodSurvival::ReadParameterFile( xercesc::DOMDocumen
         m_fMinSaplingHeight = p_oPop->GetMaxSeedlingHeight( i );
 
     //The rest are sized number of species to which this behavior applies
-    mp_fM = new float[iNumTotalSpecies];
-    mp_fN = new float[iNumTotalSpecies];
-    mp_fA = new float[iNumTotalSpecies];
-    mp_fB = new float[iNumTotalSpecies];
+    mp_fM = new double[iNumTotalSpecies];
+    mp_fN = new double[iNumTotalSpecies];
+    mp_fA = new double[iNumTotalSpecies];
+    mp_fB = new double[iNumTotalSpecies];
 
-    //Set up our floatVal array that will extract values only for the species
+    //Set up our doubleVal array that will extract values only for the species
     //assigned to this behavior
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -220,9 +220,9 @@ deadCode clTempDependentNeighborhoodSurvival::DoMort( clTree * p_oTree, const fl
 {
   clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
   float fX, fY,
-        fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep(),
         fSurvivalProb, //Tree's annual survival probability
         fBAT; //Neighborhood basal area of adult trees
+  int iNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
   short int iType = p_oTree->GetType(),
             iX, iY;
   bool bIsDead;
@@ -245,7 +245,7 @@ deadCode clTempDependentNeighborhoodSurvival::DoMort( clTree * p_oTree, const fl
     //Calculate survival probability for this grid cell
     fSurvivalProb = exp(-1.0 * mp_fA[iSpecies] * pow(fBAT, mp_fB[iSpecies])) *
               mp_fTempFunction[iSpecies];
-    fSurvivalProb = pow( fSurvivalProb, fNumberYearsPerTimestep );
+    fSurvivalProb = pow( fSurvivalProb, iNumberYearsPerTimestep );
     mp_oGrid->SetValueOfCell(iX, iY, mp_iGridSurvivalCodes[iSpecies], fSurvivalProb);
   }
 

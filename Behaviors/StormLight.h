@@ -117,21 +117,21 @@ class clStormLight : virtual public clBehaviorBase {
   int **mp_iStmDmgCodes;
 
   /**The max radius, in m, to search for storm-damaged neighbors.*/
-  float m_fMaxRadius;
+  double m_fMaxRadius;
 
   /**The slope of the light function.*/
-  float m_fSlope;
+  double m_fSlope;
 
   /**The intercept of the light function.*/
-  float m_fIntercept;
+  double m_fIntercept;
 
   /**Standard deviation if normal or lognormal distribution is desired. Or
    * nothing, if we are using deterministic light levels.*/
-  float m_fRandParameter;
+  double m_fRandParameter;
 
   /**The minimum number of trees within the search radius for the site to
   * qualify as under full canopy.*/
-  float m_fMinCanopyTrees;
+  double m_fMinCanopyTrees;
 
   /**The max time since damage, in years, that a live tree can count toward
   * light calculations.*/

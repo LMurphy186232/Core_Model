@@ -80,7 +80,7 @@ protected:
 
   /**Lamba for NCI. Array sized number of total species by number of total
    * species.*/
-  float **mp_fLambda;
+  double **mp_fLambda;
 
   /**Holds return data codes for the "stm_dmg" tree data member. Array size is
    * number of total species by number of types.
@@ -90,33 +90,33 @@ protected:
   /**Maximum search radius, in meters, in which to look for crowding
    * neighbors. Array sized number of species.
    */
-  float *mp_fMaxCrowdingRadius;
+  double *mp_fMaxCrowdingRadius;
 
   /**Neighbor DBH effect. @htmlonly &alpha; @endhtmlonly variable in
    * equation above. Array sized number of species.*/
-  float *mp_fAlpha;
+  double *mp_fAlpha;
 
   /**Neighbor distance effect. @htmlonly &beta; @endhtmlonly variable in
    * equation above. Array sized number of species.*/
-  float *mp_fBeta;
+  double *mp_fBeta;
 
   /**NCI neighbor storm medium damage parameter.
    * @htmlonly &eta;<sub>k</sub> @endhtmlonly in NCI equation above. This is
    * omitted or set to 1 if not used. Array sized number of species.*/
-  float *mp_fMedDamageEta;
+  double *mp_fMedDamageEta;
 
   /**NCI neighbor storm full damage parameter.
    * @htmlonly &eta;<sub>k</sub> @endhtmlonly in NCI equation above. This is
    * omitted or set to 1 if not used. Array sized number of species.*/
-  float *mp_fFullDamageEta;
+  double *mp_fFullDamageEta;
 
   /**The minimum DBH, in cm, of neighbors to be included in NCI calculations.
    * Array assumed to be sized total number of species.*/
-  float *mp_fMinimumNeighborDBH;
+  double *mp_fMinimumNeighborDBH;
 
   /**The value to divide DBH by in NCI. <i>q</i> in the NCI equation above.
    * May be set to 1.*/
-  float m_fDbhDivisor;
+  double m_fDbhDivisor;
 
   /**Minimum sapling height.  For doing neighbor searches.*/
   float m_fMinSaplingHeight;

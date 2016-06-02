@@ -77,49 +77,49 @@ protected:
   /**Dispersal (weibull) or X0 (lognormal) parameter. The array is 3D - first
    * index is which disperse function is used. The second index is cover. The
    * third index is species.  This value comes from the parameter file.*/
-  float ***mp_fDispersalX0;
+  double ***mp_fDispersalX0;
 
   /**Theta (weibull) or Xb (lognormal) parameter. If this is theta, this value
    * must be less than 50 to protect against pow overflows. The array is 3D -
    * first index is which disperse function is used. The second index is cover.
    * The third index is species. This value comes from the parameter file.*/
-  float ***mp_fThetaXb;
+  double ***mp_fThetaXb;
 
   /**STR parameter. The array is 3D - first index is which disperse function is
    * used. The second index is cover. The third index is species. This value
    * comes from the parameter file.*/
-  float ***mp_fStr;
+  double ***mp_fStr;
 
   /**Beta parameter. The array is 3D - first index is which disperse function is
    * used. The second index is cover. The third index is species. This value
    * comes from the parameter file.*/
-  float ***mp_fBeta;
+  double ***mp_fBeta;
 
   /**Fecundity for 30 cm dbh tree for each species. The array is 3D - first
    * index is which disperse function is used. The second index is cover. The
    * third index is species.*/
-  float ***mp_fFecundity;
+  double ***mp_fFecundity;
 
   /**Beta parameter for stumps. This matches the beta parameter for live trees
    * for this species.*/
-  float *mp_fStumpBeta;
+  double *mp_fStumpBeta;
 
   /**STR parameter for stumps. This matches the STR parameter for live trees
    * for this species.*/
-  float *mp_fStumpStr;
+  double *mp_fStumpStr;
 
   /**Fecundity for stumps.*/
-  float *mp_fStumpFecundity;
+  double *mp_fStumpFecundity;
 
   /**Array of species with each one's dbh for reproduction*/
-  float *mp_fDbhForReproduction;
+  double *mp_fDbhForReproduction;
 
   /**Cumulative probability array for gap and canopy cover. Array size is
    * # functions by # covers by # species by max distance.*/
-  float ****mp_fCumProb;
+  double ****mp_fCumProb;
 
   /**Number of years per timestep*/
-  float m_fNumYearsPerTimestep;
+  int m_iNumYearsPerTimestep;
 
   /**Maximum distance, in meters, a seed can disperse*/
   int m_iMaxDistance;
@@ -286,7 +286,7 @@ protected:
   * @param iFunction Function flag.
   * @param iCover Cover flag.
   */
-  void CalculateProbabilityDistribution(float *p_fProbArray, int iMaxDistance,
+  void CalculateProbabilityDistribution(double *p_fProbArray, int iMaxDistance,
        int iSpecies, function iFunction, cover iCover);
 
   /**

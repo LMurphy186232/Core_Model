@@ -87,27 +87,27 @@ class clLogisticBiLevelMortality : virtual public clMortalityBase {
   clTreePopulation *mp_oPop;
 
   /**Mortality equation low light "b" - sized number of behavior species*/
-  float *mp_fLoLightB;
+  double *mp_fLoLightB;
 
   /**Mortality equation low light "a" - sized number of behavior species*/
-  float *mp_fLoLightA;
+  double *mp_fLoLightA;
 
   /**Mortality equation high light "b" - sized number of behavior species*/
-  float *mp_fHiLightB;
+  double *mp_fHiLightB;
 
   /**Mortality equation high light "a" - sized number of behavior species*/
-  float *mp_fHiLightA;
+  double *mp_fHiLightA;
 
   /**Threshold between low light and high light mortality, as a value between 0
   * and 100 - sized number of behavior species*/
-  float *mp_fHiLightThreshold;
+  double *mp_fHiLightThreshold;
 
   /**To help access the other arrays*/
   int *mp_iIndexes;
 
   /**Conversion factor to translate the results of the function to the
   * appropriate units per timestep*/
-  float m_fYearsPerTimestep;
+  int m_iYearsPerTimestep;
 
   /**Code for the "Light" data member of the "Storm Light" grid*/
   int m_iLightCode;

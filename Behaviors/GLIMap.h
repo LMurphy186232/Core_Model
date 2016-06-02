@@ -111,7 +111,7 @@ class clGLIMap : public clGLIBase {
   */
   clGrid *mp_oMapGrid;
 
-  float m_fLightHeight;  /**<The height above the ground, in m, at which the
+  double m_fLightHeight;  /**<The height above the ground, in m, at which the
                         quadrat light values are calculated.*/
   float m_fMaxSearchDistance; /**<Maximum search distance for shading
                                  neighbors.*/

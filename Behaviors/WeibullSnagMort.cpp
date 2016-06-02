@@ -30,7 +30,7 @@ clMortalityBase( p_oSimManager )
 
     m_iNumSizeClasses = 3;
     m_iMaxPrecalcAge = 30;
-    m_fNumYearsPerTimestep = 0;
+    m_iNumYearsPerTimestep = 0;
 
     //Versions
     m_fVersionNumber = 1.1;
@@ -114,7 +114,7 @@ void clWeibullSnagMort::DoShellSetup( xercesc::DOMDocument * p_oDoc )
 {
   try
   {
-    m_fNumYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_iNumYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
     ValidateTypes();
     ReadParameterFile( p_oDoc );
@@ -168,14 +168,14 @@ void clWeibullSnagMort::ReadParameterFile( xercesc::DOMDocument * p_oDoc )
   {
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
-    floatVal * p_fTempValues; //for getting species-specific values
-    float fVal;
+    doubleVal * p_fTempValues; //for getting species-specific values
+    double fVal;
     short int i, j, iNumSpecies; //loop counter
     bool bFound;
 
     //Declare the temp array and populate it with the species to which this
     //behavior applies
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -186,14 +186,14 @@ void clWeibullSnagMort::ReadParameterFile( xercesc::DOMDocument * p_oDoc )
       mp_iIndexes[mp_iWhatSpecies[i]] = i;
 
     //Declare the arrays for holding the variables
-    mp_fAParameter = new float * [m_iNumSizeClasses];
-    mp_fBParameter = new float * [m_iNumSizeClasses];
-    mp_fSnagSizeClasses = new float * [m_iNumSizeClasses];
+    mp_fAParameter = new double * [m_iNumSizeClasses];
+    mp_fBParameter = new double * [m_iNumSizeClasses];
+    mp_fSnagSizeClasses = new double * [m_iNumSizeClasses];
     for ( i = 0; i < m_iNumSizeClasses; i++ )
     {
-      mp_fAParameter[i] = new float[m_iNumBehaviorSpecies];
-      mp_fBParameter[i] = new float[m_iNumBehaviorSpecies];
-      mp_fSnagSizeClasses[i] = new float[m_iNumBehaviorSpecies];
+      mp_fAParameter[i] = new double[m_iNumBehaviorSpecies];
+      mp_fBParameter[i] = new double[m_iNumBehaviorSpecies];
+      mp_fSnagSizeClasses[i] = new double[m_iNumBehaviorSpecies];
 
       //Initialize size class values to -1 so we know when we've read them
       for (j = 0; j < m_iNumBehaviorSpecies; j++) {
@@ -406,7 +406,7 @@ void clWeibullSnagMort::FillDeathProbArray()
         mp_fProbabilityOfDeath[i] [j] = new float[m_iMaxPrecalcAge];
         for ( k = 0; k < m_iMaxPrecalcAge; k++ )
         {
-          mp_fProbabilityOfDeath[i] [j] [k] = CalculateDeathProbability(i, mp_iWhatSpecies[j], (int)m_fNumYearsPerTimestep * k);
+          mp_fProbabilityOfDeath[i] [j] [k] = CalculateDeathProbability(i, mp_iWhatSpecies[j], m_iNumYearsPerTimestep * k);
         }
       }
     }
@@ -448,7 +448,7 @@ float clWeibullSnagMort::CalculateDeathProbability( int iSizeClass, int iSpecies
   else fFunc1 = exp( fFunc1 );
 
   //Get the value of the function at the previous timestep
-  iAge -= (int)m_fNumYearsPerTimestep;
+  iAge -= m_iNumYearsPerTimestep;
   if ( iAge > 0 )
   {
     fFunc2 = -( pow( mp_fAParameter[iSizeClass] [mp_iIndexes[iSpecies]] * iAge,
@@ -513,7 +513,7 @@ deadCode clWeibullSnagMort::DoMort( clTree * p_oTree, const float & fDbh, const 
   if ( iAge < m_iMaxPrecalcAge )
   {
     //We've already calculated this age
-    iAgeInTS = iAge / (int)m_fNumYearsPerTimestep;
+    iAgeInTS = iAge / m_iNumYearsPerTimestep;
     fProb = mp_fProbabilityOfDeath[iSizeClass] [mp_iIndexes[iSpecies]] [iAgeInTS];
 
   }

@@ -71,28 +71,28 @@ protected:
 
   /**Lamba for NCI. Array sized number of total species by number of total
    * species.*/
-  float **mp_fLambda;
+  double **mp_fLambda;
 
   /**Maximum search radius, in meters, in which to look for crowding
    * neighbors. Array sized number of species.
    */
-  float *mp_fMaxCrowdingRadius;
+  double *mp_fMaxCrowdingRadius;
 
   /**Neighbor DBH effect. @htmlonly &alpha; @endhtmlonly variable in
    * equation above. Array sized number of species.*/
-  float *mp_fAlpha;
+  double *mp_fAlpha;
 
   /**Neighbor distance effect. @htmlonly &beta; @endhtmlonly variable in
    * equation above. Array sized number of species.*/
-  float *mp_fBeta;
+  double *mp_fBeta;
 
   /**The minimum Diam10, in cm, of neighbors to be included in NCI calculations.
   * Array is sized total number of species.*/
-  float *mp_fMinimumNeighborDiam10;
+  double *mp_fMinimumNeighborDiam10;
 
   /**The value to divide diam10 by in NCI. <i>q</i> in the NCI equation above.
   * May be set to 1.*/
-  float m_fDiam10Divisor;
+  double m_fDiam10Divisor;
 
   /**Whether or not to include snags in NCI*/
   bool m_bIncludeSnags;

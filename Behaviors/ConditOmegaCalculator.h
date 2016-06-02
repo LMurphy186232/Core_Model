@@ -140,10 +140,10 @@ class clConditOmegaCalculator : virtual public clBehaviorBase {
   float *mp_fAnnulusAreas;
 
   /** The max distance to which to calculate Condit's Omega. */
-  float m_fMaxDistance;
+  double m_fMaxDistance;
 
   /** The distance increment used to step out to the max distance. */
-  float m_fIncrement;
+  double m_fIncrement;
 
   /** Number of increments for which to calculate Condit's Omega.*/
   int m_iNumIncs;

@@ -152,10 +152,10 @@ void clDisturbance::ReadHarvestParameterFileData(xercesc::DOMDocument * p_oDoc) 
   XMLCh *sVal;
   std::stringstream sTempStream;
   std::string sTemp;
-  float fTemp, //for extracting float data from parameter file
-  fMaxVal, //maximum cut range value
-  *p_fRanges; //for sorting cut ranges
-  floatVal * p_fSeedlingValues; //for getting species-specific values
+  double fTemp, //for extracting float data from parameter file
+  fMaxVal; //maximum cut range value
+  double *p_fRanges; //for sorting cut ranges
+  doubleVal * p_fSeedlingValues; //for getting species-specific values
   int iNumHarvestEvents, //total number of cut events to extract
   iX, iY, //X and Y grid values for package
   iNumberTimesteps = mp_oSimManager->GetNumberOfTimesteps(), iNumSpecies =
@@ -187,7 +187,7 @@ void clDisturbance::ReadHarvestParameterFileData(xercesc::DOMDocument * p_oDoc) 
   if (0 == iNumHarvestEvents)
     return;
 
-  p_fSeedlingValues = new floatVal[iNumSpecies];
+  p_fSeedlingValues = new doubleVal[iNumSpecies];
   for (i = 0; i < iNumSpecies; i++)
     p_fSeedlingValues[i].code = i;
 
@@ -324,7 +324,7 @@ void clDisturbance::ReadHarvestParameterFileData(xercesc::DOMDocument * p_oDoc) 
     }
 
     //Get the minimum dbh in each cut range
-    p_fRanges = new float[iNumChildren];
+    p_fRanges = new double[iNumChildren];
     for (j = 0; j < iNumChildren; j++) {
       p_oNode = p_oCutSpecificsList->item(j);
       p_oChildElement = (DOMElement *) p_oNode;
@@ -360,11 +360,11 @@ void clDisturbance::ReadHarvestParameterFileData(xercesc::DOMDocument * p_oDoc) 
       p_oNode = p_oCutSpecificsList->item(iMinIndex);
       p_oChildElement = (DOMElement *) p_oNode;
 
-      p_oNewPackage->SetValue(mp_iRangeMinCodes[j], p_fRanges[iMinIndex]);
+      p_oNewPackage->SetValue(mp_iRangeMinCodes[j], (float)p_fRanges[iMinIndex]);
       FillSingleValue(p_oChildElement, "ha_high", &fTemp, true);
-      p_oNewPackage->SetValue(mp_iRangeMaxCodes[j], fTemp);
+      p_oNewPackage->SetValue(mp_iRangeMaxCodes[j], (float)fTemp);
       FillSingleValue(p_oChildElement, "ha_amountToCut", &fTemp, true);
-      p_oNewPackage->SetValue(mp_iRangeAmountCodes[j], fTemp);
+      p_oNewPackage->SetValue(mp_iRangeAmountCodes[j], (float)fTemp);
 
       p_fRanges[iMinIndex] = fMaxVal;
     }
@@ -432,9 +432,9 @@ void clDisturbance::ReadHarvestParameterFileData(xercesc::DOMDocument * p_oDoc) 
       p_oNewPackage->SetValue(mp_iPriorityTypeCodes[j], iTemp);
 
       FillSingleValue(p_oChildElement, "ha_min", &fTemp, true);
-      p_oNewPackage->SetValue(mp_iPriorityMinCodes[j], fTemp);
+      p_oNewPackage->SetValue(mp_iPriorityMinCodes[j], (float)fTemp);
       FillSingleValue(p_oChildElement, "ha_max", &fTemp, false);
-      p_oNewPackage->SetValue(mp_iPriorityMaxCodes[j], fTemp);
+      p_oNewPackage->SetValue(mp_iPriorityMaxCodes[j], (float)fTemp);
     }
 
     //Create an ID number - just use the loop counter
@@ -505,10 +505,10 @@ void clDisturbance::ReadMortEpParameterFileData(xercesc::DOMDocument * p_oDoc) {
   XMLCh *sVal;
   std::stringstream sTempStream;
   std::string sTemp;
-  float fTemp, //for extracting float data from parameter file
+  double fTemp, //for extracting float data from parameter file
   fMaxVal, //maximum cut range value
   *p_fRanges; //for sorting cut ranges
-  floatVal * p_fSeedlingValues; //for getting species-specific values
+  doubleVal * p_fSeedlingValues; //for getting species-specific values
   int iNumDisturbanceEvents, //total number of cut events to extract
   iX, iY, //X and Y grid values for package
   iNumberTimesteps = mp_oSimManager->GetNumberOfTimesteps(), iNumSpecies =
@@ -539,7 +539,7 @@ void clDisturbance::ReadMortEpParameterFileData(xercesc::DOMDocument * p_oDoc) {
   if (0 == iNumDisturbanceEvents)
     return;
 
-  p_fSeedlingValues = new floatVal[iNumSpecies];
+  p_fSeedlingValues = new doubleVal[iNumSpecies];
   for (i = 0; i < iNumSpecies; i++)
     p_fSeedlingValues[i].code = i;
 
@@ -652,7 +652,7 @@ void clDisturbance::ReadMortEpParameterFileData(xercesc::DOMDocument * p_oDoc) {
     }
 
     //Get the minimum dbh in each cut range
-    p_fRanges = new float[iNumChildren];
+    p_fRanges = new double[iNumChildren];
     for (j = 0; j < iNumChildren; j++) {
       p_oNode = p_oCutSpecificsList->item(j);
       p_oChildElement = (DOMElement *) p_oNode;
@@ -688,11 +688,11 @@ void clDisturbance::ReadMortEpParameterFileData(xercesc::DOMDocument * p_oDoc) {
       p_oNode = p_oCutSpecificsList->item(iMinIndex);
       p_oChildElement = (DOMElement *) p_oNode;
 
-      p_oNewPackage->SetValue(mp_iRangeMinCodes[j], p_fRanges[iMinIndex]);
+      p_oNewPackage->SetValue(mp_iRangeMinCodes[j], (float)p_fRanges[iMinIndex]);
       FillSingleValue(p_oChildElement, "ds_high", &fTemp, true);
-      p_oNewPackage->SetValue(mp_iRangeMaxCodes[j], fTemp);
+      p_oNewPackage->SetValue(mp_iRangeMaxCodes[j], (float)fTemp);
       FillSingleValue(p_oChildElement, "ds_amountToCut", &fTemp, true);
-      p_oNewPackage->SetValue(mp_iRangeAmountCodes[j], fTemp);
+      p_oNewPackage->SetValue(mp_iRangeAmountCodes[j], (float)fTemp);
 
       p_fRanges[iMinIndex] = fMaxVal;
     }

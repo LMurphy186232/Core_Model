@@ -59,9 +59,9 @@ public:
 
 protected:
 
-  floatVal *mp_fRandomAlpha; /**<Random mortality alpha, for calculating annual probability of death.  Array size is number of species to which this behavior applies.*/
-  floatVal *mp_fRandomBeta; /**<Random mortality beta, for calculating annual probability of death.  Array size is number of species to which this behavior applies.*/
-  floatVal *mp_fDbhAtOnset; /**<DBH at onset of senescence.  Old parameter elderlyMort.  Array size is number of species to which this behavior applies.*/
+  doubleVal *mp_fRandomAlpha; /**<Random mortality alpha, for calculating annual probability of death.  Array size is number of species to which this behavior applies.*/
+  doubleVal *mp_fRandomBeta; /**<Random mortality beta, for calculating annual probability of death.  Array size is number of species to which this behavior applies.*/
+  doubleVal *mp_fDbhAtOnset; /**<DBH at onset of senescence.  Old parameter elderlyMort.  Array size is number of species to which this behavior applies.*/
   float **mp_fMortProb; /**<Probability of death per timestep for each DBH value out to the maximum.  Array of total number of species by m_iMaxDbh.*/
 
   int m_iMaxDbh; /**<DBH of asymptotic maximum mortality.  Defaults to 100*/

@@ -91,7 +91,7 @@ clStochDoubleLogTempDepNeighDisperse::~clStochDoubleLogTempDepNeighDisperse()
 ////////////////////////////////////////////////////////////////////////////
 void clStochDoubleLogTempDepNeighDisperse::DoShellSetup( DOMDocument * p_oDoc )
 {
-  floatVal * p_fTempValues = NULL; //for getting species-specific values
+  doubleVal * p_fTempValues = NULL; //for getting species-specific values
   try
   {
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
@@ -107,22 +107,22 @@ void clStochDoubleLogTempDepNeighDisperse::DoShellSetup( DOMDocument * p_oDoc )
 
     //Declare the temp array and populate it with the species to which this
     //behavior applies
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
     //Declare the arrays for holding the variables
-    mp_fPA = new float[iNumTotalSpecies];
-    mp_fPB = new float[iNumTotalSpecies];
-    mp_fPM = new float[iNumTotalSpecies];
-    mp_fAl = new float[iNumTotalSpecies];
-    mp_fBl = new float[iNumTotalSpecies];
-    mp_fCl = new float[iNumTotalSpecies];
-    mp_fAh = new float[iNumTotalSpecies];
-    mp_fBh = new float[iNumTotalSpecies];
-    mp_fCh = new float[iNumTotalSpecies];
-    mp_fA = new float[iNumTotalSpecies];
-    mp_fB = new float[iNumTotalSpecies];
+    mp_fPA = new double[iNumTotalSpecies];
+    mp_fPB = new double[iNumTotalSpecies];
+    mp_fPM = new double[iNumTotalSpecies];
+    mp_fAl = new double[iNumTotalSpecies];
+    mp_fBl = new double[iNumTotalSpecies];
+    mp_fCl = new double[iNumTotalSpecies];
+    mp_fAh = new double[iNumTotalSpecies];
+    mp_fBh = new double[iNumTotalSpecies];
+    mp_fCh = new double[iNumTotalSpecies];
+    mp_fA = new double[iNumTotalSpecies];
+    mp_fB = new double[iNumTotalSpecies];
 
     //Capture the values from the parameter file
 
@@ -265,7 +265,6 @@ void clStochDoubleLogTempDepNeighDisperse::AddSeeds()
         iTotalNumSpecies = p_oPop->GetNumberOfSpecies();
     float fNumGridSeeds, //seeds already in one grid cell
           fTemp,
-          fNumYrs = mp_oSimManager->GetNumberOfYearsPerTimestep(),
           fMeanTempC = p_oPlot->GetMeanAnnualTemp(),
           fMeanTempK = fMeanTempC + 273.15,
           fNeighDbh, //DBH of neighbors for calculating basal area
@@ -279,6 +278,7 @@ void clStochDoubleLogTempDepNeighDisperse::AddSeeds()
           fArea, //one cell's area
           fPCc, fPCa,
           fCellX, fCellY; //one cell's X and Y dimensions
+    int iNumYrs = mp_oSimManager->GetNumberOfYearsPerTimestep();
     short int i, iSpecies,
               iNeighSpecies, iNeighType,
               iX, iY;
@@ -389,7 +389,7 @@ void clStochDoubleLogTempDepNeighDisperse::AddSeeds()
             }
 
             //Scale to seeds per grid cell per timestep
-            fNumGridSeeds *= fNumYrs * fArea;
+            fNumGridSeeds *= iNumYrs * fArea;
 
             //Place the seeds in the seed grid
             mp_oSeedGrid->GetValueOfCell( iX, iY, mp_iNumSeedsCode[mp_iWhatSpecies[i]], & fTemp );

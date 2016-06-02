@@ -67,23 +67,23 @@ clBrowsedStochasticMortality::~clBrowsedStochasticMortality()
 ////////////////////////////////////////////////////////////////////////////
 void clBrowsedStochasticMortality::DoShellSetup( xercesc::DOMDocument * p_oDoc )
 {
-  floatVal * p_fTempValues = NULL; //for getting species-specific values
+  doubleVal * p_fTempValues = NULL; //for getting species-specific values
   try
   {
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
     DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
-    float fYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    int iYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
     short int i, j, iNumTypes = p_oPop->GetNumberOfTypes();
 
     m_iNumSpecies = p_oPop->GetNumberOfSpecies();
 
     //Declare the arrays we'd like read
-    mp_fBrowsedMortProb = new float[m_iNumSpecies];
-    mp_fUnbrowsedMortProb = new float[m_iNumSpecies];
+    mp_fBrowsedMortProb = new double[m_iNumSpecies];
+    mp_fUnbrowsedMortProb = new double[m_iNumSpecies];
 
     //Declare the species-specific temp array and pre-load with the species
     //that this behavior affects
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -102,7 +102,7 @@ void clBrowsedStochasticMortality::DoShellSetup( xercesc::DOMDocument * p_oDoc )
         stcErr.sMoreInfo = "All values for probability of mortality must be between 0 and 1.";
         throw( stcErr );
       }
-      mp_fBrowsedMortProb[p_fTempValues[i].code] = 1 - pow( 1 - p_fTempValues[i].val, fYearsPerTimestep );
+      mp_fBrowsedMortProb[p_fTempValues[i].code] = 1 - pow( 1 - p_fTempValues[i].val, iYearsPerTimestep );
     }
 
     //Unbrowsed mortality probability
@@ -120,7 +120,7 @@ void clBrowsedStochasticMortality::DoShellSetup( xercesc::DOMDocument * p_oDoc )
         stcErr.sMoreInfo = "All values for probability of mortality must be between 0 and 1.";
         throw( stcErr );
       }
-      mp_fUnbrowsedMortProb[p_fTempValues[i].code] = 1 - pow( 1 - p_fTempValues[i].val, fYearsPerTimestep );
+      mp_fUnbrowsedMortProb[p_fTempValues[i].code] = 1 - pow( 1 - p_fTempValues[i].val, iYearsPerTimestep );
     }
 
     //Collect the "Browsed" codes

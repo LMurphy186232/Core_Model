@@ -99,21 +99,21 @@ class clAbsoluteGrowth : virtual public clMichMenBase {
   protected:
   /**Length last suppression factor - array size is number of species.
   This is the old parameter D.*/
-  float *mp_fLengthLastSuppFactor;
+  double *mp_fLengthLastSuppFactor;
 
   /**Length current release factor - array size is number of species.  This
   is the old parameter G.*/
-  float *mp_fLengthCurrReleaseFactor;
+  double *mp_fLengthCurrReleaseFactor;
 
   /**GLI threshold below which a tree is suppressed - array size is number
   of species.*/
-  float *mp_fGliThreshold;
+  double *mp_fGliThreshold;
 
   /**Mortality rate of suppressed trees.*/
-  float m_fMortRateAtSuppression;
+  double m_fMortRateAtSuppression;
 
   /**Number of years per timestep - from sim manager*/
-  float m_fNumberYearsPerTimestep;
+  int m_iNumberYearsPerTimestep;
 
   /**Years exceeding threshold before a tree becomes suppressed.*/
   int m_iYrsExceedThresholdBeforeSup;

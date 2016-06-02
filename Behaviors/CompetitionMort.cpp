@@ -26,8 +26,6 @@ clMortalityBase(p_oSimManager) {
     mp_fMaxPotentialGrowth = NULL;
     mp_fX0 = NULL;
     mp_iIndexes = NULL;
-
-    m_fNumberYearsPerTimestep = 0;
   }
   catch (modelErr&err) {throw(err);}
   catch (modelMsg &msg) {throw(msg);} //non-fatal error
@@ -67,10 +65,8 @@ void clCompetitionMort::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
   try {
     clTreePopulation *p_oPop = (clTreePopulation*) mp_oSimManager->GetPopulationObject("treepopulation");
     DOMElement *p_oElement = GetParentParametersElement(p_oDoc);
-    floatVal *p_fTempValues;  //for getting species-specific values
+    doubleVal *p_fTempValues;  //for getting species-specific values
     short int i; //loop counter
-
-    m_fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
     m_iNumTotalSpecies = p_oPop->GetNumberOfSpecies();
     mp_iIndexes = new short int[m_iNumTotalSpecies];
@@ -91,7 +87,7 @@ void clCompetitionMort::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
       }
 
     //This behavior can only be applied with a one year timestep, therefore throw error if timestep is not 1.
-    if ( m_fNumberYearsPerTimestep != 1 )
+    if ( mp_oSimManager->GetNumberOfYearsPerTimestep() != 1 )
     {
       modelErr stcErr;
       stcErr.iErrorCode = BAD_DATA;
@@ -103,16 +99,16 @@ void clCompetitionMort::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
 
     //Declare the temp array and populate it with the species to which this
     //behavior applies
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for (i = 0; i < m_iNumBehaviorSpecies; i++)
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
     //Declare the arrays for holding the variables and initilize to null
-    mp_fCompMort = new float[m_iNumBehaviorSpecies];
-    mp_fCompMortMax = new float[m_iNumBehaviorSpecies];
-    mp_fXb = new float[m_iNumBehaviorSpecies];
-    mp_fMaxPotentialGrowth = new float[m_iNumBehaviorSpecies];
-    mp_fX0 = new float[m_iNumBehaviorSpecies];
+    mp_fCompMort = new double[m_iNumBehaviorSpecies];
+    mp_fCompMortMax = new double[m_iNumBehaviorSpecies];
+    mp_fXb = new double[m_iNumBehaviorSpecies];
+    mp_fMaxPotentialGrowth = new double[m_iNumBehaviorSpecies];
+    mp_fX0 = new double[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
     {
       mp_fCompMort[i] = 0;

@@ -75,7 +75,7 @@ clSuppressionDurationMort::~clSuppressionDurationMort()
 ////////////////////////////////////////////////////////////////////////////
 void clSuppressionDurationMort::DoShellSetup( xercesc::DOMDocument * p_oDoc )
 {
-  floatVal * p_fTempValues = NULL; //for getting species-specific values
+  doubleVal * p_fTempValues = NULL; //for getting species-specific values
   try
   {
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
@@ -85,13 +85,13 @@ void clSuppressionDurationMort::DoShellSetup( xercesc::DOMDocument * p_oDoc )
     m_iNumSpecies = p_oPop->GetNumberOfSpecies();
 
     //Declare the arrays we'd like read
-    mp_fMax = new float[m_iNumSpecies];
-    mp_fX0 = new float[m_iNumSpecies];
-    mp_fXb = new float[m_iNumSpecies];
+    mp_fMax = new double[m_iNumSpecies];
+    mp_fX0 = new double[m_iNumSpecies];
+    mp_fXb = new double[m_iNumSpecies];
 
     //Declare the species-specific temp array and pre-load with the species
     //that this behavior affects
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 

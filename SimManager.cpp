@@ -1239,10 +1239,10 @@ void clSimManager::DoSetup( DOMDocument * p_oDoc )
     m_iNumTimesteps = iTemp;
 
     //Get number of years per timestep
-    FillSingleValue( p_oElement, "yearsPerTimestep", & m_fNumYearsPerTimestep, true );
+    FillSingleValue( p_oElement, "yearsPerTimestep", & m_iNumYearsPerTimestep, true );
 
     //Throw an error if the value is less than 0
-    if ( 0 >= m_fNumYearsPerTimestep )
+    if ( 0 >= m_iNumYearsPerTimestep )
     {
       modelErr stcErr;
       stcErr.sFunction = "clSimManager::DoSetup" ;
@@ -1616,14 +1616,14 @@ void clSimManager::RunBatch(string sBatchFile) {
 /////////////////////////////////////////////////////////////////////////////
 // CreateGrid()
 /////////////////////////////////////////////////////////////////////////////
-clGrid * clSimManager::CreateGrid(string sGridName, short int iNumIntVals, short int iNumFloatVals,
+clGrid * clSimManager::CreateGrid(string sGridName, short int iNumIntVals, short int iNumdoubleVals,
     short int iNumCharVals, short int iNumBoolVals, float fXCellLength, float fYCellLength )
 {
   try
   {
     //Make sure the grid manager has been created - if not, return NULL
     if ( !mp_oGridManager ) return NULL;
-    return mp_oGridManager->CreateGrid(sGridName, iNumIntVals, iNumFloatVals, iNumCharVals, iNumBoolVals,
+    return mp_oGridManager->CreateGrid(sGridName, iNumIntVals, iNumdoubleVals, iNumCharVals, iNumBoolVals,
         fXCellLength, fYCellLength );
   }
   catch ( modelErr & err )

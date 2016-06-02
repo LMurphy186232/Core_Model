@@ -25,7 +25,7 @@ clDensitySelfThinningGompertz::clDensitySelfThinningGompertz(clSimManager *p_oSi
    mp_fMinHeight = NULL;
    mp_iIndexes = NULL;
 
-   m_fNumberYearsPerTimestep = 0;
+   m_iNumberYearsPerTimestep = 0;
    m_fRadius = 0;
 
  }
@@ -56,13 +56,13 @@ clDensitySelfThinningGompertz::~clDensitySelfThinningGompertz() {
 // DoShellSetup()
 ////////////////////////////////////////////////////////////////////////////
 void clDensitySelfThinningGompertz::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
-  floatVal *p_fTempValues = NULL;
+  doubleVal *p_fTempValues = NULL;
   try {
     clTreePopulation *p_oPop = (clTreePopulation*) mp_oSimManager->GetPopulationObject("treepopulation");
     DOMElement *p_oElement = GetParentParametersElement(p_oDoc);
     short int i; //loop counter
 
-    m_fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_iNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
     m_iNumTotalSpecies = p_oPop->GetNumberOfSpecies();
     mp_iIndexes = new short int[m_iNumTotalSpecies];
@@ -73,15 +73,15 @@ void clDensitySelfThinningGompertz::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
 
     //Declare the temp array and populate it with the species to which this
     //behavior applies
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for (i = 0; i < m_iNumBehaviorSpecies; i++)
            p_fTempValues[i].code = mp_iWhatSpecies[i];
 
     //Declare the arrays for holding the variables and initilize to null
-    mp_fG = new float[m_iNumBehaviorSpecies];
-    mp_fH = new float[m_iNumBehaviorSpecies];
-    mp_fI = new float[m_iNumBehaviorSpecies];
-    mp_fMinHeight = new float[m_iNumBehaviorSpecies];
+    mp_fG = new double[m_iNumBehaviorSpecies];
+    mp_fH = new double[m_iNumBehaviorSpecies];
+    mp_fI = new double[m_iNumBehaviorSpecies];
+    mp_fMinHeight = new double[m_iNumBehaviorSpecies];
 
     //Capture the values from the parameter file
 
@@ -210,7 +210,7 @@ deadCode clDensitySelfThinningGompertz::DoMort(clTree *p_oTree, const float &fDb
   ind = mp_iIndexes[iSpecies];
   fDeathProb = mp_fG[ind] * exp(-exp(mp_fH[ind] - (mp_fI[ind] * fDensity)));
 
-  fDeathProb = 1 - pow(1 - fDeathProb, m_fNumberYearsPerTimestep);
+  fDeathProb = 1 - pow(1 - fDeathProb, m_iNumberYearsPerTimestep);
 
   //If the probability of mortality is greater than the random number, kill the tree
   if (fRandom <  fDeathProb)

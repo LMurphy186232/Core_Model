@@ -138,24 +138,24 @@ class clDetailedSubstrate : virtual public clBehaviorBase {
    * calculate volume.  Array index is size class. If not provided, mean 
    * diameters will be 0.5 * m_fLogSizeClassBoundary and 1.5 * 
    * m_fLogSizeClassBoundary for small and large logs, respectively.*/
-	float * mp_fInitialLogMeanDiameter;
+	double * mp_fInitialLogMeanDiameter;
 	
 	/**Mean diameter of small and large logs added by a harvest partial cut. Used 
    * to calculate volume.  Array index is size class. */
-	float * mp_fPartCutLogMeanDiameter;
+	double * mp_fPartCutLogMeanDiameter;
   /**Mean diameter of small and large logs added by a harvest gap cut. Used 
    * to calculate volume.  Array index is size class. */
-	float * mp_fGapCutLogMeanDiameter;
+	double * mp_fGapCutLogMeanDiameter;
   /**Mean diameter of small and large logs added by a harvest clear cut. Used 
    * to calculate volume.  Array index is size class. */
-	float * mp_fClearCutLogMeanDiameter;
+	double * mp_fClearCutLogMeanDiameter;
 
 	/**Proportion of live trees that enter decay classes 1-5.
 	 * Array index is decay class #.*/
-	float * mp_fPropFallenTreesLogDecayClass;
+	double * mp_fPropFallenTreesLogDecayClass;
   /**Proportion of snags that enter decay classes 1-5. Array index is decay 
    * class #.*/
-	float * mp_fPropFallenSnagsLogDecayClass;
+	double * mp_fPropFallenSnagsLogDecayClass;
 	
 	/**Species grouping to which each tree species falls into.
 	 * Array index is total number of species.*/  
@@ -163,38 +163,38 @@ class clDetailedSubstrate : virtual public clBehaviorBase {
 
 	/**Alpha decay parameter for logs.  Array indexes are species group, 
 	 * size, and decay class.*/
-	float *** mp_fLogDecayAlpha;
+	double *** mp_fLogDecayAlpha;
   /**Beta decay parameter for logs.  Array indexes are species group, 
    * size, and decay class.*/
-	float *** mp_fLogDecayBeta;
+	double *** mp_fLogDecayBeta;
 	
 	/**The number of species groups used (1-3).*/
 	int m_iNumLogSpGroupsUsed;
 	
 	/**Boundary between two log diameter classes, in cm.*/
-	float m_fLogSizeClassBoundary;
+	double m_fLogSizeClassBoundary;
 	  
   /**Proportion of fallen dead trees that uproot. Array size is total number 
    * of species.*/
-  float *mp_fPropOfFallenThatUproot;
+  double *mp_fPropOfFallenThatUproot;
   /**Proportion of snags that uproot. Array size is total number of species.*/
-  float *mp_fPropOfSnagsThatUproot;
+  double *mp_fPropOfSnagsThatUproot;
 
   /**Decay proportion each year for logs. This is
   * @htmlonly exp( &alpha; * t <sup> &beta; </sup>) @endhtmlonly.  
   * Array indexes are species group, size, decay class, 
   * m_iMaxDecayTimesteps, and years per timestep.*/
-  float *****mp_fLogDecayProp;
+  double *****mp_fLogDecayProp;
 
   /**Decay proportion for each timestep for scarified soil. This is
   * @htmlonly exp( &alpha; * t <sup> &beta; </sup>) @endhtmlonly.  Array size
   * is m_iMaxDecayTimesteps.*/
-  float *mp_fScarSoilDecayProp;
+  double *mp_fScarSoilDecayProp;
 
   /**Decay proportion for each timestep for tip-up mounds. This is
   * @htmlonly exp( &alpha; * t <sup> &beta; </sup>) @endhtmlonly.  Array size
   * is m_iMaxDecayTimesteps.*/
-  float *mp_fTipupDecayProp;
+  double *mp_fTipupDecayProp;
 
   /**Codes for using log data members of calculations grid.  Array indexes are 
    * species group, size, decay class, and age (in timesteps)*/
@@ -212,68 +212,68 @@ class clDetailedSubstrate : virtual public clBehaviorBase {
   bool **mp_bSubstrateApplies;
 
   /**Scarified soil alpha decay parameter.*/
-  float m_fScarifiedSoilA;
+  double m_fScarifiedSoilA;
 
   /**Tip-up alpha decay parameter.*/
-  float m_fTipUpA;
+  double m_fTipUpA;
 
   /**Scarified soil beta decay parameter.*/
-  float m_fScarifiedSoilB;
+  double m_fScarifiedSoilB;
 
   /**Tip-up beta decay parameter.*/
-  float m_fTipUpB;
+  double m_fTipUpB;
 
   /**Scarified soil initial conditions proportion*/
-  float m_fInitScarifiedSoil;
+  double m_fInitScarifiedSoil;
 
   /**Tip-up initial conditions proportion*/
-  float m_fInitTipUp;
+  double m_fInitTipUp;
 
   /**Log initial conditions proportion*/
-  float ***mp_fInitLog;
+  double ***mp_fInitLog;
 
   /**Scarified soil partial cut proportion.  Not required if Harvest is not
   * being used.*/
-  float m_fPartCutScarifiedSoil;
+  double m_fPartCutScarifiedSoil;
 
   /**Tip-up partial cut proportion.  Not required if Harvest is not being
   * used.*/
-  float m_fPartCutTipUp;
+  double m_fPartCutTipUp;
 
   /**Log partial cut proportion.  Array indexes are species group, size, 
    * and decay class. Not required if Harvest is not being used.*/
-  float *** mp_fPartCutLog;
+  double *** mp_fPartCutLog;
 
 
   /**Scarified soil gap cut proportion.  Not required if Harvest is not being
   * used.*/
-  float m_fGapCutScarifiedSoil;
+  double m_fGapCutScarifiedSoil;
 
   /**Tip-up gap cut proportion.  Not required if Harvest is not being used.*/
-  float m_fGapCutTipUp;
+  double m_fGapCutTipUp;
 
   /**Log gap cut proportion.  Array indexes are species group, size, 
    * and decay class. Not required if Harvest is not being used.*/
-  float *** mp_fGapCutLog;
+  double *** mp_fGapCutLog;
 
   /**Scarified soil clear cut proportion.  Not required if Harvest is not being
   * used.*/
-  float m_fClearCutScarifiedSoil;
+  double m_fClearCutScarifiedSoil;
 
   /**Tip-up clear cut proportion.  Not required if Harvest is not being
   * used.*/
-  float m_fClearCutTipUp;
+  double m_fClearCutTipUp;
 
   /**Log clear cut proportion.  Array indexes are species group, size, 
    * and decay class. Not required if Harvest is not being used.*/
-  float *** mp_fClearCutLog;
+  double *** mp_fClearCutLog;
 
   /**Amount by which the tree radius is multiplied when calculating the tip-up
   * mound to account for the effects of root rip-out*/
-  float m_fRootTipupFactor;
+  double m_fRootTipupFactor;
 
   /**Proportion of the litter/moss pool that is moss*/
-  float m_fMossProportion;
+  double m_fMossProportion;
 
   /**Grid cell area of substrate grid*/
   float m_fGridCellArea;

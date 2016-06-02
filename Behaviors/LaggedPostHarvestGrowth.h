@@ -161,34 +161,34 @@ class clLaggedPostHarvestGrowth : virtual public clGrowthBase {
 
 
   /**Distance (m) from a given tree out to which local basal area is calculated.*/
-  float m_fNciDistanceRadius;
+  double m_fNciDistanceRadius;
 
     /**Maximum growth constant @htmlonly , p<sub>0</sub> @endhtmlonly , in growth equation.  Array assumed to be sized number of species to
   which this behavior applies.  This array is accessed by using the index
   returned for mp_iIndexes[species number].*/
-  float *mp_fMaxGrowthConstant;
+  double *mp_fMaxGrowthConstant;
 
     /**Maximum growth DBH effect @htmlonly , p<sub>1</sub> @endhtmlonly , in growth equation.  Array assumed to be sized number of species to
   which this behavior applies.  This array is accessed by using the index
   returned for mp_iIndexes[species number].*/
-  float *mp_fMaxGrowthDbhEffect;
+  double *mp_fMaxGrowthDbhEffect;
 
     /**NCI constant @htmlonly , p<sub>2</sub> @endhtmlonly , in growth equation.  Array assumed to be sized number of species to
   which this behavior applies.  This array is accessed by using the index
   returned for mp_iIndexes[species number].*/
-  float *mp_fNciConstant;
+  double *mp_fNciConstant;
 
     /**NCI DBH effect @htmlonly , p<sub>3</sub> @endhtmlonly , in growth equation.  Array assumed to be sized number of species to
   which this behavior applies.  This array is accessed by using the index
   returned for mp_iIndexes[species number].*/
-  float *mp_fNciDbhEffect;
+  double *mp_fNciDbhEffect;
 
     /**Rate parameter @htmlonly , p<sub>4</sub> @endhtmlonly , which determines how quickly after harvest
      * growth increases to it's new value.  Array assumed to be sized
   * number of species to which this behavior applies.  This array is accessed
   * by using the index returned for mp_iIndexes[species number].
   */
-  float *mp_fTimeSinceHarvestRateParam;
+  double *mp_fTimeSinceHarvestRateParam;
 
 
 
@@ -254,7 +254,7 @@ class clLaggedPostHarvestGrowth : virtual public clGrowthBase {
   /**Pointer to Harvest Results grid.**/
   clGrid *mp_oHarvestResultsGrid;
 
-  float m_fNumberYearsPerTimestep; /**<Number of years per timestep*/
+  int m_iNumberYearsPerTimestep; /**<Number of years per timestep*/
 
   /**
   * This creates the Years Since Harvest grid at the beginning of the simulation if it doesn't

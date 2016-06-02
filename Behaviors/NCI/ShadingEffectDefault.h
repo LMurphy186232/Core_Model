@@ -33,7 +33,7 @@ public:
    * Calculates shading effect.
    * @param p_oTree Tree for which to calculate shading effect.
    */
-  float CalculateShadingEffect(clTree *p_oTree);
+  double CalculateShadingEffect(clTree *p_oTree);
 
   /**
    * Does any desired setup.
@@ -53,11 +53,11 @@ protected:
 
   /**Shading coefficient in Shading Effect equation. Array is sized number of
    * species.*/
-  float *mp_fShadingCoefficient;
+  double *mp_fShadingCoefficient;
 
   /**Shading exponent in Shading Effect equation. Array is sized number of
    * species.*/
-  float *mp_fShadingExponent;
+  double *mp_fShadingExponent;
 
   /**
    * Number of total species. For the destructor.

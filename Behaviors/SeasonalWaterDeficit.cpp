@@ -28,14 +28,14 @@ clSeasonalWaterDeficit::clSeasonalWaterDeficit(clSimManager * p_oSimManager) : c
     m_fVersionNumber = 1;
     m_fMinimumVersionNumber = 1;
 
-    mp_fPropRainfall = new float[12];
-    mp_fRadiation = new float[12];
-    mp_fRatioMonthlyAnnualTemp = new float[12];
-    mp_fMonthlyTemp = new float[12];
-    mp_fMonthlyPrecip = new float[12];
-    mp_fMonthlyPET = new float[12];
-    mp_fMonthlySMS = new float[12];
-    mp_fMonthlyAET = new float[12];
+    mp_fPropRainfall = new double[12];
+    mp_fRadiation = new double[12];
+    mp_fRatioMonthlyAnnualTemp = new double[12];
+    mp_fMonthlyTemp = new double[12];
+    mp_fMonthlyPrecip = new double[12];
+    mp_fMonthlyPET = new double[12];
+    mp_fMonthlySMS = new double[12];
+    mp_fMonthlyAET = new double[12];
 
     m_fAWS = 0;
   }
@@ -79,7 +79,7 @@ void clSeasonalWaterDeficit::GetData(DOMDocument * p_oDoc)
 {
 
   DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
-  float fVal;
+  double fVal;
 
   //Proportion of rain that falls in each month
   FillSingleValue(p_oElement, "sc_wdJanPptProp", &fVal, true); mp_fPropRainfall[0] = fVal;

@@ -93,22 +93,22 @@ class clMichMenNegGrowth : virtual public clGrowthBase {
   protected:
 
   /** alpha - sized number of behavior species*/
-  float *mp_fAlpha;
+  double *mp_fAlpha;
 
   /** beta - sized number of behavior species*/
-  float *mp_fBeta;
+  double *mp_fBeta;
 
   /** phi - sized number of behavior species*/
-  float *mp_fPhi;
+  double *mp_fPhi;
 
   /** gamma - sized number of behavior species*/
-  float *mp_fGamma;
+  double *mp_fGamma;
 
   /** standard deviation of growth stochasticity in cm/year*/
-  float *mp_fStdDev;
+  double *mp_fStdDev;
 
   /** one year probability of autocorrelation */
-  float *mp_fProbAutoCorr;
+  double *mp_fProbAutoCorr;
 
   /**To help access the other arrays*/
   int *mp_iIndexes;
@@ -121,7 +121,7 @@ class clMichMenNegGrowth : virtual public clGrowthBase {
 
   /**Conversion factor to translate the results of the function to the
   * appropriate units per timestep*/
-  float m_fYearsPerTimestep;
+  int m_iYearsPerTimestep;
 };
 //---------------------------------------------------------------------------
 #endif // MichMenNegGrowth_H

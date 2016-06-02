@@ -19,7 +19,7 @@ public:
    * @param iSpecies Species for which to calculate effect. This is separate
    * in case p_oTree is NULL because there is no target.
    */
-  float CalculateCrowdingEffect(clTree *p_oTree, const float &fDiam, const clNCITermBase::ncivals nci, const int &iSpecies) {return 1;};
+  double CalculateCrowdingEffect(clTree *p_oTree, const float &fDiam, const clNCITermBase::ncivals nci, const int &iSpecies) {return 1;};
 
   /**
    * No setup required.

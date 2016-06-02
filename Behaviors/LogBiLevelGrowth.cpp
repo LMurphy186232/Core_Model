@@ -30,7 +30,7 @@ clLogBiLevelGrowth::clLogBiLevelGrowth( clSimManager * p_oSimManager ) :
     mp_fHiLightThreshold = NULL;
     mp_iIndexes = NULL;
 
-    m_fYearsPerTimestep = 0;
+    m_iYearsPerTimestep = 0;
     m_iLightCode = -1;
 
     m_sNameString = "logbilevelgrowthshell";
@@ -73,7 +73,7 @@ clLogBiLevelGrowth::~clLogBiLevelGrowth()
 /////////////////////////////////////////////////////////////////////////////*/
 void clLogBiLevelGrowth::DoShellSetup( DOMDocument * p_oDoc )
 {
-  floatVal * p_fTempValues = NULL; //for getting species-specific values
+  doubleVal * p_fTempValues = NULL; //for getting species-specific values
   try
   {
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
@@ -81,16 +81,16 @@ void clLogBiLevelGrowth::DoShellSetup( DOMDocument * p_oDoc )
     short int iNumSpecies = p_oPop->GetNumberOfSpecies(), i;
 
     //Get number of years per timestep
-    m_fYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_iYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
     //Declare the arrays we'd like read
-    mp_fLoLightMaxGrowth = new float[m_iNumBehaviorSpecies];
-    mp_fLoLightX0 = new float[m_iNumBehaviorSpecies];
-    mp_fLoLightXb = new float[m_iNumBehaviorSpecies];
-    mp_fHiLightMaxGrowth = new float[m_iNumBehaviorSpecies];
-    mp_fHiLightX0 = new float[m_iNumBehaviorSpecies];
-    mp_fHiLightXb = new float[m_iNumBehaviorSpecies];
-    mp_fHiLightThreshold = new float[m_iNumBehaviorSpecies];
+    mp_fLoLightMaxGrowth = new double[m_iNumBehaviorSpecies];
+    mp_fLoLightX0 = new double[m_iNumBehaviorSpecies];
+    mp_fLoLightXb = new double[m_iNumBehaviorSpecies];
+    mp_fHiLightMaxGrowth = new double[m_iNumBehaviorSpecies];
+    mp_fHiLightX0 = new double[m_iNumBehaviorSpecies];
+    mp_fHiLightXb = new double[m_iNumBehaviorSpecies];
+    mp_fHiLightThreshold = new double[m_iNumBehaviorSpecies];
     mp_iIndexes = new int[iNumSpecies];
 
     //Set up the array indexes
@@ -105,7 +105,7 @@ void clLogBiLevelGrowth::DoShellSetup( DOMDocument * p_oDoc )
 
     //Declare the species-specific temp array and pre-load with the species that
     //this behavior affects
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -275,7 +275,7 @@ float clLogBiLevelGrowth::CalcHeightGrowthValue(clTree *p_oTree, clTreePopulatio
 
   //Calculate the function value according to the light level
   if (fLightLevel < mp_fHiLightThreshold[mp_iIndexes[iSp]]) {
-    return m_fYearsPerTimestep * mp_fLoLightMaxGrowth[mp_iIndexes[iSp]] * exp( -0.5 * pow( log( fHeight / mp_fLoLightX0[mp_iIndexes[iSp]] ) / mp_fLoLightXb[mp_iIndexes[iSp]], 2 ) );
+    return m_iYearsPerTimestep * mp_fLoLightMaxGrowth[mp_iIndexes[iSp]] * exp( -0.5 * pow( log( fHeight / mp_fLoLightX0[mp_iIndexes[iSp]] ) / mp_fLoLightXb[mp_iIndexes[iSp]], 2 ) );
   }
-  return m_fYearsPerTimestep * mp_fHiLightMaxGrowth[mp_iIndexes[iSp]] * exp( -0.5 * pow( log( fHeight / mp_fHiLightX0[mp_iIndexes[iSp]] ) / mp_fHiLightXb[mp_iIndexes[iSp]], 2 ) );
+  return m_iYearsPerTimestep * mp_fHiLightMaxGrowth[mp_iIndexes[iSp]] * exp( -0.5 * pow( log( fHeight / mp_fHiLightX0[mp_iIndexes[iSp]] ) / mp_fHiLightXb[mp_iIndexes[iSp]], 2 ) );
 }

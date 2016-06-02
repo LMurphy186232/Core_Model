@@ -85,14 +85,14 @@ class clNCIMasterMortality : virtual public clMortalityBase, clNCIBehaviorBase {
   protected:
 
   /**Maximum survival value. Array sized number of species.*/
-  float *mp_fMaxPotentialValue;
+  double *mp_fMaxPotentialValue;
 
   /** The length of the time period of the max survival, if needed for
    * adjustment of survival rates. For instance, if the max survival is for
    * a 5-year time period, then this value is 5, and the 5th root is taken
    * of the final survival rate to arrive at the yearly value. 1 indicates
    * that the max rate is yearly already.*/
-  float m_fMaxSurvivalPeriod;
+  double m_fMaxSurvivalPeriod;
 
   /**Return codes for the "dead" tree int data member variable.  Array size
    * is number of species by number of tree types (even if not every species

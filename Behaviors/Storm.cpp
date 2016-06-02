@@ -164,7 +164,9 @@ void clStorm::ReadParFile( xercesc::DOMDocument * p_oDoc )
     XMLCh *sVal;
     std::stringstream sLabel;
     char *cData;
-    float fTemp;
+    double fTemp,
+    //This has to be a float so we can do math properly
+    fNumYrs = mp_oSimManager->GetNumberOfYearsPerTimestep();
     int iTemp;
     int i;
 
@@ -309,8 +311,6 @@ void clStorm::ReadParFile( xercesc::DOMDocument * p_oDoc )
     if (p_oStormsList->getLength() == 0) return;
     m_iNumScheduledStorms = p_oStormsList->getLength();
 
-    fTemp = mp_oSimManager->GetNumberOfYearsPerTimestep();
-
     mp_stormsList = new stcStorms[m_iNumScheduledStorms];
     for ( i = 0; i < m_iNumScheduledStorms; i++ )
     {
@@ -328,7 +328,7 @@ void clStorm::ReadParFile( xercesc::DOMDocument * p_oDoc )
       XMLString::release(&sVal);
       sVal = XMLString::transcode( "yr" );
       cData = XMLString::transcode( p_oElement->getAttributeNode( sVal )->getNodeValue() );
-      mp_stormsList[i].iTS = (int)ceil(atoi( cData ) / fTemp);
+      mp_stormsList[i].iTS = (int)ceil(atoi( cData ) / fNumYrs);
       delete[] cData; cData = NULL;
       XMLString::release(&sVal);
     } //end of for (j = 0; j < m_iNumScheduledStorms; j++)
@@ -556,14 +556,14 @@ void clStorm::Action()
 {
   try
   {
-    float fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep(),
-          fCurrentTimestep = mp_oSimManager->GetCurrentTimestep(),
-          fX, //for calculating effects of cyclicity
+    float fX, //for calculating effects of cyclicity
           fTrendBit, //trend effect on frequency
           fSineBit, //sinusoidal effect on frequency
           fCyclicity, //total cyclicity effect
           fMeanSeverity; //mean storm severity to apply
-    int i, j, iTS = (int)fCurrentTimestep;
+    int iNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep(),
+        iCurrentTimestep = mp_oSimManager->GetCurrentTimestep(),
+        i, j, iTS = iCurrentTimestep;
     bool bStorms = false;  //whether or not we had a storm this timestep
 
     PackageCleanup();
@@ -583,7 +583,7 @@ void clStorm::Action()
 
     //Calculate the effects of cyclicity
     if (fabs(m_fSineD) > VERY_SMALL_VALUE) {
-      fX = 4 * ((fCurrentTimestep * fNumberYearsPerTimestep)) / m_fSSTPeriod;
+      fX = 4.0 * ((iCurrentTimestep * iNumberYearsPerTimestep)) / m_fSSTPeriod;
       fSineBit = m_fSineD * sin( M_PI * (fX - m_fSineG)/(2 * m_fSineF));
       fTrendBit = m_fTrendSlopeM * fX + m_fTrendInterceptI;
       fCyclicity = fSineBit + fTrendBit;
@@ -592,7 +592,7 @@ void clStorm::Action()
 
     for ( i = 0; i < m_iNumSeverityClasses; i++ )
     {
-      for ( j = 0; j < fNumberYearsPerTimestep; j++ )
+      for ( j = 0; j < iNumberYearsPerTimestep; j++ )
       {
         if ( clModelMath::GetRand() <= mp_fStormProbabilities[i] * fCyclicity )
         {

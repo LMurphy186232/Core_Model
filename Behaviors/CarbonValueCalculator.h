@@ -90,7 +90,7 @@ class clCarbonValueCalculator : virtual public clBehaviorBase {
   /** Percent of biomass that is carbon.  In the parameter file, this is as a
    * percentage between 0 and 100.  We convert this upon reading to a
    * proportion between 0 and 1.  Array size is # total species.*/
-  float *mp_fCPercentBiomass;
+  double *mp_fCPercentBiomass;
 
   /**String to pass to clTreePopulation::Find() in order to get the trees for
   * which to calculate volume.  This will instigate a species/type search for
@@ -120,7 +120,7 @@ class clCarbonValueCalculator : virtual public clBehaviorBase {
   short int *mp_iCarbonCodes;
 
   /** Price per metric ton of carbon - currency unimportant*/
-  float m_fPricePerTonCarbon;
+  double m_fPricePerTonCarbon;
 
   /**Total number of species.  For the destructor.*/
   short int m_iNumTotalSpecies;

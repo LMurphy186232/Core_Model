@@ -207,25 +207,25 @@ class clStorm : virtual public clBehaviorBase {
   * functions.  This is only used if m_iStochasticity = stochastic and
   * m_iDistribution = lognormal or normal.  Value comes from the parameter
   * file.*/
-  float m_fStdDev;
+  double m_fStdDev;
 
   /** SST periodicity (Sr) */
-  float m_fSSTPeriod;
+  double m_fSSTPeriod;
 
   /** Sine function d */
-  float m_fSineD;
+  double m_fSineD;
 
   /** Sine function f */
-  float m_fSineF;
+  double m_fSineF;
 
   /** Sine function g */
-  float m_fSineG;
+  double m_fSineG;
 
   /** Trend function slope (m) */
-  float m_fTrendSlopeM;
+  double m_fTrendSlopeM;
 
   /** Trend function intercept (i) */
-  float m_fTrendInterceptI;
+  double m_fTrendInterceptI;
 
   /**The total number of storm return intervals.  Hardcoded.*/
   int m_iNumSeverityClasses;

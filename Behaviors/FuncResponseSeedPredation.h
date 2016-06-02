@@ -190,27 +190,27 @@ protected:
   /**Max instantaneous rate at which predator abundance declines in the
    * absense of food, number of predators per week - array index is 2 (#
    * seasons)*/
-  float *mp_fMaxInstantaneousDeclineRate;
+  double *mp_fMaxInstantaneousDeclineRate;
 
   /**Population's demographic efficiency - array size is 2 (# seasons)*/
-  float *mp_fDemographicEfficiency;
+  double *mp_fDemographicEfficiency;
 
   /**Density-dependent coefficient - array size is 2 (# seasons)*/
-  float *mp_fDensityDependentCoefficient;
+  double *mp_fDensityDependentCoefficient;
 
   /**Foraging efficiency - array size is # behavior species*/
-  float *mp_fForagingEfficiency;
+  double *mp_fForagingEfficiency;
 
   /**Predator initial density - number per square meter*/
-  float m_fPredatorInitialDensity;
+  double m_fPredatorInitialDensity;
 
   /**Maximum seed intake rate - number of seeds per predator per day - array
    * size is # behavior species*/
-  float *mp_fMaxIntakeRate;
+  double *mp_fMaxIntakeRate;
 
   /**Proportion of seeds that germinate each week in the germination
    * period - this must be a number between 0 and 1*/
-  float m_fProportionGerminating;
+  double m_fProportionGerminating;
 
   /**Area of a seed grid grid cell in square meters - when multiplied by the
    * density of predators, produces the number in the cell*/

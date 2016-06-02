@@ -26,7 +26,7 @@ clGrowthBase( p_oSimManager), clMichMenBase(p_oSimManager) {
     m_iNumBehaviorTypes = 0;
     m_iYrsExceedThresholdBeforeSup = 0;
     m_fMortRateAtSuppression = 0;
-    m_fNumberYearsPerTimestep = 0;
+    m_iNumberYearsPerTimestep = 0;
 
     m_sNameString = "absolutegrowthshell";
     m_iNewTreeInts = 2;
@@ -130,22 +130,22 @@ void clAbsoluteGrowth::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
   try {
     clTreePopulation *p_oPop = (clTreePopulation*) mp_oSimManager->GetPopulationObject("treepopulation");
     xercesc::DOMElement *p_oElement = GetParentParametersElement(p_oDoc);
-    floatVal *p_fTempValues;  //for getting species-specific values
+    doubleVal *p_fTempValues;  //for getting species-specific values
     short int iNumSpecies = p_oPop->GetNumberOfSpecies(),
         i;
 
-    m_fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
+    m_iNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
 
     //Declare the arrays we'd like read
-    mp_fAsympDiamGrowth = new float[iNumSpecies];
-    mp_fSlopeDiamGrowthResponse = new float[iNumSpecies];
+    mp_fAsympDiamGrowth = new double[iNumSpecies];
+    mp_fSlopeDiamGrowthResponse = new double[iNumSpecies];
 
     if (m_bConstRadialLimited) {
-      mp_fAdultConstRadInc = new float[iNumSpecies];
+      mp_fAdultConstRadInc = new double[iNumSpecies];
     }
 
     if (m_bConstBasalAreaLimited) {
-      mp_fAdultConstBAInc = new float[iNumSpecies];
+      mp_fAdultConstBAInc = new double[iNumSpecies];
     }
 
     //Read the base variables
@@ -155,13 +155,13 @@ void clAbsoluteGrowth::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
     //even though we may not be applying suppression to all species, since the
     //couple extra floats of space is more than compensated for by array access
     //speed
-    mp_fLengthLastSuppFactor = new float[iNumSpecies];
-    mp_fLengthCurrReleaseFactor = new float[iNumSpecies];
+    mp_fLengthLastSuppFactor = new double[iNumSpecies];
+    mp_fLengthCurrReleaseFactor = new double[iNumSpecies];
 
 
     //Declare the species-specific temp array and pre-load with the species that
     //this behavior affects
-    p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+    p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for (i = 0; i < m_iNumBehaviorSpecies; i++)
       p_fTempValues[i].code = mp_iWhatSpecies[i];
 
@@ -231,7 +231,7 @@ void clAbsoluteGrowth::DoShellSetup(xercesc::DOMDocument *p_oDoc) {
 void clAbsoluteGrowth::CalculateSuppressionThresholds(xercesc::DOMDocument *p_oDoc,
     clTreePopulation *p_oPop) {
   try {
-    floatVal *p_fMortAtZeroGrowth, //mortality at zero growth - from par file
+    doubleVal *p_fMortAtZeroGrowth, //mortality at zero growth - from par file
     *p_fLightDepMort;     //light dependent mortality - from par file
     DOMElement *p_oElement = p_oDoc->getDocumentElement();
     float fGrowthAtMortThreshold,  //growth value at mortality threshold
@@ -240,8 +240,8 @@ void clAbsoluteGrowth::CalculateSuppressionThresholds(xercesc::DOMDocument *p_oD
     i;                   //loop counter
 
     //Declare the mortality values array and pre-load with species codes
-    p_fMortAtZeroGrowth = new floatVal[m_iNumBehaviorSpecies];
-    p_fLightDepMort = new floatVal[m_iNumBehaviorSpecies];
+    p_fMortAtZeroGrowth = new doubleVal[m_iNumBehaviorSpecies];
+    p_fLightDepMort = new doubleVal[m_iNumBehaviorSpecies];
     for (i = 0; i < m_iNumBehaviorSpecies; i++) {
       p_fMortAtZeroGrowth[i].code = mp_iWhatSpecies[i];
       p_fLightDepMort[i].code = mp_iWhatSpecies[i];
@@ -256,7 +256,7 @@ void clAbsoluteGrowth::CalculateSuppressionThresholds(xercesc::DOMDocument *p_oD
 
     //Declare the thresholds array - make it of size total # species
     iNumSpecies = p_oPop->GetNumberOfSpecies();
-    mp_fGliThreshold = new float[iNumSpecies];
+    mp_fGliThreshold = new double[iNumSpecies];
     for (i = 0; i < iNumSpecies; i++)
       mp_fGliThreshold[i] = 0;
 
@@ -493,16 +493,16 @@ float clAbsoluteGrowth::CalculateSuppressionFactor(clTree *p_oTree,
 
       //Was released but is now suppressed - record this last timestep as
       //years suppressed, and set the release counter to 0
-      iYls = (int)m_fNumberYearsPerTimestep;
+      iYls = m_iNumberYearsPerTimestep;
       iYlr = 0;
 
     } else if (iYlr == 0)
 
       //Was suppressed and is suppressed - tack on this timestep to the tally
-      iYls += (int)m_fNumberYearsPerTimestep;
+      iYls += m_iNumberYearsPerTimestep;
 
   } else  //is released
-    iYlr += (int)m_fNumberYearsPerTimestep;
+    iYlr += m_iNumberYearsPerTimestep;
 
   //Limit tracking to maximum number of years
   if (iYlr >= m_iMaxYears)  iYlr = m_iMaxYears;

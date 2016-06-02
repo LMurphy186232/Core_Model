@@ -110,13 +110,13 @@ class clLognormalGrowth : virtual public clGrowthBase {
   protected:
 
   /**Growth increment at diameter 36 - a - sized number of behavior species*/
-  float *mp_fIncAtDiam36;
+  double *mp_fIncAtDiam36;
 
   /**Shape parameter - b - sized number of behavior species*/
-  float *mp_fShape;
+  double *mp_fShape;
 
   /**Effect of shade - c - sized number of behavior species*/
-  float *mp_fShade;
+  double *mp_fShade;
 
   /**For accessing the other arrays*/
   short int *mp_iIndexes;
@@ -126,7 +126,7 @@ class clLognormalGrowth : virtual public clGrowthBase {
   float m_fConversionFactor;
 
   /**Number of years per timestep*/
-  float m_fNumberOfYearsPerTimestep;
+  int m_iNumberOfYearsPerTimestep;
 
   /**
   * Calculates the value of the lognormal growth function for one increment. The

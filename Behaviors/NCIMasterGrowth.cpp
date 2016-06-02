@@ -98,18 +98,18 @@ void clNCIMasterGrowth::DoShellSetup(xercesc::DOMDocument * p_oDoc) {
   m_iNumTotalSpecies = p_oPop->GetNumberOfSpecies();
 
   DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
-  floatVal * p_fTempValues; //for getting species-specific values
+  doubleVal * p_fTempValues; //for getting species-specific values
   int iTemp;
   short int i; //loop counters
 
-  //Set up our floatVal array that will extract values only for the species
+  //Set up our doubleVal array that will extract values only for the species
   //assigned to this behavior
-  p_fTempValues = new floatVal[m_iNumBehaviorSpecies];
+  p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
   for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
     p_fTempValues[i].code = mp_iWhatSpecies[i];
 
   //Maximum potential growth
-  mp_fMaxPotentialValue = new float[m_iNumTotalSpecies];
+  mp_fMaxPotentialValue = new double[m_iNumTotalSpecies];
   FillSpeciesSpecificValue( p_oElement, "gr_nciMaxPotentialGrowth", "gr_nmpgVal", p_fTempValues,
       m_iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
@@ -149,7 +149,7 @@ void clNCIMasterGrowth::DoShellSetup(xercesc::DOMDocument * p_oDoc) {
   if (lognormal_pdf == m_iStochasticGrowthMethod ||
       normal_pdf == m_iStochasticGrowthMethod) {
 
-    mp_fRandParameter = new float[m_iNumTotalSpecies];
+    mp_fRandParameter = new double[m_iNumTotalSpecies];
     FillSpeciesSpecificValue(p_oElement, "gr_standardDeviation", "gr_sdVal",
           p_fTempValues, m_iNumBehaviorSpecies, p_oPop, true);
 
@@ -267,9 +267,9 @@ void clNCIMasterGrowth::PreGrowthCalcs(clTreePopulation * p_oPop) {
     fInfectionEffect, //tree's infection effect
     fDiam, //tree's diameter
     fX, fY,
-    fNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep(), fAmountDiamIncrease, //amount diameter increase
+    fAmountDiamIncrease, //amount diameter increase
     fTempDiamIncrease; //amount diameter increase - intermediate
-    int iIsDead;
+    int iNumberYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep(), iIsDead;
     short int iSpecies, iType, //type and species of a tree
     i, //loop counter
     iDeadCode; //tree's dead code
@@ -343,7 +343,7 @@ void clNCIMasterGrowth::PreGrowthCalcs(clTreePopulation * p_oPop) {
           //we have to loop over the number of years, re-calculating the parts
           //with DBH and incrementing the DBH each time
           fAmountDiamIncrease = 0;
-          for ( i = 0; i < fNumberYearsPerTimestep; i++ ) {
+          for ( i = 0; i < iNumberYearsPerTimestep; i++ ) {
 
             fCrowdingEffect = mp_oCrowdingEffect->CalculateCrowdingEffect(p_oTree, fDiam, nci, iSpecies);
 
