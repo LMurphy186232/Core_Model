@@ -441,7 +441,7 @@ void clMastingSpatialDisperse::CalcSeedCDF(xercesc::DOMDocument *p_oDoc, clTreeP
   doubleVal * p_fTemp = NULL; //for getting species-specific values
   try {
     clPlot * p_oPlot = mp_oSimManager->GetPlotObject();
-    DOMElement * p_oElement = p_oDoc->getDocumentElement();
+    DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
     float fXPlotLength = p_oPlot->GetXPlotLength(),
           fYPlotLength = p_oPlot->GetYPlotLength();
     int iNumFunctionSpecies, //number of species using a given function
