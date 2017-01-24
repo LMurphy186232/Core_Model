@@ -114,6 +114,7 @@
 #include "ClimateCompDepNeighborhoodSurvival.h"
 #include "StochDoubleLogTempDepNeighDisperse.h"
 #include "SizeDependentLogisticMortality.h"
+#include "ClimateImporter.h"
 //Test objects
 #include "RandomSeedLogger.h"
 
@@ -474,13 +475,16 @@ void clBehaviorManager::CreateBehavior(behaviorData * p_data)
     {
       clClimateChange * p_oObj = new clClimateChange(mp_oSimManager);
       mp_oObjectArray[iIndex] = p_oObj;
-
     }
     else if (p_data->sNameString.compare("SeasonalWaterDeficit") == 0)
     {
       clSeasonalWaterDeficit * p_oObj = new clSeasonalWaterDeficit(mp_oSimManager);
       mp_oObjectArray[iIndex] = p_oObj;
-
+    }
+    else if (p_data->sNameString.compare("ClimateImporter") == 0)
+    {
+      clClimateImporter * p_oObj = new clClimateImporter(mp_oSimManager);
+      mp_oObjectArray[iIndex] = p_oObj;
     }
 
     //*************************************************

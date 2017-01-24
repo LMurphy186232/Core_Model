@@ -173,7 +173,7 @@ int main( int argc, char * argv[] )
     } //end of try block
     catch ( modelErr & err )
     {
-      ExternalErrorHandler( err, p_oSimManager.GetSimState() );
+      ExternalErrorHandler( err, p_oSimManager.GetSimState(), false );
       //An error occurred - exit
       return 0;
     }
@@ -240,7 +240,7 @@ int main( int argc, char * argv[] )
         {
           stcError.iErrorCode = NEED_FILE;
           stcError.sFunction = "main";
-          ExternalErrorHandler( stcError, p_oSimManager.GetSimState() );
+          ExternalErrorHandler( stcError, p_oSimManager.GetSimState(), false );
         }
         else
         {
@@ -267,7 +267,7 @@ int main( int argc, char * argv[] )
         if ( clSimManager::No_Data == p_oSimManager.GetSimState() )
         {
           stcError.iErrorCode = MODEL_NOT_READY;
-          ExternalErrorHandler( stcError, p_oSimManager.GetSimState() );
+          ExternalErrorHandler( stcError, p_oSimManager.GetSimState(), false );
         }
         else
         {
@@ -352,7 +352,7 @@ int main( int argc, char * argv[] )
     } //end of try block
     catch ( modelErr & err )
     {
-      ExternalErrorHandler( err, p_oSimManager.GetSimState() );
+      ExternalErrorHandler( err, p_oSimManager.GetSimState(), false );
     }
     catch ( modelMsg & msg )
     {
