@@ -14,32 +14,34 @@ using namespace whyDead;
 /**
 * Disturbance - Version 2.1
 *
-* This class allows for highly specific disturbance events.  Two kinds of
-* disturbance can be performed:  harvest or episodic mortality (disease,
-* insect outbreaks, etc).  They work the exact same way, differing only in the
+* This class allows for highly specific disturbance events. Two kinds of
+* disturbance can be performed: harvest or episodic mortality (disease,
+* insect outbreaks, etc). They work the exact same way, differing only in the
 * reason code passed to the tree population when killing the tree (Harvest in
 * the case of harvest, and disease in the case of episodic mortality).
 *
 * Harvest/mortality episodes can be defined on a grid cell level for each
-* timestep for each species.  If more than one event is defined for a species
+* timestep for each species. If more than one event is defined for a species
 * for a single grid cell and timestep, the user takes a chance on what happens.
 * Cells with common disturbance criteria are grouped by the user into groups
 * which will be evaluated together.
 *
 * If the disturbance is harvest, there are three kinds of harvests that can be
-* performed:  gap cut, partial cut, and clear cut.  Partial cuts may remove
+* performed: gap cut, partial cut, and clear cut. Partial cuts may remove
 * only a portion of the trees, but otherwise, there is no difference in how the
-* trees are removed for each cut type.  The type of cut is recorded for the
-* benefit of other behaviors for whom this might be important.  The user can
+* trees are removed for each cut type. The type of cut is recorded for the
+* benefit of other behaviors for whom this might be important. The user can
 * define different ranges of dbh values to cut, and each can have a portion of
 * the trees removed, as defined by percentage of basal area, percentage of
 * density, absolute amount of basal area (in square meters per hectare), or
-* absolute amount of density (in stems per hectare).  For gap cut and clear
-* cut, for all species affected, all trees are removed.  Any attempt to define
+* absolute amount of density (in stems per hectare). For gap cut and clear
+* cut, for all species affected, all trees are removed. Any attempt to define
 * cut ranges etc. for gap and clear cuts will cause an error to be thrown (the
 * cut ranges could be ignored but throwing an error alerts the user in case
 * they didn't know, so they could amend the parameter file to get what they
 * meant to get).
+*
+* Trees can be cut either largest to smallest or smallest to largest.
 *
 * Trees can be prioritized by any tree data member. Trees meeting the criterion
 * will be cut before any others. There can be up to three priorities. The
@@ -54,13 +56,11 @@ using namespace whyDead;
 *
 * Episodic mortality events are processed like harvest partial cuts.
 *
-* The disturbance event data is stored in a grid.  Each cut event, defined as
+* The disturbance event data is stored in a grid. Each cut event, defined as
 * the killing to be done for one species for one timestep for one grid cell,
-* is stored in a grid package.  These packages are sorted in timestep order.
+* is stored in a grid package. These packages are sorted in timestep order.
 * Each timestep, all the cut events that are defined for that timestep are
 * executed, then those packages are removed.
-*
-* Seedlings are always ignored by this behavior.
 *
 * This behavior can be called from the parameter file by either "Harvest" or
 * "EpisodicMortality". The namestring is "harvest".
@@ -72,6 +72,7 @@ using namespace whyDead;
 * <br>-----------------
 * <br>October 20, 2011 - Wiped the slate clean for SORTIE 7.0 (LEM)
 * <br>February 23, 2012 - Added priorities (LEM)
+* <br>April 18, 2017 - Allowed reverse cut order (LEM)
 */
 class clDisturbance : virtual public clBehaviorBase {
 
@@ -183,8 +184,12 @@ class clDisturbance : virtual public clBehaviorBase {
   * </tr>
   * <tr>
   * <td>amttype</td>        <td>int</td>  <td>Matches a value of the enum
-  *                                       "amtType".  Not used if
+  *                                       "amtType". Not used if
   *                                       episodic mortality</td>
+  * </tr>
+  * <tr>
+  * <td>tallestfirst</td>   <td>bool</td> <td>Whether to cut the tallest
+  *                                       trees first (true) or shortest (false)</td>
   * </tr>
   * <tr>
   * <td>species(x)</td>     <td>bool</td> <td>One of each of these for each
@@ -339,6 +344,8 @@ class clDisturbance : virtual public clBehaviorBase {
   short int m_iCutTypeCode;
   /**amttype data member code in "harvestmastercuts" grid*/
   short int m_iAmountTypeCode;
+  /**tallestfirst data member code in "harvestmastercuts" grid*/
+  short int m_iTallestFirstCode;
   /**rangeminx data member codes in "harvestmastercuts" grid. Array size is
    * number cut ranges*/
   short int *mp_iRangeMinCodes;
@@ -367,6 +374,7 @@ class clDisturbance : virtual public clBehaviorBase {
   //"harvestcutevents/mortepisodecutevents" grid data members
   /**timestep data member code in "harvestcutevents" grid*/
   short int m_iCutTimestepCode;
+
   /**id data member code in "harvestcutevents" grid*/
   short int m_iCutIDCode;
 
@@ -492,10 +500,12 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param p_fHiDbh Array of the high dbhs of the package's cut ranges.
    * @param p_fAmountToRemove Amount to remove in each cut range.
    * @param p_fAmountRemoved Amount already removed.
+   * @param bTallestFirst Whether to cut the tallest trees first (true)
+   * or shortest first (false).
    */
   void CutSpeciesAbsDen(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
-    float *p_fAmountRemoved);
+    float *p_fAmountRemoved, bool bTallestFirst);
 
   /**
    * Cut trees for a species with a priority - absolute density.
@@ -510,11 +520,13 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param iPriorityType Priority type.
    * @param fPriorityMin Priority minimum value.
    * @param fPriorityMax Priority maximum value.
+   * @param bTallestFirst Whether to cut the tallest trees first (true)
+   * or shortest first (false).
    */
   void CutSpeciesAbsDenPriority(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
     float *p_fAmountRemoved, std::string sPriorityName, int &iPriorityType,
-    float &fPriorityMin, float &fPriorityMax);
+    float &fPriorityMin, float &fPriorityMax, bool bTallestFirst);
 
   /**
    * Cut trees for a species - absolute basal area.
@@ -525,10 +537,12 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param p_fHiDbh Array of the high dbhs of the package's cut ranges.
    * @param p_fAmountToRemove Amount to remove in each cut range.
    * @param p_fAmountRemoved Amount already removed.
+   * @param bTallestFirst Whether to cut the tallest trees first (true)
+   * or shortest first (false).
    */
   void CutSpeciesAbsBA(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
-    float *p_fAmountRemoved);
+    float *p_fAmountRemoved, bool bTallestFirst);
 
   /**
    * Cut trees for a species with a priority - absolute basal area.
@@ -543,11 +557,17 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param iPriorityType Priority type.
    * @param fPriorityMin Priority minimum value.
    * @param fPriorityMax Priority maximum value.
+   * @param bTallestFirst Whether to cut the tallest trees first (true)
+   * or shortest first (false).
+   * @return Whether to keep cutting (true) or stop the harvest (false).
+   * False indicates that there are more priority trees left but they
+   * were not cut because we were too close to the target. It would not
+   * make sense then in this case to cut other trees.
    */
-  void CutSpeciesAbsBAPriority(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
+  bool CutSpeciesAbsBAPriority(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
     float *p_fAmountRemoved, std::string sPriorityName, int &iPriorityType,
-    float &fPriorityMin, float &fPriorityMax);
+    float &fPriorityMin, float &fPriorityMax, bool bTallestFirst);
 
   /**
    * Cut trees for a species - percent density.
@@ -573,10 +593,12 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param p_fAmountToRemove Amount to remove in each cut range.
    * @param p_fAmountRemoved Amount already removed.
    * @param p_fTotalBasalArea Total basal area.
+   * @param bTallestFirst Whether to cut the tallest trees first (true)
+   * or shortest first (false).
    */
   void CutSpeciesPercentBA(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
-    float *p_fAmountRemoved, float *p_fTotalBasalArea);
+    float *p_fAmountRemoved, float *p_fTotalBasalArea, bool bTallestFirst);
 
   /**
    * Cut trees for a species with a priority - percent basal area.
@@ -592,11 +614,17 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param iPriorityType Priority type.
    * @param fPriorityMin Priority minimum value.
    * @param fPriorityMax Priority maximum value.
+   * @param bTallestFirst Whether to cut the tallest trees first (true)
+   * or shortest first (false).
+   * @return Whether to keep cutting (true) or stop the harvest (false).
+   * False indicates that there are more priority trees left but they
+   * were not cut because we were too close to the target. It would not
+   * make sense then in this case to cut other trees.
    */
-  void CutSpeciesPercentBAPriority(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
+  bool CutSpeciesPercentBAPriority(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
     float *p_fAmountRemoved, float *p_fTotalBasalArea, std::string sPriorityName,
-    int &iPriorityType, float &fPriorityMin, float &fPriorityMax);
+    int &iPriorityType, float &fPriorityMin, float &fPriorityMax, bool bTallestFirst);
 
   /**
    * Add tree to results grid.
@@ -667,6 +695,20 @@ class clDisturbance : virtual public clBehaviorBase {
    */
   void KillSeedlings(stcGridList *p_cutAreap_cutArea, stcTreeGridList * & p_treeArea, float *p_fKillProb);
 
+  /**
+  * Finds the first tree of a species within a cut area to cut, based on bTallestFirst.
+  * This is a convenience function that will call either GetTallestTreeInCutArea or
+  * GetShortestTreeInCutArea.
+  *
+  * @param p_cutArea Pointer to the linked list of cut grid cells.
+  * @param p_treeArea Pointer to the linked list of tree grid cells.
+  * @param iSpecies Species of tree to populate.
+  * @return Either the tallest or the shortest tree in the area, depending on
+  * m_bTallestFirst, or NULL if there are no trees of the desired species.
+  */
+  clTree* GetFirstTreeInCutArea(stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
+   const short int &iSpecies, const bool bTallestFirst);
+
  /**
   * Finds the tallest tree of a species within a cut area.  The cut area is
   * defined by a linked list of grid cells.  This assumes that the tallest tree
@@ -683,6 +725,35 @@ class clDisturbance : virtual public clBehaviorBase {
    const short int &iSpecies);
 
   /**
+  * Finds the shortest tree of a species within a cut area.  The cut area is
+  * defined by a linked list of grid cells.  This assumes that the shortest tree
+  * pointers for each grid cell in the linked list is not populated.  This will
+  * populate and sort them.  Which means that the pointer p_treeArea could be
+  * changed.
+  * @param p_cutArea Pointer to the linked list of cut grid cells.
+  * @param p_treeArea Pointer to the linked list of tree grid cells.
+  * @param iSpecies Species of tree to populate.
+  * @return Shortest tree in the area, or NULL if there are no trees of the
+  * desired species.
+  */
+  clTree* GetShortestTreeInCutArea(stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
+   const short int &iSpecies);
+
+  /**
+   * Finds the next tree of a species within a cut area to cut, based on bTallestFirst.
+   * This is a convenience function that will call either GetNextTallestTreeInCutArea or
+   * GetNextShortestTreeInCutArea.
+   *
+   * @param p_cutArea Pointer to the linked list of cut grid cells.
+   * @param p_treeArea Pointer to the linked list of tree grid cells.
+   * @param iSpecies Species being cut.
+   * @return Next tallest tree in the area, or NULL if there are no trees of the
+   * desired species.
+   */
+  clTree* GetNextTreeInCutArea(stcGridList *&p_cutArea, stcTreeGridList * & p_treeArea,
+      const short int &iSpecies, const bool bTallestFirst);
+
+   /**
    * Gets the next tallest tree of a species within a cut area.  The cut area is
    * defined by a linked list of grid cells.  This assumes that the pointers to
    * the tallest trees for each grid cell are populated, and that the current
@@ -695,7 +766,23 @@ class clDisturbance : virtual public clBehaviorBase {
    * @return Next tallest tree in the area, or NULL if there are no trees of the
    * desired species.
    */
-  clTree* GetNextTreeInCutArea(stcGridList *&p_cutArea, stcTreeGridList * & p_treeArea,
+  clTree* GetNextTallestTreeInCutArea(stcGridList *&p_cutArea, stcTreeGridList * & p_treeArea,
+      const short int &iSpecies);
+
+  /**
+   * Gets the next shortest tree of a species within a cut area.  The cut area is
+   * defined by a linked list of grid cells.  This assumes that the pointers to
+   * the shortest trees for each grid cell are populated, and that the current
+   * shortest tree is no longer wanted (although if it is to be killed it hasn't
+   * been killed yet).  The current shortest tree could still be alive; but it
+   * will be ignored for further consideration.
+   * @param p_cutArea Pointer to the linked list of cut grid cells.
+   * @param p_treeArea Pointer to the linked list of tree grid cells.
+   * @param iSpecies Species being cut.
+   * @return Next tallest tree in the area, or NULL if there are no trees of the
+   * desired species.
+   */
+  clTree* GetNextShortestTreeInCutArea(stcGridList *&p_cutArea, stcTreeGridList * & p_treeArea,
       const short int &iSpecies);
 
   /**
