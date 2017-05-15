@@ -392,6 +392,9 @@ void clSelectionHarvest::CreateMasterCutPackage(int iSpecies)
   //Load up the new package with the timestep value
   mp_oNewPackage->SetValue(m_iMasterTimestepCode, iTimestep);
 
+  //Set the tallest first flag
+  mp_oNewPackage->SetValue(m_iTallestFirstCode, true);
+
   //Set the species value to true for the species we are currently dealing with.
 
   for (j = 0; j < iNumSpecies; j++)
@@ -615,6 +618,7 @@ void clSelectionHarvest::GetHarvestGrids() {
     m_iMasterIDCode = mp_oMasterCutsGrid->GetPackageIntDataCode("id");
     m_iCutTypeCode = mp_oMasterCutsGrid->GetPackageIntDataCode("cuttype");
     m_iAmountTypeCode = mp_oMasterCutsGrid->GetPackageIntDataCode("amttype");
+    m_iTallestFirstCode = mp_oMasterCutsGrid->GetPackageBoolDataCode("tallestfirst");
 
     for (i = 0; i < iNumSpecies; i++)
     {

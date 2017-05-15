@@ -599,6 +599,10 @@ void clDisturbance::ReadMortEpParameterFileData(xercesc::DOMDocument * p_oDoc) {
     //Load up the new package with the timestep value
     p_oNewPackage->SetValue(m_iMasterTimestepCode, iTimestep);
 
+    //Make tallest-first always true - I should come back and change
+    //this at some point
+    p_oNewPackage->SetValue(m_iTallestFirstCode, true);
+
     //Get species values and assign them
     sVal = XMLString::transcode("ds_applyToSpecies");
     p_oCutSpecificsList = p_oElement->getElementsByTagName(sVal);

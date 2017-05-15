@@ -56,6 +56,8 @@ class clPopulationBase;
  * <br>Edit history:
  * <br>-----------------
  * <br>October 20, 2011 - Wiped the slate clean for SORTIE 7.0 (LEM)
+ * <br>May 5, 2017 - Updated to work correctly with the new tallest-first cut
+ * flag in harvest (LEM)
  */
 class clSelectionHarvest : virtual public clBehaviorBase {
 
@@ -313,6 +315,8 @@ protected:
   short int m_iMasterTimestepCode;
   /**id data member code in "harvestmastercuts" grid*/
   short int m_iMasterIDCode;
+  /**tallestfirst data member code in "harvestmastercuts" grid*/
+  short int m_iTallestFirstCode;
   /**Species data member code in "harvestmastercuts" grid. Array size is number
    * species. Array index matches species number*/
   short int *mp_iSpeciesCodes;
