@@ -379,7 +379,7 @@ void clNCIMasterQuadratGrowth::SetupGrid(clTreePopulation *p_oPop)
         modelErr stcErr;
         stcErr.sFunction = "clNCIMasterQuadratGrowth::SetupGrid";
         std::stringstream s;
-        s << "Couldn't find the \"" << sLabel
+        s << "Couldn't find the \"" << sLabel.str()
             << "\" member of the \"NCI Quadrat Growth\" grid.";
         stcErr.sMoreInfo = s.str();
         stcErr.iErrorCode = BAD_DATA;

@@ -698,12 +698,12 @@ void clShortOutput::WriteFileHeader()
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
     clPlot * p_oPlot = mp_oSimManager->GetPlotObject();
     fstream out(m_sFileName.c_str(), ios::out | ios::trunc );
-    char cABAString[80],
-         cABATotalString[80],
-         cRBAString[80],
-         cADNString[80],
-         cADNTotalString[80],
-         cRDNString[80],
+    char cABAString[90],
+         cABATotalString[90],
+         cRBAString[90],
+         cADNString[90],
+         cADNTotalString[90],
+         cRDNString[90],
          cABARoot[80],
          cABATotalRoot[80],
          cADNRoot[80],

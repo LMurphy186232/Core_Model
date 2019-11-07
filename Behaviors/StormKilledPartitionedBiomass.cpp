@@ -377,7 +377,7 @@ void clStormKilledPartitionedBiomass::SetupGrid(clTreePopulation *p_oPop)
         modelErr stcErr;
         stcErr.sFunction = "clStormKilledPartitionedBiomass::SetupGrid";
         std::stringstream s;
-        s << "Couldn't find the \"" << sLabel
+        s << "Couldn't find the \"" << sLabel.str()
             << "\" member of the \"Storm Killed Paritioned Biomass\" grid.";
         stcErr.sMoreInfo = s.str();
         stcErr.iErrorCode = BAD_DATA;
@@ -394,7 +394,7 @@ void clStormKilledPartitionedBiomass::SetupGrid(clTreePopulation *p_oPop)
         modelErr stcErr;
         stcErr.sFunction = "clStormKilledPartitionedBiomass::SetupGrid" ;
         std::stringstream s;
-        s << "Couldn't find the \"" << sLabel
+        s << "Couldn't find the \"" << sLabel.str()
             << "\" member of the \"Storm Killed Paritioned Biomass\" grid.";
         stcErr.sMoreInfo = s.str();
         stcErr.iErrorCode = BAD_DATA;
@@ -411,7 +411,7 @@ void clStormKilledPartitionedBiomass::SetupGrid(clTreePopulation *p_oPop)
         modelErr stcErr;
         stcErr.sFunction = "clStormKilledPartitionedBiomass::SetupGrid" ;
         std::stringstream s;
-        s << "Couldn't find the \"" << sLabel
+        s << "Couldn't find the \"" << sLabel.str()
             << "\" member of the \"Storm Killed Paritioned Biomass\" grid.";
         stcErr.sMoreInfo = s.str();
         stcErr.iErrorCode = BAD_DATA;
@@ -428,7 +428,7 @@ void clStormKilledPartitionedBiomass::SetupGrid(clTreePopulation *p_oPop)
         modelErr stcErr;
         stcErr.sFunction = "clStormKilledPartitionedBiomass::SetupGrid" ;
         std::stringstream s;
-        s << "Couldn't find the \"" << sLabel
+        s << "Couldn't find the \"" << sLabel.str()
             << "\" member of the \"Storm Killed Paritioned Biomass\" grid.";
         stcErr.sMoreInfo = s.str();
         stcErr.iErrorCode = BAD_DATA;
@@ -445,7 +445,7 @@ void clStormKilledPartitionedBiomass::SetupGrid(clTreePopulation *p_oPop)
         modelErr stcErr;
         stcErr.sFunction = "clStormKilledPartitionedBiomass::SetupGrid" ;
         std::stringstream s;
-        s << "Couldn't find the \"" << sLabel
+        s << "Couldn't find the \"" << sLabel.str()
             << "\" member of the \"Storm Killed Paritioned Biomass\" grid.";
         stcErr.sMoreInfo = s.str();
         stcErr.iErrorCode = BAD_DATA;

@@ -387,7 +387,8 @@ class clStorm : virtual public clBehaviorBase {
   */
   inline float NormalDraw(const float &fMean) {
     float fVal = fMean + clModelMath::NormalRandomDraw(m_fStdDev);
-    if (fVal < 0) fVal = 0; if (fVal > 1) fVal = 1;
+    if (fVal < 0) fVal = 0;
+    if (fVal > 1) fVal = 1;
     return fVal;
   };
 

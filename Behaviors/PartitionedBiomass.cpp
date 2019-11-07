@@ -409,7 +409,7 @@ void clPartitionedBiomass::SetupGrid()
         modelErr stcErr;
         stcErr.sFunction = "clPartitionedBiomass::SetupGrid";
         std::stringstream s;
-        s << "Couldn't find the \"" << sLabel
+        s << "Couldn't find the \"" << sLabel.str()
             << "\" member of the \"Partitioned Biomass\" grid.";
         stcErr.sMoreInfo = s.str();
         stcErr.iErrorCode = BAD_DATA;
@@ -424,7 +424,7 @@ void clPartitionedBiomass::SetupGrid()
         modelErr stcErr;
         stcErr.sFunction = "clPartitionedBiomass::SetupGrid" ;
         std::stringstream s;
-        s << "Couldn't find the \"" << sLabel
+        s << "Couldn't find the \"" << sLabel.str()
             << "\" member of the \"Partitioned Biomass\" grid.";
         stcErr.sMoreInfo = s.str();
         stcErr.iErrorCode = BAD_DATA;
@@ -439,7 +439,7 @@ void clPartitionedBiomass::SetupGrid()
         modelErr stcErr;
         stcErr.sFunction = "clPartitionedBiomass::SetupGrid" ;
         std::stringstream s;
-        s << "Couldn't find the \"" << sLabel
+        s << "Couldn't find the \"" << sLabel.str()
             << "\" member of the \"Partitioned Biomass\" grid.";
         stcErr.sMoreInfo = s.str();
         stcErr.iErrorCode = BAD_DATA;
@@ -454,7 +454,7 @@ void clPartitionedBiomass::SetupGrid()
         modelErr stcErr;
         stcErr.sFunction = "clPartitionedBiomass::SetupGrid" ;
         std::stringstream s;
-        s << "Couldn't find the \"" << sLabel
+        s << "Couldn't find the \"" << sLabel.str()
             << "\" member of the \"Partitioned Biomass\" grid.";
         stcErr.sMoreInfo = s.str();
         stcErr.iErrorCode = BAD_DATA;
@@ -469,7 +469,7 @@ void clPartitionedBiomass::SetupGrid()
         modelErr stcErr;
         stcErr.sFunction = "clPartitionedBiomass::SetupGrid" ;
         std::stringstream s;
-        s << "Couldn't find the \"" << sLabel
+        s << "Couldn't find the \"" << sLabel.str()
             << "\" member of the \"Partitioned Biomass\" grid.";
         stcErr.sMoreInfo = s.str();
         stcErr.iErrorCode = BAD_DATA;

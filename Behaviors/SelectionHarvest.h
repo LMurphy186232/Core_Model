@@ -128,11 +128,11 @@ protected:
 
   /**The array into which GetBasalArea will store the Basal area values for
    * each size class*/
-  float m_fTotalBasalArea[][NUM_SIZE_CLASSES];
+  //float m_fTotalBasalArea[][NUM_SIZE_CLASSES];
 
   /**The array into which CalculateBasalAreaDifference will place the absolute
    * basal area to remove from each size class*/
-  float m_fBasalAreaDifference[][NUM_SIZE_CLASSES];
+  //float m_fBasalAreaDifference[][NUM_SIZE_CLASSES];
 
 
   clPackage *mp_oOldPackage,   /**<For finding where to place a new package*/

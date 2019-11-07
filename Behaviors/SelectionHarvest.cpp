@@ -56,6 +56,7 @@ clSelectionHarvest::clSelectionHarvest(clSimManager *p_oSimManager)
     m_iCutTypeCode = -1;
     m_iAmountTypeCode = -1;
     m_iCutTimestepCode = -1;
+    m_iTallestFirstCode = -1;
     m_fPlotArea = 0;
 
     //Allowed file types

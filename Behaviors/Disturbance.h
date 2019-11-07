@@ -651,6 +651,8 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param iNumXCells Number of X cells in mp_oCutEventsGrid.
    * @param iNumYCells Number of Y cells in mp_oCutEventsGrid.
    * @param p_cutArea Pointer in which to start the linked list.
+   * @param p_treeArea Tree cell linked list. Helps resolve cell size differences
+   * between disturbance and tree grid cell sizes.
    * @param p_fLoDbh Array (sized m_iNumAllowedCutRanges) into which to put the
    * low dbhs of the package's cut ranges.
    * @param p_fHiDbh Array (sized m_iNumAllowedCutRanges) into which to put the
@@ -693,7 +695,7 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param p_treeArea Pointer to the linked list of tree grid cells.
    * @param p_fKillProb Kill probability for each species.
    */
-  void KillSeedlings(stcGridList *p_cutAreap_cutArea, stcTreeGridList * & p_treeArea, float *p_fKillProb);
+  void KillSeedlings(stcGridList *p_cutArea, stcTreeGridList * & p_treeArea, float *p_fKillProb);
 
   /**
   * Finds the first tree of a species within a cut area to cut, based on bTallestFirst.
@@ -703,6 +705,8 @@ class clDisturbance : virtual public clBehaviorBase {
   * @param p_cutArea Pointer to the linked list of cut grid cells.
   * @param p_treeArea Pointer to the linked list of tree grid cells.
   * @param iSpecies Species of tree to populate.
+  * @param bTallestFirst Whether to cut trees from tallest to shortest (true)
+  * or the reverse (false).
   * @return Either the tallest or the shortest tree in the area, depending on
   * m_bTallestFirst, or NULL if there are no trees of the desired species.
   */
@@ -747,6 +751,8 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param p_cutArea Pointer to the linked list of cut grid cells.
    * @param p_treeArea Pointer to the linked list of tree grid cells.
    * @param iSpecies Species being cut.
+   * @param bTallestFirst Whether to cut trees from tallest to shortest (true)
+   * or the reverse (false).
    * @return Next tallest tree in the area, or NULL if there are no trees of the
    * desired species.
    */
