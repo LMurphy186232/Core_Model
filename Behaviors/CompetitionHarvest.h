@@ -13,7 +13,7 @@ class clPlot;
 using namespace whyDead;
 
 /**
-* Competition Based Harvest - Version 1.0
+* Competition Based Harvest - Version 1.1
 *
 * This is a behavior which performs harvests by preferentially removing those
 * trees that exert the most competitive pressure on their neighbors. This
@@ -29,7 +29,8 @@ using namespace whyDead;
 * percentage of the total.
 *
 * 2)  Fixed interval. The user specifies how often harvests occur. The harvests
-* cut the plot back to a set total basal area.
+* cut the plot back to EITHER a set total basal area, or a proportion of the
+* current basal area.
 *
 * Either way, the user can specify a minimum and maximum DBH for trees to
 * harvest.
@@ -89,6 +90,8 @@ using namespace whyDead;
 * <br>Edit history:
 * <br>-----------------
 * <br>October 20, 2011 - Wiped the slate clean for SORTIE 7.0 (LEM)
+* <br>November 7, 2019 - Added the ability to specify a %BA to cut to a fixed
+* interval harvest
 */
 class clCompetitionHarvest : virtual public clBehaviorBase {
 
@@ -247,13 +250,20 @@ class clCompetitionHarvest : virtual public clBehaviorBase {
  /**Maxinum DBH for harvesting.*/
  double m_fMaxHarvestDBH;
 
- /**Cut amount - if this is a fixed interval harvest, this is the amount to
-  * which the plot is cut back, in m2 of basal area; if this is a fixed BA
-  * threshold harvest with fixed amount to cut, this is that amount to cut, in
-  * m2 of basal area; if this is a fixed BA threshold harvest with proportion
-  * to cut, this is the proportion to cut between 0 and 1. BA amounts are read
-  * as per ha from the parameter file, but they are stored as a total amount
-  * here to avoid having to convert back and forth.*/
+ /**Cut amount - if this is a fixed interval harvest with a target amount to
+  * leave, this is the amount to which the plot is cut back, in m2 of basal
+  * area;
+  *
+  * if this is a fixed interval harvest with a proportion of BA to cut, this
+  * is the proportion to cut;
+  *
+  * if this is a fixed BA threshold harvest with fixed amount to cut, this is
+  * that amount to cut, in m2 of basal area;
+  *
+  * if this is a fixed BA threshold harvest with proportion to cut, this is
+  * the proportion to cut between 0 and 1. BA amounts are read as per ha from
+  * the parameter file, but they are stored as a total amount here to avoid
+  * having to convert back and forth.*/
  double m_fAmtToCut;
 
  /**For fixed BA threshold harvests, the BA threshold that triggers a harvest.
@@ -287,10 +297,11 @@ class clCompetitionHarvest : virtual public clBehaviorBase {
  short int m_iNumSpecies;
 
  /**Type of harvest*/
- enum cutType {interval,  /**<Fixed interval*/
-               ba_amt,    /**<Fixed BA threshold with fixed amount to cut*/
-               ba_prop    /**<Fixed BA threshold with proportion to cut*/
-               } harvest; /**<What kind of harvest is being used for this run*/
+ enum cutType {interval_rem,  /**<Fixed interval, with target to leave           */
+               ba_amt,        /**<Fixed BA threshold with fixed amount to cut    */
+               ba_prop,       /**<Fixed BA threshold with proportion to cut      */
+               interval_prop  /**<Fixed interval, with proportion to cut         */
+               } harvest;     /**<What kind of harvest is being used for this run*/
 
  /**Whether or not this is a species-specific harvest.*/
  bool m_bIsSpeciesSpecific;

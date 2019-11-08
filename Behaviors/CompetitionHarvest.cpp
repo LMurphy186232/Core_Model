@@ -62,7 +62,7 @@ clCompetitionHarvest::clCompetitionHarvest( clSimManager * p_oSimManager ) : clW
     m_iNumY = 0;
     m_iNumSpecies = 0;
     m_bIsSpeciesSpecific = false;
-    harvest = interval;
+    harvest = interval_rem;
 
     //Allowed file types
     m_iNumAllowedTypes = 2;
@@ -292,12 +292,14 @@ void clCompetitionHarvest::ReadParameterFileData( xercesc::DOMDocument * p_oDoc,
 
     //Type of harvest
     FillSingleValue( p_oElement, "di_compHarvTypeHarvest", & iTemp, true );
-    if (interval == iTemp) {
-      harvest = interval;
+    if (interval_rem == iTemp) {
+      harvest = interval_rem;
     } else if (ba_amt == iTemp) {
       harvest = ba_amt;
     } else if (ba_prop == iTemp) {
       harvest = ba_prop;
+    } else if (interval_prop == iTemp) {
+      harvest = interval_prop;
     } else {
       modelErr stcErr;
       stcErr.sFunction = "clCompetitionHarvest::ReadParameterFileData" ;
@@ -311,9 +313,9 @@ void clCompetitionHarvest::ReadParameterFileData( xercesc::DOMDocument * p_oDoc,
     //Cut amount
     FillSingleValue( p_oElement, "di_compHarvCutAmount", &m_fAmtToCut, true );
     //Validate - if this is a fixed BA threshold harvest with proportion to cut,
-    //this must be a proportion to cut between 0 and 1; otherwise, it must be
-    //greater than 0-->
-    if (ba_prop == harvest && (m_fAmtToCut < 0 || m_fAmtToCut > 1)) {
+    //or a fixed interval cut with proportion to cut, this must be a proportion
+    //to cut between 0 and 1; otherwise, it must be greater than 0
+    if ((ba_prop == harvest || interval_prop == harvest) && (m_fAmtToCut < 0 || m_fAmtToCut > 1)) {
       modelErr stcErr;
       stcErr.sFunction = "clCompetitionHarvest::ReadParameterFileData" ;
       stcErr.iErrorCode = BAD_DATA;
@@ -327,7 +329,7 @@ void clCompetitionHarvest::ReadParameterFileData( xercesc::DOMDocument * p_oDoc,
       throw( stcErr );
     }
     //If not a proportion, transform from per hectare to total
-    if (ba_prop != harvest) m_fAmtToCut *= fPlotSize;
+    if (ba_prop != harvest && interval_prop != harvest) m_fAmtToCut *= fPlotSize;
 
     //For fixed BA threshold harvests, the minimum interval between harvests and
     //the BA threshold; for fixed interval threshold harvests, the threshold
@@ -605,7 +607,7 @@ void clCompetitionHarvest::Action()
     if (m_iTimeSinceLastHarvest < m_iInterval) return; //hasn't been long enough
 
     //Check to see if it's a fixed-interval harvest - if so, it's time
-    if (interval == harvest) {
+    if (interval_rem == harvest || interval_prop == harvest) {
       float fBA = GetBasalArea();
       if (m_bIsSpeciesSpecific) CutTreesSpeciesSpecific(fBA);
       else CutTreesNotSpeciesSpecific(fBA);
@@ -1076,10 +1078,14 @@ void clCompetitionHarvest::CutTreesNotSpeciesSpecific(const float &fPlotBA)
     out.open(m_sHarvestListFilename.c_str(), ios::out | ios::app);
 
   //Calculate the cut targets
-  if (interval == harvest) {
-    //Fixed interval harvest. Amount to harvest is the difference between the
-    //current basal area and the amount to cut back to.
+  if (interval_rem == harvest) {
+    //Fixed interval harvest, target amount remaining. Amount to harvest is the
+    //difference between the current basal area and the amount to cut back to.
     fAmtToCutThisTS = fPlotBA - m_fAmtToCut;
+  } else if (interval_prop == harvest) {
+    //Fixed interval harvest, target proportion to cut. Amount to harvest is the
+    //appropriate fraction of total BA.
+    fAmtToCutThisTS = fPlotBA * m_fAmtToCut;
   } else if (ba_amt == harvest) {
     //Fixed basal area harvest. Target is constant.
     fAmtToCutThisTS = m_fAmtToCut;
@@ -1193,17 +1199,21 @@ void clCompetitionHarvest::CutTreesSpeciesSpecific(const float &fPlotBA)
     out.open(m_sHarvestListFilename.c_str(), ios::out | ios::app);
 
   //Calculate the cut targets
-  if (interval == harvest) {
-    //Fixed interval harvest. Amount to harvest is the difference between the
-    //current basal area and the amount to cut back to.
-    fAmtToCutThisTS = fPlotBA - m_fAmtToCut;
-  } else if (ba_amt == harvest) {
-    //Fixed basal area harvest. Target is constant.
-    fAmtToCutThisTS = m_fAmtToCut;
-  } else {
-    //Fixed basal area harvest. Target amount is proportion of total.
-    fAmtToCutThisTS = fPlotBA * m_fAmtToCut;
-  }
+    if (interval_rem == harvest) {
+      //Fixed interval harvest, target amount remaining. Amount to harvest is the
+      //difference between the current basal area and the amount to cut back to.
+      fAmtToCutThisTS = fPlotBA - m_fAmtToCut;
+    } else if (interval_prop == harvest) {
+      //Fixed interval harvest, target proportion to cut. Amount to harvest is the
+      //appropriate fraction of total BA.
+      fAmtToCutThisTS = fPlotBA * m_fAmtToCut;
+    } else if (ba_amt == harvest) {
+      //Fixed basal area harvest. Target is constant.
+      fAmtToCutThisTS = m_fAmtToCut;
+    } else {
+      //Fixed basal area harvest. Target amount is proportion of total.
+      fAmtToCutThisTS = fPlotBA * m_fAmtToCut;
+    }
 
   //Now take the amount to cut and proportion it among the species.
   for (i = 0; i < m_iNumSpecies; i++) {
