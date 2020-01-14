@@ -58,6 +58,7 @@ clCompetitionHarvest::clCompetitionHarvest( clSimManager * p_oSimManager ) : clW
     m_iInterval = 0;
     m_iReasonCode = notdead;
     m_iTimeSinceLastHarvest = 0;
+    m_iTimestepToStartHarvests = 0;
     m_iNumX = 0;
     m_iNumY = 0;
     m_iNumSpecies = 0;
@@ -350,7 +351,14 @@ void clCompetitionHarvest::ReadParameterFileData( xercesc::DOMDocument * p_oDoc,
     }
 
     //Transform the interval from years to timesteps
-    m_iInterval *= iTimestep;
+    m_iInterval /= iTimestep;
+
+    //Read the year to begin harvesting. For backwards compatibility, this is
+    //optional
+    FillSingleValue(p_oElement, "di_compHarvFirstHarvestYear", &m_iTimestepToStartHarvests, false);
+    //Transform from years to timesteps
+    m_iTimestepToStartHarvests /= iTimestep;
+
 
     //Filename for list of trees harvested - optional
     FillSingleValue( p_oElement, "di_compHarvHarvestedListFile", &m_sHarvestListFilename, false );
@@ -599,6 +607,8 @@ void clCompetitionHarvest::Action()
 {
   try
   {
+    if (mp_oSimManager->GetCurrentTimestep() < m_iTimestepToStartHarvests) return;
+
     //Reset the results grid
     ResetResultsGrid();
 

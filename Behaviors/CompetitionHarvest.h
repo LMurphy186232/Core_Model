@@ -13,7 +13,7 @@ class clPlot;
 using namespace whyDead;
 
 /**
-* Competition Based Harvest - Version 1.1
+* Competition Based Harvest - Version 1.2
 *
 * This is a behavior which performs harvests by preferentially removing those
 * trees that exert the most competitive pressure on their neighbors. This
@@ -92,6 +92,8 @@ using namespace whyDead;
 * <br>October 20, 2011 - Wiped the slate clean for SORTIE 7.0 (LEM)
 * <br>November 7, 2019 - Added the ability to specify a %BA to cut to a fixed
 * interval harvest
+* <br>January 10, 2020 - Added the option to let the model run for a period of
+* time before beginning harvests
 */
 class clCompetitionHarvest : virtual public clBehaviorBase {
 
@@ -271,30 +273,35 @@ class clCompetitionHarvest : virtual public clBehaviorBase {
   * m2 of basal area.*/
  double m_fBAThreshold;
 
- /**Minimum sapling height.  For doing neighbor searches.*/
- float m_fMinSaplingHeight;
+  /**Minimum sapling height.  For doing neighbor searches.*/
+  float m_fMinSaplingHeight;
 
- /**For fixed BA threshold harvests, the minimum interval between harvests. For
- * fixed interval harvests, the interval between harvests. This is read from
- * the parameter file in years but is stored as timesteps.*/
- int m_iInterval;
+  /**For fixed BA threshold harvests, the minimum interval between harvests. For
+  * fixed interval harvests, the interval between harvests. This is read from
+  * the parameter file in years but is stored as timesteps.*/
+  int m_iInterval;
 
- /**Reason code to pass to the tree population when trees are killed.*/
- deadCode m_iReasonCode;
+  /**Timestep to begin harvesting*/
+  int m_iTimestepToStartHarvests;
 
- /**How many timesteps it's been since the last harvest.*/
- short int m_iTimeSinceLastHarvest;
+  /**Reason code to pass to the tree population when trees are killed.*/
+  deadCode m_iReasonCode;
 
- /**Number of cells in the X direction for the mp_oHighestCOE and mp_fCOE
-  * arrays.*/
- short int m_iNumX;
+  /**How many timesteps it's been since the last harvest.*/
+  short int m_iTimeSinceLastHarvest;
 
- /**Number of cells in the Y direction for the mp_oHighestCOE and mp_fCOE
-  * arrays.*/
- short int m_iNumY;
+  /**Number of cells in the X direction for the mp_oHighestCOE and mp_fCOE
+   * arrays.*/
+  short int m_iNumX;
 
- /**Number of species. For destructor.*/
- short int m_iNumSpecies;
+  /**Number of cells in the Y direction for the mp_oHighestCOE and mp_fCOE
+   * arrays.*/
+  short int m_iNumY;
+
+  /**Number of species. For destructor.*/
+  short int m_iNumSpecies;
+
+
 
  /**Type of harvest*/
  enum cutType {interval_rem,  /**<Fixed interval, with target to leave           */
