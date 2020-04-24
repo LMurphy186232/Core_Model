@@ -94,6 +94,7 @@ using namespace whyDead;
 * interval harvest
 * <br>January 10, 2020 - Added the option to let the model run for a period of
 * time before beginning harvests
+* <br>January 31, 2020 - Added the option to cut from least to most competitive
 */
 class clCompetitionHarvest : virtual public clBehaviorBase {
 
@@ -158,11 +159,13 @@ class clCompetitionHarvest : virtual public clBehaviorBase {
  clGrid *mp_oResultsGrid;
 
  /**Which tree in each grid cell (matching the cells of the clTreePopulation
-  * class) has the highest COE. Array size is number of X cells (in variable
-  * m_iNumX) by number of Y cells (held in variable m_iNumY).*/
- clTree ***mp_oHighestCOE;
+  * class) has the most cut-eligible COE (highest if we're cutting most
+  * competitive first, lowest if we're cutting least competitive first). Array
+  * size is number of X cells (in variable m_iNumX) by number of Y cells (held
+  * in variable m_iNumY).*/
+ clTree ***mp_oMostestCOE;
 
- /**The value for the COE of each tree in mp_oHighestCOE. Array size is number
+ /**The value for the COE of each tree in mp_oMostestCOE. Array size is number
   * of X cells (in variable m_iNumX) by number of Y cells (held in variable
   * m_iNumY).*/
  float **mp_fCOE;
@@ -300,6 +303,10 @@ class clCompetitionHarvest : virtual public clBehaviorBase {
 
   /**Number of species. For destructor.*/
   short int m_iNumSpecies;
+
+  /**Whether to cut the most competitive first (true) or the least
+   * competitive.*/
+  bool m_bCutMostCompetitive;
 
 
 

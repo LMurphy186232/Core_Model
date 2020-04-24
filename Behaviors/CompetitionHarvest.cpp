@@ -31,7 +31,7 @@ clCompetitionHarvest::clCompetitionHarvest( clSimManager * p_oSimManager ) : clW
     m_iNewTreeFloats = 1;
 
     //Null pointers, initialize variables to empty
-    mp_oHighestCOE = NULL;
+    mp_oMostestCOE = NULL;
     mp_fCOE = NULL;
     mp_fLambda = NULL;
     mp_iCOECodes = NULL;
@@ -64,6 +64,7 @@ clCompetitionHarvest::clCompetitionHarvest( clSimManager * p_oSimManager ) : clW
     m_iNumSpecies = 0;
     m_bIsSpeciesSpecific = false;
     harvest = interval_rem;
+    m_bCutMostCompetitive = true;
 
     //Allowed file types
     m_iNumAllowedTypes = 2;
@@ -90,10 +91,10 @@ clCompetitionHarvest::clCompetitionHarvest( clSimManager * p_oSimManager ) : clW
 clCompetitionHarvest::~clCompetitionHarvest()
 {
   short int i;
-  if (mp_oHighestCOE) {
+  if (mp_oMostestCOE) {
     for (i = 0; i < m_iNumX; i++)
-      delete[] mp_oHighestCOE[i];
-    delete[] mp_oHighestCOE;
+      delete[] mp_oMostestCOE[i];
+    delete[] mp_oMostestCOE;
   }
 
   if (mp_fCOE) {
@@ -359,6 +360,9 @@ void clCompetitionHarvest::ReadParameterFileData( xercesc::DOMDocument * p_oDoc,
     //Transform from years to timesteps
     m_iTimestepToStartHarvests /= iTimestep;
 
+    //Flag for whether to cut most competitive first or least competitive;
+    //for backwards compatibility, this is optional
+    FillSingleValue(p_oElement, "di_compHarvCutMostComp", &m_bCutMostCompetitive, false);
 
     //Filename for list of trees harvested - optional
     FillSingleValue( p_oElement, "di_compHarvHarvestedListFile", &m_sHarvestListFilename, false );
@@ -463,11 +467,11 @@ void clCompetitionHarvest::SetupCOEGrids(clTreePopulation * p_oPop)
     m_iNumX = p_oPop->GetNumXCells();
     m_iNumY = p_oPop->GetNumYCells();
 
-    mp_oHighestCOE = new clTree**[m_iNumX];
+    mp_oMostestCOE = new clTree**[m_iNumX];
     mp_fCOE = new float*[m_iNumX];
 
     for (i = 0; i < m_iNumX; i++) {
-      mp_oHighestCOE[i] = new clTree*[m_iNumY];
+      mp_oMostestCOE[i] = new clTree*[m_iNumY];
       mp_fCOE[i] = new float[m_iNumY];
     }
 
@@ -723,7 +727,7 @@ float clCompetitionHarvest::CalculateOneCOE(clPlot *p_oPlot, clTreePopulation *p
   iDeadCode = p_oPop->GetIntDataCode( "dead", iTargetSp, iTargetTp );
   if ( -1 != iDeadCode ) {
     p_oTree->GetValue( iDeadCode, & iIsDead );
-    if (iIsDead > notdead) return 0;
+    if (iIsDead > notdead) return -1;
   }
 
   //Format the query to get all competing neighbors
@@ -801,13 +805,22 @@ void clCompetitionHarvest::CalculateAllCOEsSpeciesSpecific(clTreePopulation *p_o
   float fCOE, fHeight, fDbh;
   int iX, iY, iSp, iTp; //grid loop counters
 
-  //Reset the grid array where we stash the current highest COEs
-  for (iX = 0; iX < m_iNumX; iX++) {
-    for (iY = 0; iY < m_iNumY; iY++) {
-      mp_oHighestCOE[iX][iY] = NULL;
-      mp_fCOE[iX][iY] = 0;
+  //Reset the grid array where we stash the current highest or lowest COEs
+  if (m_bCutMostCompetitive) {
+      for (iX = 0; iX < m_iNumX; iX++) {
+        for (iY = 0; iY < m_iNumY; iY++) {
+          mp_oMostestCOE[iX][iY] = NULL;
+          mp_fCOE[iX][iY] = 0;
+        }
+      }
+    } else {
+      for (iX = 0; iX < m_iNumX; iX++) {
+        for (iY = 0; iY < m_iNumY; iY++) {
+          mp_oMostestCOE[iX][iY] = NULL;
+          mp_fCOE[iX][iY] = 1E10;
+        }
+      }
     }
-  }
 
   //Find the eligible species - those that have a positive difference between
   //target amount to cut and amount already cut
@@ -834,11 +847,20 @@ void clCompetitionHarvest::CalculateAllCOEsSpeciesSpecific(clTreePopulation *p_o
           p_oTree->GetValue(p_oPop->GetDbhCode(iSp, iTp), &fDbh);
           if (fDbh >= m_fMinHarvestDBH && fDbh <= m_fMaxHarvestDBH)
             fCOE = CalculateOneCOE(p_oPlot, p_oPop, p_oTree);
+          if (fCOE >= 0) {
 
-          //If this is the new highest COE - keep a record of it
-          if (fCOE > mp_fCOE[iX][iY]) {
-            mp_fCOE[iX][iY] = fCOE;
-            mp_oHighestCOE[iX][iY] = p_oTree;
+            //If this is the new highest (or lowest) COE - keep a record of it
+            if (m_bCutMostCompetitive) {
+              if (fCOE > mp_fCOE[iX][iY]) {
+                mp_fCOE[iX][iY] = fCOE;
+                mp_oMostestCOE[iX][iY] = p_oTree;
+              }
+            } else {
+              if (fCOE < mp_fCOE[iX][iY]) {
+                mp_fCOE[iX][iY] = fCOE;
+                mp_oMostestCOE[iX][iY] = p_oTree;
+              }
+            }
           }
         }
         else {
@@ -869,11 +891,20 @@ void clCompetitionHarvest::CalculateAllCOEsNotSpeciesSpecific(clTreePopulation *
   float fCOE, fHeight, fDbh;
   int iX, iY, iSp, iTp; //grid loop counters
 
-  //Reset the grid array where we stash the current highest COEs
-  for (iX = 0; iX < m_iNumX; iX++) {
-    for (iY = 0; iY < m_iNumY; iY++) {
-      mp_oHighestCOE[iX][iY] = NULL;
-      mp_fCOE[iX][iY] = 0;
+  //Reset the grid array where we stash the current highest or lowest COEs
+  if (m_bCutMostCompetitive) {
+    for (iX = 0; iX < m_iNumX; iX++) {
+      for (iY = 0; iY < m_iNumY; iY++) {
+        mp_oMostestCOE[iX][iY] = NULL;
+        mp_fCOE[iX][iY] = 0;
+      }
+    }
+  } else {
+    for (iX = 0; iX < m_iNumX; iX++) {
+      for (iY = 0; iY < m_iNumY; iY++) {
+        mp_oMostestCOE[iX][iY] = NULL;
+        mp_fCOE[iX][iY] = 1E10;
+      }
     }
   }
 
@@ -892,11 +923,20 @@ void clCompetitionHarvest::CalculateAllCOEsNotSpeciesSpecific(clTreePopulation *
           p_oTree->GetValue(p_oPop->GetDbhCode(iSp, iTp), &fDbh);
           if (fDbh >= m_fMinHarvestDBH && fDbh <= m_fMaxHarvestDBH) {
             fCOE = CalculateOneCOE(p_oPlot, p_oPop, p_oTree);
+            if (fCOE >= 0) {
 
-            //If this is the new highest COE - keep a record of it
-            if (fCOE > mp_fCOE[iX][iY]) {
-              mp_fCOE[iX][iY] = fCOE;
-              mp_oHighestCOE[iX][iY] = p_oTree;
+              //If this is the new highest (or lowest) COE - keep a record of it
+              if (m_bCutMostCompetitive) {
+                if (fCOE > mp_fCOE[iX][iY]) {
+                  mp_fCOE[iX][iY] = fCOE;
+                  mp_oMostestCOE[iX][iY] = p_oTree;
+                }
+              } else {
+                if (fCOE < mp_fCOE[iX][iY]) {
+                  mp_fCOE[iX][iY] = fCOE;
+                  mp_oMostestCOE[iX][iY] = p_oTree;
+                }
+              }
             }
           }
         }
@@ -952,8 +992,12 @@ void clCompetitionHarvest::RecalculateCOESpeciesSpecific(clTreePopulation *p_oPo
       if (iY < 0) iY += m_iNumY;
       if (iY >= m_iNumY) iY -= m_iNumY;
 
-      mp_fCOE[iX][iY] = 0;
-      mp_oHighestCOE[iX][iY] = NULL;
+      if (m_bCutMostCompetitive) {
+        mp_fCOE[iX][iY] = 0;
+      } else {
+        mp_fCOE[iX][iY] = 1E10;
+      }
+      mp_oMostestCOE[iX][iY] = NULL;
 
       p_oTree = p_oPop->GetTallestTreeInCell(iX, iY);
       while (p_oTree) {
@@ -970,11 +1014,20 @@ void clCompetitionHarvest::RecalculateCOESpeciesSpecific(clTreePopulation *p_oPo
           if (fDbh >= m_fMinHarvestDBH && fDbh <= m_fMaxHarvestDBH &&
               mp_fAlreadyCut[iSp] < mp_fTargetToCut[iSp]) {
             fCOE = CalculateOneCOE(p_oPlot, p_oPop, p_oTree);
+            if (fCOE >= 0) {
 
-            //If this is the new highest COE - keep a record of it
-            if (fCOE > mp_fCOE[iX][iY]) {
-              mp_fCOE[iX][iY] = fCOE;
-              mp_oHighestCOE[iX][iY] = p_oTree;
+              //If this is the new highest (or lowest) COE - keep a record of it
+              if (m_bCutMostCompetitive) {
+                if (fCOE > mp_fCOE[iX][iY]) {
+                  mp_fCOE[iX][iY] = fCOE;
+                  mp_oMostestCOE[iX][iY] = p_oTree;
+                }
+              } else {
+                if (fCOE < mp_fCOE[iX][iY]) {
+                  mp_fCOE[iX][iY] = fCOE;
+                  mp_oMostestCOE[iX][iY] = p_oTree;
+                }
+              }
             }
           }
         }
@@ -1022,8 +1075,12 @@ void clCompetitionHarvest::RecalculateCOENotSpeciesSpecific(clTreePopulation *p_
       if (iY < 0) iY += m_iNumY;
       if (iY >= m_iNumY) iY -= m_iNumY;
 
-      mp_fCOE[iX][iY] = 0;
-      mp_oHighestCOE[iX][iY] = NULL;
+      if (m_bCutMostCompetitive) {
+        mp_fCOE[iX][iY] = 0;
+      } else {
+        mp_fCOE[iX][iY] = 1E10;
+      }
+      mp_oMostestCOE[iX][iY] = NULL;
 
       p_oTree = p_oPop->GetTallestTreeInCell(iX, iY);
       while (p_oTree) {
@@ -1038,11 +1095,20 @@ void clCompetitionHarvest::RecalculateCOENotSpeciesSpecific(clTreePopulation *p_
           p_oTree->GetValue(p_oPop->GetDbhCode(iSp, iTp), &fDbh);
           if (fDbh >= m_fMinHarvestDBH && fDbh <= m_fMaxHarvestDBH) {
             fCOE = CalculateOneCOE(p_oPlot, p_oPop, p_oTree);
+            if (fCOE >= 0) {
 
-            //If this is the new highest COE - keep a record of it
-            if (fCOE > mp_fCOE[iX][iY]) {
-              mp_fCOE[iX][iY] = fCOE;
-              mp_oHighestCOE[iX][iY] = p_oTree;
+              //If this is the new highest (or lowest) COE - keep a record of it
+              if (m_bCutMostCompetitive) {
+                if (fCOE > mp_fCOE[iX][iY]) {
+                  mp_fCOE[iX][iY] = fCOE;
+                  mp_oMostestCOE[iX][iY] = p_oTree;
+                }
+              } else {
+                if (fCOE < mp_fCOE[iX][iY]) {
+                  mp_fCOE[iX][iY] = fCOE;
+                  mp_oMostestCOE[iX][iY] = p_oTree;
+                }
+              }
             }
           }
         }
@@ -1074,7 +1140,7 @@ void clCompetitionHarvest::CutTreesNotSpeciesSpecific(const float &fPlotBA)
   fTemp,
   fBA, //basal area of trees to cut
   fDbh,
-  fMaxCOE, //for finding the highest COE tree
+  fMostCOE, //for finding the highest/lowest COE tree
   fCutSoFar = 0, //how much has been cut so far
   fAmtToCutThisTS; //amount to cut this timestep
   int i, iX, iY, //loop counters
@@ -1116,19 +1182,35 @@ void clCompetitionHarvest::CutTreesNotSpeciesSpecific(const float &fPlotBA)
 
   while (false == bHarvestDone) {
 
-    //Find the tree with the highest COE
-    fMaxCOE = 0;
-    for (iX = 0; iX < m_iNumX; iX++) {
-      for (iY = 0; iY < m_iNumY; iY++) {
-        if (mp_fCOE[iX][iY] > fMaxCOE) {
-          fMaxCOE = mp_fCOE[iX][iY];
-          iMaxX = iX; iMaxY = iY;
+    //Find the tree with the highest (or lowest) COE, depending on choice
+    fMostCOE = 0;
+    iMaxX = 0;
+    iMaxY = 0;
+
+    if (m_bCutMostCompetitive) {
+      for (iX = 0; iX < m_iNumX; iX++) {
+        for (iY = 0; iY < m_iNumY; iY++) {
+          if (mp_fCOE[iX][iY] > fMostCOE) {
+            fMostCOE = mp_fCOE[iX][iY];
+            iMaxX = iX; iMaxY = iY;
+          }
         }
       }
+    } else {
+      fMostCOE = 1E10;
+      for (iX = 0; iX < m_iNumX; iX++) {
+        for (iY = 0; iY < m_iNumY; iY++) {
+          if (mp_fCOE[iX][iY] < fMostCOE) {
+            fMostCOE = mp_fCOE[iX][iY];
+            iMaxX = iX; iMaxY = iY;
+          }
+        }
+      }
+      if (fMostCOE == 1E10) fMostCOE = -1;
     }
-    if (0 < fMaxCOE) {
+    if (0 <= fMostCOE && NULL != mp_oMostestCOE[iMaxX][iMaxY]) {
 
-      p_oTree = mp_oHighestCOE[iMaxX][iMaxY];
+      p_oTree = mp_oMostestCOE[iMaxX][iMaxY];
       iSp = p_oTree->GetSpecies();
       iTp = p_oTree->GetType();
 
@@ -1196,7 +1278,7 @@ void clCompetitionHarvest::CutTreesSpeciesSpecific(const float &fPlotBA)
   fTemp,
   fBA, //basal area of trees to cut
   fDbh,
-  fMaxCOE, //for finding the highest COE tree
+  fMostCOE, //for finding the highest/lowest COE tree
   fAmtToCutThisTS; //amount to cut this timestep
   int i, iX, iY, //loop counters
   iTemp,
@@ -1237,18 +1319,34 @@ void clCompetitionHarvest::CutTreesSpeciesSpecific(const float &fPlotBA)
   while (false == bHarvestDone) {
 
     //Find the tree with the highest COE of an uncut species
-    fMaxCOE = 0;
-    for (iX = 0; iX < m_iNumX; iX++) {
-      for (iY = 0; iY < m_iNumY; iY++) {
-        if (mp_fCOE[iX][iY] > fMaxCOE) {
-          fMaxCOE = mp_fCOE[iX][iY];
-          iMaxX = iX; iMaxY = iY;
+    fMostCOE = 0;
+    iMaxX = 0;
+    iMaxY = 0;
+
+    if (m_bCutMostCompetitive) {
+      for (iX = 0; iX < m_iNumX; iX++) {
+        for (iY = 0; iY < m_iNumY; iY++) {
+          if (mp_fCOE[iX][iY] > fMostCOE) {
+            fMostCOE = mp_fCOE[iX][iY];
+            iMaxX = iX; iMaxY = iY;
+          }
         }
       }
+    } else {
+      fMostCOE = 1E10;
+      for (iX = 0; iX < m_iNumX; iX++) {
+        for (iY = 0; iY < m_iNumY; iY++) {
+          if (mp_fCOE[iX][iY] < fMostCOE) {
+            fMostCOE = mp_fCOE[iX][iY];
+            iMaxX = iX; iMaxY = iY;
+          }
+        }
+      }
+      if (fMostCOE == 1E10) fMostCOE = -1;
     }
-    if (0 < fMaxCOE) {
+    if (0 <= fMostCOE && NULL != mp_oMostestCOE[iMaxX][iMaxY]) {
 
-      p_oTree = mp_oHighestCOE[iMaxX][iMaxY];
+      p_oTree = mp_oMostestCOE[iMaxX][iMaxY];
       iSp = p_oTree->GetSpecies();
       iTp = p_oTree->GetType();
 
