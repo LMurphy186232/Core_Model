@@ -4178,11 +4178,19 @@ short int clTreePopulation::RegisterDataMember(string sLabel, int iSpecies,
 
   //Find the first open space for this type and species
   iNumVals = p_iNumTreeVals[iSpecies][iType];
-  for (i = 0; i < iNumVals; i++)
+  for (i = 0; i < iNumVals; i++) {
     if (0 == p_sLabels[iSpecies][iType][i].length()) {
       iReturnCode = i;
       break;
     }
+    if (p_sLabels[iSpecies][iType][i].compare(sLabel) == 0) {
+      modelErr stcErr;
+          stcErr.sFunction = "clTreePopulation::RegisterDataMember" ;
+          stcErr.iErrorCode = ILLEGAL_OP;
+          stcErr.sMoreInfo = "Data member already registered";
+          throw(stcErr);
+    }
+  }
 
   //If we didn't find anything, throw an error
   if (-1 == iReturnCode)

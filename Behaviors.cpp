@@ -115,6 +115,7 @@
 #include "StochDoubleLogTempDepNeighDisperse.h"
 #include "SizeDependentLogisticMortality.h"
 #include "ClimateImporter.h"
+#include "MastingDisperseAutocorrelation.h"
 //Test objects
 #include "RandomSeedLogger.h"
 
@@ -918,6 +919,11 @@ void clBehaviorManager::CreateBehavior(behaviorData * p_data)
     else if (p_data->sNameString.compare("ConspecificBANeighborhoodDisperse") == 0)
     {
       clConspecificBANeighborhoodDisperse * p_oDisperse = new clConspecificBANeighborhoodDisperse(mp_oSimManager);
+      mp_oObjectArray[iIndex] = p_oDisperse;
+    }
+    else if (p_data->sNameString.compare("MastingDisperseAutocorrelation") == 0)
+    {
+      clMastingDisperseAutocorrelation * p_oDisperse = new clMastingDisperseAutocorrelation(mp_oSimManager);
       mp_oObjectArray[iIndex] = p_oDisperse;
     }
 

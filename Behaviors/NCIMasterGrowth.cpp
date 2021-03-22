@@ -20,6 +20,8 @@
 #include <stdio.h>
 #include <sstream>
 
+//#define NCI_WRITER
+
 //////////////////////////////////////////////////////////////////////////////
 // Constructor
 //////////////////////////////////////////////////////////////////////////////
@@ -252,7 +254,7 @@ void clNCIMasterGrowth::PreGrowthCalcs(clTreePopulation * p_oPop) {
     char cFilename[100];
     sprintf(cFilename, "%s%d%s", "GrowthNCI", iTS, ".txt");
     fstream out( cFilename, ios::trunc | ios::out );
-    out << "Timestep\tSpecies\tDBH\tNCI\tSize Effect\tCrowding Effect\tDamage Effect\tGrowth\n";
+    out << "Timestep\tSpecies\tDBH\tSize Effect\tCrowding Effect\tDamage Effect\tGrowth\n";
 #endif
 
     clTreeSearch * p_oNCITrees; //trees that this growth behavior applies to
@@ -379,9 +381,9 @@ void clNCIMasterGrowth::PreGrowthCalcs(clTreePopulation * p_oPop) {
           p_oTree->SetValue( mp_iGrowthCodes[iSpecies][iType], fAmountDiamIncrease );
 
 #ifdef NCI_WRITER
-            p_oTree->GetValue( p_oPop->GetDbhCode( iSpecies, iType ), & fDbh );
-            out << iTS << "\t" << p_oTree->GetSpecies() << "\t" << fDbh
-                << "\t" << fNCI << "\t" << fSizeEffect << "\t" << fCrowdingEffect
+            p_oTree->GetValue( p_oPop->GetDbhCode( iSpecies, iType ), & fDiam );
+            out << iTS << "\t" << p_oTree->GetSpecies() << "\t" << fDiam
+                << "\t" << fSizeEffect << "\t" << fCrowdingEffect
                 << "\t" << fDamageEffect << "\t" << fAmountDiamIncrease << "\n";
 #endif
 
