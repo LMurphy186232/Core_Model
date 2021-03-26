@@ -155,7 +155,7 @@ void clInsectInfestation::ReadParFile( xercesc::DOMDocument * p_oDoc, clTreePopu
     FillSpeciesSpecificValue( p_oElement, "di_insectMaxInfestation",
         "di_imiVal", p_fTempValues, m_iNumBehaviorSpecies, p_oPop, true );
     //Transfer to the appropriate array buckets and make sure all values are
-    //between 0 and 1
+    //between 0 and 1, and greater than I
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
       mp_fMax[p_fTempValues[i].code] = p_fTempValues[i].val;
       if (mp_fMax[p_fTempValues[i].code] < 0 ||
@@ -163,6 +163,13 @@ void clInsectInfestation::ReadParFile( xercesc::DOMDocument * p_oDoc, clTreePopu
         modelErr stcErr;
         stcErr.sFunction = "clInsectInfestation::ReadParFile" ;
         stcErr.sMoreInfo = "Max infestation value must be between 0 and 1.";
+        stcErr.iErrorCode = BAD_DATA;
+        throw( stcErr );
+      }
+      if (mp_fMax[p_fTempValues[i].code] < mp_fIntercept[p_fTempValues[i].code]) {
+        modelErr stcErr;
+        stcErr.sFunction = "clInsectInfestation::ReadParFile" ;
+        stcErr.sMoreInfo = "Max infestation value must be greater than intercept.";
         stcErr.iErrorCode = BAD_DATA;
         throw( stcErr );
       }
@@ -184,12 +191,19 @@ void clInsectInfestation::ReadParFile( xercesc::DOMDocument * p_oDoc, clTreePopu
       }
     }
 
-    //Xb
+    //Xb - must be negative
     FillSpeciesSpecificValue( p_oElement, "di_insectXb", "di_ixbVal",
         p_fTempValues, m_iNumBehaviorSpecies, p_oPop, true );
     //Transfer to the appropriate array buckets
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
       mp_fXb[p_fTempValues[i].code] = p_fTempValues[i].val;
+      if (mp_fXb[p_fTempValues[i].code] > 0) {
+        modelErr stcErr;
+        stcErr.sFunction = "clInsectInfestation::ReadParFile" ;
+        stcErr.sMoreInfo = "Xb must be negative.";
+        stcErr.iErrorCode = BAD_DATA;
+        throw( stcErr );
+      }
     }
 
     //Minimum DBH to infest
