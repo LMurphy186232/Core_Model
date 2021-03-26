@@ -10,7 +10,10 @@
  * The number of trees participating in seed production is a sigmoidal function
  * of the mast level: c/(1+(x/a)^b), where x is the masting level, and a, b,
  * and c are parameters. c is the asymptote of the function maximum and must be
- * between 0 and 1.
+ * between 0 and 1. This may or may not be hit; the probability of an
+ * individual tree reproducing is not uniform but is a linear function of its
+ * size. This may have unintended consequences in populations with unusual size
+ * distributions.
  *
  * The number of seeds an individual tree produces is itself a function of its
  * seed producer score (fixed trait assigned at "birth"), its size, and the
@@ -101,18 +104,29 @@ public:
    double *mp_fBeta;
 
    /**A parameter in the sigmoidal function for fraction reproducing. Controls
-    * slope.
-    */
-   double *mp_fReproFractionA;
+    * slope.*/
+   double *mp_fA;
 
-   /**B parameter in the sigmoidal function for fraction reproducing. Exponent.
-    */
-   double *mp_fReproFractionB;
+   /**B parameter in the sigmoidal function for fraction reproducing. Exponent.*/
+   double *mp_fB;
 
    /**C parameter in the sigmoidal function for fraction reproducing.
-    * Function max.
-    */
-   double *mp_fReproFractionC;
+    * Function max.*/
+   double *mp_fC;
+
+   /**Autocorrelation factor for rho*/
+   double *mp_fACF;
+
+   /**Noise adder for rho - this is the standard devation of a normal draw at 0*/
+   double *mp_fRhoNoiseSD;
+
+   /**Intercept of the probability of individual reproduction as a linear
+    * function of DBH.*/
+   double *mp_fPRA;
+
+   /**Slope of the probability of individual reproduction as a linear
+    * function of DBH.*/
+   double *mp_fPRB;
 
    /**Whether this behavior is used by a species/type combo.  First array index
     * is species, second is type.*/
@@ -124,6 +138,9 @@ public:
    /**Max DBH for each species for size effects; DBH above this is truncated
     * to this value */
    double *mp_fMaxDbh;
+
+   /**Standard deviation for seed producer scores*/
+   double *mp_fSPSSD;
 
    /**This will speed access to the other arrays by storing each species' array
     * index so the other arrays only have to be as big as the number of unique
@@ -190,11 +207,11 @@ public:
    * value than the random number. Once the seed has an azimuth direction and
    * a distance, it is added to the species total in the appropriate grid cell.
    * @param p_oTree Tree for which to perform dispersal.
-   * @param fDbh DBH of the tree, in cm.
+   * @param fSeeds Number of seeds to disperse.
    * @param p_oPlot Plot object
    * @param p_oPop Tree Population object
    */
-   void DisperseOneParentSeeds(clTree * p_oTree, clTreePopulation * p_oPop, clPlot * p_oPlot, float fDbh );
+   void DisperseOneParentSeeds(clTree * p_oTree, clTreePopulation * p_oPop, clPlot * p_oPlot, float fSeeds );
 
    /**
    * Extracts needed parameter file data. (Some parameters are extracted by

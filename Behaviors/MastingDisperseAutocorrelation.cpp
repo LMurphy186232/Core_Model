@@ -32,9 +32,14 @@ clMastingDisperseAutocorrelation::clMastingDisperseAutocorrelation( clSimManager
     mp_fMastTimeSeries = NULL;
     mp_fDbhForReproduction = NULL;
     mp_fMaxDbh = NULL;
-    mp_fReproFractionA = NULL;
-    mp_fReproFractionB = NULL;
-    mp_fReproFractionC = NULL;
+    mp_fA = NULL;
+    mp_fB = NULL;
+    mp_fC = NULL;
+    mp_fACF = NULL;
+    mp_fRhoNoiseSD = NULL;
+    mp_fPRA = NULL;
+    mp_fPRB = NULL;
+    mp_fSPSSD = NULL;
 
     mp_fSeedCDF = NULL;
     mp_fStrMean = NULL;
@@ -116,9 +121,14 @@ clMastingDisperseAutocorrelation::~clMastingDisperseAutocorrelation()
   delete[] mp_fBeta;
   delete[] mp_fDbhForReproduction;
   delete[] mp_fMaxDbh;
-  delete[] mp_fReproFractionA;
-  delete[] mp_fReproFractionB;
-  delete[] mp_fReproFractionC;
+  delete[] mp_fA;
+  delete[] mp_fB;
+  delete[] mp_fC;
+  delete[] mp_fACF;
+  delete[] mp_fRhoNoiseSD;
+  delete[] mp_fPRA;
+  delete[] mp_fPRB;
+  delete[] mp_fSPSSD;
   delete[] mp_iIndexes;
   delete[] m_cQuery;
   delete[] mp_fMastTimeSeries;
@@ -197,11 +207,11 @@ void clMastingDisperseAutocorrelation::DoShellSetup( xercesc::DOMDocument * p_oD
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       mp_iIndexes[mp_iWhatSpecies[i]] = i;
 
-    GetMastTimeseries(p_oElement);
-    //GetParameterFileData( p_oElement, p_oPop );
-    //CalcSeedCDF( p_oElement, p_oPop );
-    FormatQueryString( p_oPop );
     PopulateUsedTable( p_oPop );
+    GetMastTimeseries(p_oElement);
+    GetParameterFileData( p_oElement, p_oPop );
+    CalcSeedCDF( p_oElement, p_oPop );
+    FormatQueryString( p_oPop );
   }
   catch ( modelErr & err )
   {
@@ -267,10 +277,16 @@ void clMastingDisperseAutocorrelation::GetParameterFileData( xercesc::DOMElement
     mp_fStrMean = new double[m_iNumBehaviorSpecies];
     mp_fBeta = new double[m_iNumBehaviorSpecies];
     mp_fDbhForReproduction = new double[m_iNumBehaviorSpecies];
+    mp_fMaxDbh = new double[m_iNumBehaviorSpecies];
 
-    mp_fReproFractionA = new double[m_iNumBehaviorSpecies];
-    mp_fReproFractionB = new double[m_iNumBehaviorSpecies];
-    mp_fReproFractionC = new double[m_iNumBehaviorSpecies];
+    mp_fA = new double[m_iNumBehaviorSpecies];
+    mp_fB = new double[m_iNumBehaviorSpecies];
+    mp_fC = new double[m_iNumBehaviorSpecies];
+    mp_fACF = new double[m_iNumBehaviorSpecies];
+    mp_fRhoNoiseSD = new double[m_iNumBehaviorSpecies];
+    mp_fPRA = new double[m_iNumBehaviorSpecies];
+    mp_fPRB = new double[m_iNumBehaviorSpecies];
+    mp_fSPSSD = new double[m_iNumBehaviorSpecies];
 
     p_fTemp = new doubleVal[m_iNumBehaviorSpecies];
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
@@ -285,8 +301,16 @@ void clMastingDisperseAutocorrelation::GetParameterFileData( xercesc::DOMElement
     //Maximum DBH for size effects
     FillSpeciesSpecificValue( p_oElement, "di_maxDbhForSizeEffect", "di_mdfseVal", p_fTemp,
         m_iNumBehaviorSpecies, p_oPop, true );
-    for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
+    for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
       mp_fMaxDbh[i] = p_fTemp[i].val;
+      if (mp_fMaxDbh[i] < mp_fDbhForReproduction[i]) {
+        modelErr stcErr;
+        stcErr.iErrorCode = BAD_DATA;
+        stcErr.sFunction = "clMastingDisperseAutocorrelation::GetParameterFileData" ;
+        stcErr.sMoreInfo = "Max DBH must be greater than minimum repro DBH.";
+        throw( stcErr );
+      }
+    }
 
     //Beta
     FillSpeciesSpecificValue( p_oElement, "di_spatialBeta", "di_sbVal", p_fTemp,
@@ -307,6 +331,94 @@ void clMastingDisperseAutocorrelation::GetParameterFileData( xercesc::DOMElement
                             m_iNumBehaviorSpecies, p_oPop, true );
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       mp_fStrMean[i] = p_fTemp[i].val;
+
+    //A, B, and C for fraction participating
+    FillSpeciesSpecificValue( p_oElement, "di_mdaReproFracA", "di_mdarfaVal", p_fTemp,
+        m_iNumBehaviorSpecies, p_oPop, true );
+    for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
+      mp_fA[i] = p_fTemp[i].val;
+      if (p_fTemp[i].val ==  0) {
+        modelErr stcErr;
+        stcErr.iErrorCode = BAD_DATA;
+        stcErr.sFunction = "clMastingDisperseAutocorrelation::GetParameterFileData" ;
+        stcErr.sMoreInfo = "Fraction participating A cannot be 0.";
+        throw( stcErr );
+      }
+    }
+
+    FillSpeciesSpecificValue( p_oElement, "di_mdaReproFracB", "di_mdarfbVal", p_fTemp,
+        m_iNumBehaviorSpecies, p_oPop, true );
+    for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
+      mp_fB[i] = p_fTemp[i].val;
+
+    FillSpeciesSpecificValue( p_oElement, "di_mdaReproFracC", "di_mdarfcVal", p_fTemp,
+        m_iNumBehaviorSpecies, p_oPop, true );
+    for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
+      mp_fC[i] = p_fTemp[i].val;
+      //Enforce that C is between 0 and 1
+      if (p_fTemp[i].val > 1 || p_fTemp[i].val < 0) {
+        modelErr stcErr;
+        stcErr.iErrorCode = BAD_DATA;
+        stcErr.sFunction = "clMastingDisperseAutocorrelation::GetParameterFileData" ;
+        stcErr.sMoreInfo = "Reproduction fraction c must be between 0 and 1.";
+        throw( stcErr );
+      }
+    }
+
+    //Autocorrelation factor for rho - make sure isn't 0
+    FillSpeciesSpecificValue( p_oElement, "di_mdaRhoACF", "di_mdaraVal", p_fTemp,
+        m_iNumBehaviorSpecies, p_oPop, true );
+    for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
+      mp_fACF[i] = p_fTemp[i].val;
+      if (p_fTemp[i].val <=  0) {
+        modelErr stcErr;
+        stcErr.iErrorCode = BAD_DATA;
+        stcErr.sFunction = "clMastingDisperseAutocorrelation::GetParameterFileData" ;
+        stcErr.sMoreInfo = "Rho autocorrelation factor cannot be less than or equal to 0.";
+        throw( stcErr );
+      }
+    }
+
+    //Standard deviation for noise for rho - must be greater than 0
+    FillSpeciesSpecificValue( p_oElement, "di_mdaRhoNoiseSD", "di_mdarnsdVal", p_fTemp,
+        m_iNumBehaviorSpecies, p_oPop, true );
+    for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
+      if (p_fTemp[i].val < 0) {
+        modelErr stcErr;
+        stcErr.iErrorCode = BAD_DATA;
+        stcErr.sFunction = "clMastingDisperseAutocorrelation::GetParameterFileData" ;
+        stcErr.sMoreInfo = "Standard deviation of rho noise cannot be less than 0";
+        throw( stcErr );
+      }
+      mp_fRhoNoiseSD[i] = p_fTemp[i].val;
+    }
+
+    //Slope and intercept of the linear function of DBH for individual
+    //probability of reproducting; this function is truncated at 0 and 1 so
+    //we are unbothered by outlandish values
+    FillSpeciesSpecificValue( p_oElement, "di_mdaPRA", "di_mdapraVal", p_fTemp,
+        m_iNumBehaviorSpecies, p_oPop, true );
+    for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
+      mp_fPRA[i] = p_fTemp[i].val;
+
+    FillSpeciesSpecificValue( p_oElement, "di_mdaPRB", "di_mdaprbVal", p_fTemp,
+        m_iNumBehaviorSpecies, p_oPop, true );
+    for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
+      mp_fPRB[i] = p_fTemp[i].val;
+
+    //Seed producer standard deviation. Must be greater than 0.
+    FillSpeciesSpecificValue( p_oElement, "di_mdaSPSSD", "di_mdaspssdVal", p_fTemp,
+        m_iNumBehaviorSpecies, p_oPop, true );
+    for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
+      if (p_fTemp[i].val < 0) {
+        modelErr stcErr;
+        stcErr.iErrorCode = BAD_DATA;
+        stcErr.sFunction = "clMastingDisperseAutocorrelation::GetParameterFileData" ;
+        stcErr.sMoreInfo = "Standard deviation of rho noise cannot be less than 0";
+        throw( stcErr );
+      }
+      mp_fSPSSD[i] = p_fTemp[i].val;
+    }
 
     delete[] p_fTemp;
   }
@@ -615,41 +727,29 @@ void clMastingDisperseAutocorrelation::AddSeeds()
   try
   {
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
-    //clPlot * p_oPlot = mp_oSimManager->GetPlotObject();
+    clPlot * p_oPlot = mp_oSimManager->GetPlotObject();
     clTreeSearch * p_oAllTrees; //search object for getting all trees
     clTree * p_oTree; //for working with a single tree
+    float *p_fFractionParticipating = new float[m_iNumBehaviorSpecies];
     float fDbh, //tree's dbh
+          fTemp, fReproProbability,
           fMastingLevel,
+          fRho,
+          fPrevSeeds,
+          fPotentialSeeds, fSeeds,
           fSps; //tree's seed producer score
     short int iSp, iType, //species and type of a given tree
               i;
 
     //Get the masting level
-    fMastingLevel = mp_fMastTimeSeries[mp_oSimManager->GetCurrentTimestep()];
+    fMastingLevel = mp_fMastTimeSeries[(mp_oSimManager->GetCurrentTimestep()-1)];
 
-    //Calculate the reproductive fraction
-
-
-    //Calculate rho
-
-
-    //Calculate fecundities where possible
-  /*  for (i = 0; i < m_iNumBehaviorSpecies; i++) {
-      iEvent = mp_iEvent[i];
-      if (deterministic_pdf == mp_iWhatPDFForSTR[i]) {
-        mp_fFecundity[i] = m_iNumYearsPerTimestep * mp_fStrMean[iEvent][i] / pow(30, mp_fBeta[i]);
-      } else if (mp_bDrawSTRPerSpecies[i]) {
-        float fSTR;
-        if (normal_pdf == mp_iWhatPDFForSTR[i]) {
-          fSTR = mp_fStrMean[iEvent][i] +
-               clModelMath::NormalRandomDraw(mp_fStrStdDev[iEvent][i]);
-        } else {
-          fSTR = clModelMath::LognormalRandomDraw(mp_fStrMean[iEvent][i],
-                                                  mp_fStrStdDev[iEvent][i]);
-        }
-        mp_fFecundity[i] = m_iNumYearsPerTimestep * fSTR / pow(30, mp_fBeta[i]);
-      }
-    }*/
+    //Calculate the fraction of trees participating as a sigmoidal function
+    //of mast level
+    for (i = 0; i < m_iNumBehaviorSpecies; i++) {
+      p_fFractionParticipating[i] =
+          mp_fC[i] /(1+pow((fMastingLevel/mp_fA[i]), mp_fB[i]));
+    }
 
     //Ask the tree population to find the trees in our query
     p_oAllTrees = p_oPop->Find( m_cQuery );
@@ -663,32 +763,71 @@ void clMastingDisperseAutocorrelation::AddSeeds()
       iType = p_oTree->GetType();
 
       //Check to see if this species/type combo is used
-      if ( mp_bIsUsed[iSp] [iType] )
-      {
+      if ( false == mp_bIsUsed[iSp] [iType] ) goto nextTree;
 
-        // Get the tree's sps code - assign if new
-        p_oTree->GetValue(mp_iSpsCodes[iSp][iType], &fSps);
-        if (fSps == 0) {
-          fSps = clModelMath::GetRand();
-          p_oTree->SetValue(mp_iSpsCodes[iSp][iType], fSps);
-        }
-
-        //Get the tree's dbh
-        p_oTree->GetValue( p_oPop->GetDbhCode( iSp, iType ), & fDbh );
-
-        //If the tree is larger than the minimum size for reproduction,
-        //and a random number lets it participate, let it reproduce
-       // if ( fDbh >= mp_fDbhForReproduction[mp_iIndexes[iSp]] &&
-       //      clModelMath::GetRand() <
-       //       mp_fFractionParticipating[mp_iEvent[mp_iIndexes[iSp]]][mp_iIndexes[iSp]] )
-       //   DisperseOneParentSeeds( p_oTree, p_oPop, p_oPlot, fDbh );
-
-       /* clModelMath::RandomRound( mp_fFecundity[mp_iIndexes[iSp]]
-               * pow( fDbh, mp_fBeta[mp_iIndexes[iSp]] )
-               * m_iNumYearsPerTimestep );*/
-
+      // Get the tree's sps code - assign if new
+      p_oTree->GetValue(mp_iSpsCodes[iSp][iType], &fSps);
+      if (fSps == 0) {
+        fSps = 1 + clModelMath::NormalRandomDraw(mp_fSPSSD[mp_iIndexes[iSp]]);
+        p_oTree->SetValue(mp_iSpsCodes[iSp][iType], fSps);
       }
 
+      // Get the tree's dbh and verify that it is big enough to reproduce
+      p_oTree->GetValue( p_oPop->GetDbhCode( iSp, iType ), & fDbh );
+      if ( fDbh < mp_fDbhForReproduction[mp_iIndexes[iSp]]) goto nextTree;
+
+      // Get the probability that the tree will reproduce. The probability is
+      // the individual probability (linear function of DBH, truncated at 0
+      // and 1) times the population fraction reproducing.
+      fReproProbability = mp_fPRA[mp_iIndexes[iSp]] + mp_fPRB[mp_iIndexes[iSp]] * fDbh;
+      fReproProbability = fmax(fReproProbability, 0.0);
+      fReproProbability = fmin(fReproProbability, 1.0);
+      fReproProbability *= p_fFractionParticipating[mp_iIndexes[iSp]];
+
+      // Test to see if the tree will be reproducing
+      if (clModelMath::GetRand() > fReproProbability) {
+        // Nope. Set 0 as the seeds for this year to be saved for next year
+        fPrevSeeds = 0;
+        p_oTree->SetValue(mp_iPrevseedsCodes[iSp][iType], fPrevSeeds);
+        goto nextTree;
+      }
+
+      //Calculate rho - make sure it is truncated at the max DBH
+      fTemp = fDbh > mp_fMaxDbh[mp_iIndexes[iSp]] ? mp_fMaxDbh[mp_iIndexes[iSp]] : fDbh;
+
+      fRho = ((fTemp - mp_fDbhForReproduction[mp_iIndexes[iSp]]) /
+          (mp_fMaxDbh[mp_iIndexes[iSp]] - mp_fDbhForReproduction[mp_iIndexes[iSp]])) *
+              mp_fACF[mp_iIndexes[iSp]];
+
+      // Add noise to rho if desired by the user
+      if (mp_fRhoNoiseSD[mp_iIndexes[iSp]] > 0) {
+        fRho += clModelMath::NormalRandomDraw(mp_fRhoNoiseSD[mp_iIndexes[iSp]]);
+      }
+
+      // Get last year's seed count. If 0, assume this tree is new (or this
+      // is the first timestep) and give it a mean fecundity as a starting
+      // point
+      p_oTree->GetValue(mp_iPrevseedsCodes[iSp][iType], &fPrevSeeds);
+      if (fPrevSeeds == 0) {
+        fPrevSeeds = fSps * mp_fStrMean[mp_iIndexes[iSp]] * pow(fDbh/30.0, mp_fBeta[mp_iIndexes[iSp]]);
+        fPrevSeeds = clModelMath::RandomRound(fPrevSeeds);
+      }
+
+      // Calculate potential seeds
+      fPotentialSeeds = fSps * mp_fStrMean[mp_iIndexes[iSp]] * pow(fDbh/30.0, mp_fBeta[mp_iIndexes[iSp]]);
+      fSeeds = fRho * (fPrevSeeds - fPotentialSeeds) + fPotentialSeeds;
+      fSeeds = fSeeds * fMastingLevel * m_iNumYearsPerTimestep;
+      fSeeds = clModelMath::RandomRound(fSeeds);
+
+      if (fSeeds < 0) fSeeds = 0;
+
+      // Save this for next year
+      p_oTree->SetValue(mp_iPrevseedsCodes[iSp][iType], fSeeds);
+
+      // Send out these seeds
+      DisperseOneParentSeeds( p_oTree, p_oPop, p_oPlot, fSeeds );
+
+      nextTree:
       p_oTree = p_oAllTrees->NextTree();
     } //end of while (p_oTree) */
   }
@@ -712,9 +851,9 @@ void clMastingDisperseAutocorrelation::AddSeeds()
 //////////////////////////////////////////////////////////////////////////////
 // DisperseOneParentSeeds
 //////////////////////////////////////////////////////////////////////////////
-void clMastingDisperseAutocorrelation::DisperseOneParentSeeds( clTree * p_oTree, clTreePopulation * p_oPop, clPlot * p_oPlot, float fDbh )
+void clMastingDisperseAutocorrelation::DisperseOneParentSeeds( clTree * p_oTree, clTreePopulation * p_oPop, clPlot * p_oPlot, float fSeeds )
 {
- /* try
+  try
   {
     float fRand, //random number for determining distance and direction of
     //a seed's dispersal
@@ -724,25 +863,18 @@ void clMastingDisperseAutocorrelation::DisperseOneParentSeeds( clTree * p_oTree,
     fNumGridSeeds, //number of seeds in the seed grid
     fSeedX, fSeedY, //coordinates of seed
     fAngle, //angle from the parent tree from which a seed lands
-    fNumSeeds, //number of seeds produced by the tree
     f; //loop counter
     int iDistanceCounter = 0; //used to walk out the cumulative probability array
     short int iSp = p_oTree->GetSpecies(), //reproducing tree's species
     iType = p_oTree->GetType(), //reproducing tree's type
-    iSpIndex = mp_iIndexes[iSp],
-    iEvent = mp_iEvent[iSpIndex];
+    iSpIndex = mp_iIndexes[iSp];
 
     //Get the X and Y coords of the tree
     p_oTree->GetValue( p_oPop->GetXCode( iSp, iType ), & fX );
     p_oTree->GetValue( p_oPop->GetYCode( iSp, iType ), & fY );
 
-    //Calculate number of seeds produced, based on species
-    //fecundity and the dbh of the tree
-    //fNumSeeds = (* this.*mp_GetSeeds[iSpIndex])( fDbh, iSp );
-    fNumSeeds = 0;
-
     //Disperse the seeds produced
-    for ( f = 0; f < fNumSeeds; f++ )
+    for ( f = 0; f < fSeeds; f++ )
     {
       //Use the cumulative probability array to determine how far away from the
       //parent tree the seed lands - use a random number and find the first
@@ -787,7 +919,7 @@ void clMastingDisperseAutocorrelation::DisperseOneParentSeeds( clTree * p_oTree,
     stcErr.iErrorCode = UNKNOWN;
     stcErr.sFunction = "clMastingDisperseAutocorrelation::DisperseOneParentSeeds" ;
     throw( stcErr );
-  } */
+  }
 }
 
 
@@ -885,12 +1017,19 @@ void clMastingDisperseAutocorrelation::GetMastTimeseries(DOMElement *p_oParent) 
     if (0 > iCode || iTimesteps < iCode) { //throw an error
       modelErr stcErr;
       stcErr.iErrorCode = BAD_DATA;
-      stcErr.sFunction = "clMastingDisperseAutocorrelation::ReadMastTimeseries";
-      stcErr.sMoreInfo = "Unrecognized timestep in climate importer.";
+      stcErr.sFunction = "clMastingDisperseAutocorrelation::GetMastTimeseries";
+      stcErr.sMoreInfo = "Unrecognized timestep in mast level timeseries.";
       throw(stcErr);
     }
     cName = XMLString::transcode(p_oChildElement->getChildNodes()->item(0)->getNodeValue());
     fVal = strtod(cName, NULL);
+    if (0 > fVal || 1 < fVal) { //throw an error
+      modelErr stcErr;
+      stcErr.iErrorCode = BAD_DATA;
+      stcErr.sFunction = "clMastingDisperseAutocorrelation::GetMastTimeseries";
+      stcErr.sMoreInfo = "Mast level must be between 0 and 1.";
+      throw(stcErr);
+    }
     if (fVal != 0 || cName[0] == '0') {
       mp_fMastTimeSeries[(iCode-1)] = fVal;
     }
