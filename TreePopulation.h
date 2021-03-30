@@ -11,6 +11,10 @@
 class clAllometry;
 class clGhostTreePopulation;
 
+#define MINDIAM 0.001
+#define MINHEIGHT 0.001
+#define MINCROWN 0.001
+
 using namespace whyDead;
 /**
 * TREE POPULATION CLASS - Version 1.4

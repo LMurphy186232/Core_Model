@@ -306,6 +306,7 @@ void clAllometry::GetData(DOMDocument * p_oDoc, clTreePopulation * p_oPop) {
 // CalcAdultHeight()
 ////////////////////////////////////////////////////////////////////////////
 float clAllometry::CalcAdultHeight(const float & fDbh, const int & iSpecies) {
+  float fHeight;
   if (iSpecies >= m_iNumSpecies || iSpecies < 0) {
     //invalid species - throw an error
     modelErr stcErr;
@@ -316,13 +317,19 @@ float clAllometry::CalcAdultHeight(const float & fDbh, const int & iSpecies) {
     stcErr.sMoreInfo = s.str();
     throw(stcErr);
   }
-  return (*this.*mp_AdultHeight[iSpecies])(fDbh, iSpecies);
+  fHeight = (*this.*mp_AdultHeight[iSpecies])(fDbh, iSpecies);
+  if (fHeight > mp_fMaxTreeHeight[iSpecies])
+    return mp_fMaxTreeHeight[iSpecies];
+  if (fHeight < MINHEIGHT)
+    return MINHEIGHT;
+  return fHeight;
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // CalcAdultDbh()
 ////////////////////////////////////////////////////////////////////////////
 float clAllometry::CalcAdultDbh(float fHeight, const int & iSpecies) {
+  float fDbh;
   if (iSpecies >= m_iNumSpecies || iSpecies < 0) {
     //invalid species - throw an error
     modelErr stcErr;
@@ -341,13 +348,17 @@ float clAllometry::CalcAdultDbh(float fHeight, const int & iSpecies) {
     stcErr.sMoreInfo = "Cannot set tree height greater than maximum canopy height for this species.";
     throw(stcErr);
   }
-  return (*this.*mp_AdultDiam[iSpecies])(fHeight, iSpecies);
+  fDbh = (*this.*mp_AdultDiam[iSpecies])(fHeight, iSpecies);
+  //Don't allow negative DBH
+  if (fDbh < MINDIAM) fDbh = MINDIAM;
+  return fDbh;
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // CalcSaplingHeight()
 ////////////////////////////////////////////////////////////////////////////
 float clAllometry::CalcSaplingHeight(const float & fDbh, const int & iSpecies) {
+  float fHeight;
   if (iSpecies >= m_iNumSpecies || iSpecies < 0) {
     //invalid species - throw an error
     modelErr stcErr;
@@ -358,13 +369,19 @@ float clAllometry::CalcSaplingHeight(const float & fDbh, const int & iSpecies) {
     stcErr.sMoreInfo = s.str();
     throw(stcErr);
   }
-  return (*this.*mp_SaplingHeight[iSpecies])(fDbh, iSpecies);
+  fHeight = (*this.*mp_SaplingHeight[iSpecies])(fDbh, iSpecies);
+  if (fHeight > mp_fMaxTreeHeight[iSpecies])
+    return mp_fMaxTreeHeight[iSpecies];
+  if (fHeight < MINHEIGHT)
+    return MINHEIGHT;
+  return fHeight;
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // CalcSaplingDbh()
 ////////////////////////////////////////////////////////////////////////////
 float clAllometry::CalcSaplingDbh(float fHeight, const int & iSpecies) {
+  float fDbh;
   if (iSpecies >= m_iNumSpecies || iSpecies < 0) {
     //invalid species - throw an error
     modelErr stcErr;
@@ -383,7 +400,11 @@ float clAllometry::CalcSaplingDbh(float fHeight, const int & iSpecies) {
     stcErr.sMoreInfo = "Cannot set tree height greater than maximum canopy height for this species.";
     throw(stcErr);
   }
-  return (*this.*mp_SaplingDiam[iSpecies])(fHeight, iSpecies);
+  fDbh = (*this.*mp_SaplingDiam[iSpecies])(fHeight, iSpecies);
+
+  //Don't allow negative DBH
+  if (fDbh < MINDIAM) fDbh = MINDIAM;
+  return fDbh;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -396,20 +417,29 @@ float clAllometry::CalcAdultCrownRadius(clTree *p_oTree) {
   if (fCR > 0)
     return fCR;
   fCR = (*this.*mp_AdultCrownRad[iSp])(p_oTree);
+
+  //Make sure it's not negative
+  if (fCR < MINCROWN) fCR = MINCROWN;
   p_oTree->SetValue(m_oPop->GetCrownRadiusCode(iSp, iTp), fCR);
   return fCR;
+
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // CalcAdultCrownDepth()
 ////////////////////////////////////////////////////////////////////////////
 float clAllometry::CalcAdultCrownDepth(clTree *p_oTree) {
-  float fCD;
+  float fCD, fHeight;
   int iSp = p_oTree->GetSpecies(), iTp = p_oTree->GetType();
   p_oTree->GetValue(m_oPop->GetCrownDepthCode(iSp, iTp), &fCD);
   if (fCD > 0)
     return fCD;
   fCD = (*this.*mp_AdultCrownDepth[iSp])(p_oTree);
+
+  p_oTree->GetValue(m_oPop->GetHeightCode(iSp, p_oTree->GetType()), &fHeight);
+
+  fCD = fCD > fHeight ? fHeight : fCD;
+  if (fCD < MINCROWN) fCD = MINCROWN;
   p_oTree->SetValue(m_oPop->GetCrownDepthCode(iSp, iTp), fCD);
   return fCD;
 }
@@ -424,6 +454,7 @@ float clAllometry::CalcSaplingCrownRadius(clTree *p_oTree) {
   if (fCR > 0)
     return fCR;
   fCR = (*this.*mp_SaplingCrownRad[iSp])(p_oTree);
+  if (fCR < MINCROWN) fCR = MINCROWN;
   p_oTree->SetValue(m_oPop->GetCrownRadiusCode(iSp, iTp), fCR);
   return fCR;
 }
@@ -438,6 +469,7 @@ float clAllometry::CalcSaplingCrownDepth(clTree *p_oTree) {
   if (fCD > 0)
     return fCD;
   fCD = (*this.*mp_SaplingCrownDepth[iSp])(p_oTree);
+  if (fCD < MINCROWN) fCD = MINCROWN;
   p_oTree->SetValue(m_oPop->GetCrownDepthCode(iSp, iTp), fCD);
   return fCD;
 }
@@ -446,6 +478,7 @@ float clAllometry::CalcSaplingCrownDepth(clTree *p_oTree) {
 // CalcSeedlingHeight()
 ////////////////////////////////////////////////////////////////////////////
 float clAllometry::CalcSeedlingHeight(float fDiam10, const int & iSpecies) {
+  float fHeight;
   if (iSpecies >= m_iNumSpecies || iSpecies < 0) {
     //invalid species - throw an error
     modelErr stcErr;
@@ -456,13 +489,19 @@ float clAllometry::CalcSeedlingHeight(float fDiam10, const int & iSpecies) {
     stcErr.sMoreInfo = s.str();
     throw(stcErr);
   }
-  return (*this.*mp_SeedlingHeight[iSpecies])(fDiam10, iSpecies);
+  fHeight = (*this.*mp_SeedlingHeight[iSpecies])(fDiam10, iSpecies);
+  if (fHeight > mp_fMaxTreeHeight[iSpecies])
+    return mp_fMaxTreeHeight[iSpecies];
+  if (fHeight < MINHEIGHT)
+    return MINHEIGHT;
+  return fHeight;
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // CalcSeedlingDiam10()
 ////////////////////////////////////////////////////////////////////////////
 float clAllometry::CalcSeedlingDiam10(float fHeight, const int & iSpecies) {
+  float fDiam;
   if (iSpecies >= m_iNumSpecies || iSpecies < 0) {
     //invalid species - throw an error
     modelErr stcErr;
@@ -481,13 +520,16 @@ float clAllometry::CalcSeedlingDiam10(float fHeight, const int & iSpecies) {
     stcErr.sMoreInfo = "Cannot set tree height greater than maximum tree height for this species.";
     throw(stcErr);
   }
-  return (*this.*mp_SeedlingDiam[iSpecies])(fHeight, iSpecies);
+  fDiam = (*this.*mp_SeedlingDiam[iSpecies])(fHeight, iSpecies);
+  if (fDiam < MINDIAM) fDiam = MINDIAM;
+  return fDiam;
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // ConvertDiam10ToDbh()
 ////////////////////////////////////////////////////////////////////////////
 float clAllometry::ConvertDiam10ToDbh(float fDiam10, const int & iSpecies) {
+  float fDbh;
   if (iSpecies >= m_iNumSpecies || iSpecies < 0) {
     //invalid species - throw an error
     modelErr stcErr;
@@ -498,14 +540,17 @@ float clAllometry::ConvertDiam10ToDbh(float fDiam10, const int & iSpecies) {
     stcErr.sMoreInfo = s.str();
     throw(stcErr);
   }
-  return (fDiam10 * mp_fDbhToDiam10Slope[iSpecies])
+  fDbh = (fDiam10 * mp_fDbhToDiam10Slope[iSpecies])
       + mp_fDbhToDiam10Intercept[iSpecies];
+  if (fDbh < MINDIAM) fDbh = MINDIAM;
+  return fDbh;
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // ConvertDbhToDiam10()
 ////////////////////////////////////////////////////////////////////////////
 float clAllometry::ConvertDbhToDiam10(const float & fDbh, const int & iSpecies) {
+  float fDiam;
   if (iSpecies >= m_iNumSpecies || iSpecies < 0) {
     //invalid species - throw an error
     modelErr stcErr;
@@ -516,8 +561,10 @@ float clAllometry::ConvertDbhToDiam10(const float & fDbh, const int & iSpecies) 
     stcErr.sMoreInfo = s.str();
     throw(stcErr);
   }
-  return (fDbh - mp_fDbhToDiam10Intercept[iSpecies])
+  fDiam = (fDbh - mp_fDbhToDiam10Intercept[iSpecies])
       / mp_fDbhToDiam10Slope[iSpecies];
+  if (fDiam < MINDIAM) fDiam = MINDIAM;
+  return fDiam;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -542,25 +589,15 @@ double clAllometry::GetMaxTreeHeight(int iSpecies) {
 //////////////////////////////////////////////////////////////////////////////
 float clAllometry::CalcStandardSapAdultHeight(const float &fDbh,
     const int &iSpecies) {
-  float fHeight = (1.35 + ((mp_fMaxTreeHeight[iSpecies] - 1.35) * (1.0 - exp(
+  return (1.35 + ((mp_fMaxTreeHeight[iSpecies] - 1.35) * (1.0 - exp(
       (double) (-mp_fSlopeAsympHeight[iSpecies] * fDbh)))));
-  if (fHeight > 0.001)
-    return fHeight;
-  else
-    return 0.001;
 }
 
 //////////////////////////////////////////////////////////////////////////////
 // CalcLinearAdultHeight()
 //////////////////////////////////////////////////////////////////////////////
 float clAllometry::CalcLinearAdultHeight(const float &fDbh, const int &iSpecies) {
-  float fHeight = fDbh * mp_fAdultLinearSlope[iSpecies]
-                                              + mp_fAdultLinearIntercept[iSpecies];
-  if (fHeight > mp_fMaxTreeHeight[iSpecies])
-    return mp_fMaxTreeHeight[iSpecies];
-  if (fHeight <= 0.001)
-    return 0.001;
-  return fHeight;
+  return fDbh * mp_fAdultLinearSlope[iSpecies] + mp_fAdultLinearIntercept[iSpecies];
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -568,13 +605,8 @@ float clAllometry::CalcLinearAdultHeight(const float &fDbh, const int &iSpecies)
 //////////////////////////////////////////////////////////////////////////////
 float clAllometry::CalcReverseLinearAdultHeight(const float &fDbh,
     const int &iSpecies) {
-  float fHeight = (fDbh - mp_fAdultReverseLinearIntercept[iSpecies])
+  return (fDbh - mp_fAdultReverseLinearIntercept[iSpecies])
           / mp_fAdultReverseLinearSlope[iSpecies];
-  if (fHeight > mp_fMaxTreeHeight[iSpecies])
-    return mp_fMaxTreeHeight[iSpecies];
-  if (fHeight <= 0.001)
-    return 0.001;
-  return fHeight;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -582,13 +614,7 @@ float clAllometry::CalcReverseLinearAdultHeight(const float &fDbh,
 //////////////////////////////////////////////////////////////////////////////
 float clAllometry::CalcLinearSaplingHeight(const float &fDbh,
     const int &iSpecies) {
-  float fHeight = fDbh * mp_fSaplingLinearSlope[iSpecies]
-                                                + mp_fSaplingLinearIntercept[iSpecies];
-  if (fHeight > mp_fMaxTreeHeight[iSpecies])
-    return mp_fMaxTreeHeight[iSpecies];
-  if (fHeight <= 0.001)
-    return 0.001;
-  return fHeight;
+  return fDbh * mp_fSaplingLinearSlope[iSpecies] + mp_fSaplingLinearIntercept[iSpecies];
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -596,13 +622,8 @@ float clAllometry::CalcLinearSaplingHeight(const float &fDbh,
 //////////////////////////////////////////////////////////////////////////////
 float clAllometry::CalcReverseLinearSaplingHeight(const float &fDbh,
     const int &iSpecies) {
-  float fHeight = (fDbh - mp_fSaplingReverseLinearIntercept[iSpecies])
+  return (fDbh - mp_fSaplingReverseLinearIntercept[iSpecies])
           / mp_fSaplingReverseLinearSlope[iSpecies];
-  if (fHeight > mp_fMaxTreeHeight[iSpecies])
-    return mp_fMaxTreeHeight[iSpecies];
-  if (fHeight <= 0.001)
-    return 0.001;
-  return fHeight;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -610,12 +631,7 @@ float clAllometry::CalcReverseLinearSaplingHeight(const float &fDbh,
 //////////////////////////////////////////////////////////////////////////////
 float clAllometry::CalcStandardSeedlingHeight(const float &fDiam10,
     const int &iSpecies) {
-  float fHeight = 0.1 + 30 * (1.0 - exp(
-      (double) (-mp_fSlopeHeightDiam10[iSpecies] * fDiam10)));
-  if (fHeight > 0.001)
-    return fHeight;
-  else
-    return 0.001;
+  return 0.1 + 30 * (1.0 - exp((double) (-mp_fSlopeHeightDiam10[iSpecies] * fDiam10)));
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -623,13 +639,7 @@ float clAllometry::CalcStandardSeedlingHeight(const float &fDiam10,
 //////////////////////////////////////////////////////////////////////////////
 float clAllometry::CalcLinearSeedlingHeight(const float &fDiam10,
     const int &iSpecies) {
-  float fHeight = fDiam10 * mp_fSeedlingLinearSlope[iSpecies]
-                                                    + mp_fSeedlingLinearIntercept[iSpecies];
-  if (fHeight > mp_fMaxTreeHeight[iSpecies])
-    return mp_fMaxTreeHeight[iSpecies];
-  if (fHeight <= 0.001)
-    return 0.001;
-  return fHeight;
+  return fDiam10 * mp_fSeedlingLinearSlope[iSpecies] + mp_fSeedlingLinearIntercept[iSpecies];
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -637,13 +647,8 @@ float clAllometry::CalcLinearSeedlingHeight(const float &fDiam10,
 //////////////////////////////////////////////////////////////////////////////
 float clAllometry::CalcReverseLinearSeedlingHeight(const float &fDiam10,
     const int &iSpecies) {
-  float fHeight = (fDiam10 - mp_fSeedlingReverseLinearIntercept[iSpecies])
+  return (fDiam10 - mp_fSeedlingReverseLinearIntercept[iSpecies])
           / mp_fSeedlingReverseLinearSlope[iSpecies];
-  if (fHeight > mp_fMaxTreeHeight[iSpecies])
-    return mp_fMaxTreeHeight[iSpecies];
-  if (fHeight <= 0.001)
-    return 0.001;
-  return fHeight;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -748,9 +753,8 @@ float clAllometry::CalcStandardSapAdultCrownDepth(clTree *p_oTree) {
   int iSpecies = p_oTree->GetSpecies();
   p_oTree->GetValue(m_oPop->GetHeightCode(iSpecies, p_oTree->GetType()),
       &fHeight);
-  float fCrownHeight = mp_fAsympCrownDepth[iSpecies] * pow(fHeight,
+  return mp_fAsympCrownDepth[iSpecies] * pow(fHeight,
       mp_fCrownDepthExp[iSpecies]);
-  return fCrownHeight > fHeight ? fHeight : fCrownHeight;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -761,11 +765,10 @@ float clAllometry::CalcChapRichSapAdultCrownDepth(clTree *p_oTree) {
   int iSpecies = p_oTree->GetSpecies();
   p_oTree->GetValue(m_oPop->GetHeightCode(iSpecies, p_oTree->GetType()),
       &fHeight);
-  float fCHeight = mp_fCRCrownHtIntercept[iSpecies]
-                                          + (mp_fCRAsympCrownHt[iSpecies] * (pow((1 - exp(
-                                              -mp_fCRCrownHtShape1[iSpecies] * fHeight)),
-                                              mp_fCRCrownHtShape2[iSpecies])));
-  return (fCHeight > fHeight) ? fHeight : fCHeight;
+  return mp_fCRCrownHtIntercept[iSpecies]
+        + (mp_fCRAsympCrownHt[iSpecies] * (pow((1 - exp(
+          -mp_fCRCrownHtShape1[iSpecies] * fHeight)),
+          mp_fCRCrownHtShape2[iSpecies])));
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -776,13 +779,8 @@ float clAllometry::CalcPowerSaplingHeight(const float &fDbh,
   if (fDbh <= 0.001)
     return 0.001;
   //Turn DBH into diam10
-  float fDiam10 = ConvertDbhToDiam10(fDbh, iSpecies), fHeight =
-      mp_fPowerA[iSpecies] * pow(fDiam10, mp_fPowerExpB[iSpecies]);
-  if (fHeight > mp_fMaxTreeHeight[iSpecies])
-    return mp_fMaxTreeHeight[iSpecies];
-  if (fHeight <= 0.001)
-    return 0.001;
-  return fHeight;
+  float fDiam10 = ConvertDbhToDiam10(fDbh, iSpecies);
+  return (mp_fPowerA[iSpecies] * pow(fDiam10, mp_fPowerExpB[iSpecies]));
 }
 
 //////////////////////////////////////////////////////////////////////////////
