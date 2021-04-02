@@ -79,6 +79,14 @@ clSpatialDispersal::~clSpatialDispersal()
 {
   short int i, j, k; //loop counters
 
+  if (mp_fBeta) {
+    for ( j = 0; j < m_iNumCovers; j++ )
+    {
+      delete[] mp_fStr[j];
+      delete[] mp_fBeta[j];
+    }
+  }
+
   //Test to see if the arrays have been declared before deleting - since the
   //number of covers and functions will always be greater than 0 since they're
   //set in the constructor, the for loops would otherwise always execute and an
@@ -91,8 +99,6 @@ clSpatialDispersal::~clSpatialDispersal()
       {
         delete[] mp_fDispersalX0[i] [j];
         delete[] mp_fThetaXb[i] [j];
-        delete[] mp_fStr[i] [j];
-        delete[] mp_fBeta[i] [j];
         delete[] mp_fFecundity[i] [j];
         if ( mp_fCumProb[i] [j] )
         {
@@ -103,8 +109,6 @@ clSpatialDispersal::~clSpatialDispersal()
       }
       delete[] mp_fDispersalX0[i];
       delete[] mp_fThetaXb[i];
-      delete[] mp_fStr[i];
-      delete[] mp_fBeta[i];
       delete[] mp_fFecundity[i];
       delete[] mp_fCumProb[i];
     }
@@ -144,12 +148,10 @@ void clSpatialDispersal::DeclareArrays()
   //Declare our data arrays
   mp_fDbhForReproduction = new double[m_iTotalSpecies];
 
-  mp_fDispersalX0 = new double * * [m_iNumFunctions];
-  mp_fThetaXb = new double * * [m_iNumFunctions];
-  mp_fBeta = new double * * [m_iNumFunctions];
-  mp_fStr = new double * * [m_iNumFunctions];
-  mp_fFecundity = new double * * [m_iNumFunctions];
-  mp_fCumProb = new double * * * [m_iNumFunctions];
+  mp_fDispersalX0 = new double **[m_iNumFunctions];
+  mp_fThetaXb = new double **[m_iNumFunctions];
+  mp_fFecundity = new double **[m_iNumFunctions];
+  mp_fCumProb = new double ***[m_iNumFunctions];
   if ( m_bStumps )
   {
     mp_fStumpStr = new double[m_iNumBehaviorSpecies];
@@ -161,8 +163,6 @@ void clSpatialDispersal::DeclareArrays()
   {
     mp_fDispersalX0[i] = new double * [m_iNumCovers];
     mp_fThetaXb[i] = new double * [m_iNumCovers];
-    mp_fBeta[i] = new double * [m_iNumCovers];
-    mp_fStr[i] = new double * [m_iNumCovers];
     mp_fFecundity[i] = new double * [m_iNumCovers];
     mp_fCumProb[i] = new double * * [m_iNumCovers];
 
@@ -173,8 +173,6 @@ void clSpatialDispersal::DeclareArrays()
       {
         mp_fDispersalX0[i] [j] = new double[m_iNumBehaviorSpecies];
         mp_fThetaXb[i] [j] = new double[m_iNumBehaviorSpecies];
-        mp_fBeta[i] [j] = new double[m_iNumBehaviorSpecies];
-        mp_fStr[i] [j] = new double[m_iNumBehaviorSpecies];
         mp_fFecundity[i] [j] = new double[m_iNumBehaviorSpecies];
         mp_fCumProb[i] [j] = new double * [m_iNumBehaviorSpecies];
 
@@ -186,13 +184,28 @@ void clSpatialDispersal::DeclareArrays()
       {
         mp_fDispersalX0[i] [j] = NULL;
         mp_fThetaXb[i] [j] = NULL;
-        mp_fBeta[i] [j] = NULL;
-        mp_fStr[i] [j] = NULL;
         mp_fFecundity[i] [j] = NULL;
         mp_fCumProb[i] [j] = NULL;
       }
     }
   }
+
+  mp_fBeta = new double *[m_iNumCovers];
+  mp_fStr = new double *[m_iNumCovers];
+  for ( j = 0; j < m_iNumCovers; j++ )
+    {
+      if ( canopy == j || m_bIsGap )
+      {
+        mp_fBeta[j] = new double[m_iNumBehaviorSpecies];
+        mp_fStr[j] = new double[m_iNumBehaviorSpecies];
+      }
+      else
+      {
+        mp_fBeta[j] = NULL;
+        mp_fStr[j] = NULL;
+      }
+    }
+
 
   mp_iWhatFunction = new function * [m_iNumCovers];
   for ( i = 0; i < m_iNumCovers; i++ )
@@ -345,7 +358,7 @@ void clSpatialDispersal::GetParameterFileData( xercesc::DOMDocument * p_oDoc )
 
     //Transfer the values over - if any are not a valid function enum number,
     //throw an error
-    for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
+    for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
       if ( p_iTemp[i].val < 0 || p_iTemp[i].val >= m_iNumFunctions )
       {
         modelErr stcErr;
@@ -360,6 +373,76 @@ void clSpatialDispersal::GetParameterFileData( xercesc::DOMDocument * p_oDoc )
       {
         mp_iWhatFunction[canopy] [mp_iIndexes[mp_iWhatSpecies[i]]] = (function)p_iTemp[i].val;
       }
+    }
+
+    //**********************************
+    //Canopy STR and beta. I stupidly used to split these by function so ensure
+    //backwards compatibility. Going forward it will be weibull only (to
+    //avoid a name change)
+    //**********************************
+    //Make sure we can tell if there are missing values
+    for (i = 0; i < m_iNumBehaviorSpecies; i++) {
+      mp_fBeta[canopy][i] = -9999;
+      mp_fStr[canopy][i] = -9999;
+      p_fTemp[i].val = -9999;
+    }
+    FillSpeciesSpecificValue( p_oElement, "di_weibullCanopyBeta", "di_wcbVal", p_fTemp, m_iNumBehaviorSpecies, p_oPop, false );
+    for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
+      if (p_fTemp[i].val > -9999) {
+        mp_fBeta[canopy] [mp_iIndexes[p_fTemp[i].code]] = p_fTemp[i].val;
+      }
+    }
+    for (i = 0; i < m_iNumBehaviorSpecies; i++) {
+      p_fTemp[i].val = -9999;
+    }
+    FillSpeciesSpecificValue( p_oElement, "di_lognormalCanopyBeta", "di_lcbVal", p_fTemp, m_iNumBehaviorSpecies, p_oPop, false );
+    for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
+      if (p_fTemp[i].val > -9999) {
+        mp_fBeta[canopy] [mp_iIndexes[p_fTemp[i].code]] = p_fTemp[i].val;
+      }
+    }
+    for (i = 0; i < m_iNumBehaviorSpecies; i++) {
+      if (mp_fBeta[canopy][i] > 25) {
+        modelErr stcErr;
+        stcErr.iErrorCode = BAD_DATA;
+        stcErr.sFunction = "clSpatialDispersal::GetParameterFileData" ;
+        stcErr.sMoreInfo = "One or more beta values is too large and will cause math errors.";
+        throw( stcErr );
+      }
+      if (mp_fBeta[canopy][i] < -9990) {
+        modelErr stcErr;
+        stcErr.iErrorCode = BAD_DATA;
+        stcErr.sFunction = "clSpatialDispersal::GetParameterFileData" ;
+        stcErr.sMoreInfo = "Missing beta value.";
+        throw( stcErr );
+      }
+    }
+
+
+    FillSpeciesSpecificValue( p_oElement, "di_weibullCanopySTR", "di_wcsVal", p_fTemp, m_iNumBehaviorSpecies, p_oPop, false );
+    for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
+      if (p_fTemp[i].val > -9999) {
+        mp_fStr[canopy] [mp_iIndexes[p_fTemp[i].code]] = p_fTemp[i].val;
+      }
+    }
+    for (i = 0; i < m_iNumBehaviorSpecies; i++) {
+      p_fTemp[i].val = -9999;
+    }
+    FillSpeciesSpecificValue( p_oElement, "di_lognormalCanopySTR", "di_lcsVal", p_fTemp, m_iNumBehaviorSpecies, p_oPop, false );
+    for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
+      if (p_fTemp[i].val > -9999) {
+        mp_fStr[canopy] [mp_iIndexes[p_fTemp[i].code]] = p_fTemp[i].val;
+      }
+    }
+    for (i = 0; i < m_iNumBehaviorSpecies; i++) {
+      if (mp_fStr[canopy] [i] < -9990) {
+        modelErr stcErr;
+        stcErr.iErrorCode = BAD_DATA;
+        stcErr.sFunction = "clSpatialDispersal::GetParameterFileData" ;
+        stcErr.sMoreInfo = "Missing STR value.";
+        throw( stcErr );
+      }
+    }
 
     //**********************************
     //Weibull canopy parameters
@@ -405,26 +488,6 @@ void clSpatialDispersal::GetParameterFileData( xercesc::DOMDocument * p_oDoc )
           throw( stcErr );
         }
       }
-
-      //Beta
-      FillSpeciesSpecificValue( p_oElement, "di_weibullCanopyBeta", "di_wcbVal", p_fTemp, iNumFunctionSpecies, p_oPop, true );
-      //Transfer to permanent array
-      for ( i = 0; i < iNumFunctionSpecies; i++ ) {
-        mp_fBeta[weibull] [canopy] [mp_iIndexes[p_fTemp[i].code]] = p_fTemp[i].val;
-        if (p_fTemp[i].val > 25) {
-          modelErr stcErr;
-          stcErr.iErrorCode = BAD_DATA;
-          stcErr.sFunction = "clSpatialDispersal::GetParameterFileData" ;
-          stcErr.sMoreInfo = "One or more beta values is too large and will cause math errors.";
-          throw( stcErr );
-        }
-      }
-
-      //STR
-      FillSpeciesSpecificValue( p_oElement, "di_weibullCanopySTR", "di_wcsVal", p_fTemp, iNumFunctionSpecies, p_oPop, true );
-      //Transfer to permanent array
-      for ( i = 0; i < iNumFunctionSpecies; i++ )
-        mp_fStr[weibull] [canopy] [mp_iIndexes[p_fTemp[i].code]] = p_fTemp[i].val;
     } //end of if (iNumFunctionSpecies > 0) {
 
     //**********************************
@@ -465,30 +528,83 @@ void clSpatialDispersal::GetParameterFileData( xercesc::DOMDocument * p_oDoc )
       //Transfer to permanent array
       for ( i = 0; i < iNumFunctionSpecies; i++ )
         mp_fThetaXb[lognormal] [canopy] [mp_iIndexes[p_fTemp[i].code]] = p_fTemp[i].val;
+    } //end of if (iNumFunctionSpecies > 0)
 
-      //Beta
-      FillSpeciesSpecificValue( p_oElement, "di_lognormalCanopyBeta", "di_lcbVal", p_fTemp, iNumFunctionSpecies, p_oPop, true );
-      //Transfer to permanent array
-      for ( i = 0; i < iNumFunctionSpecies; i++ ) {
-        mp_fBeta[lognormal] [canopy] [mp_iIndexes[p_fTemp[i].code]] = p_fTemp[i].val;
-        if (p_fTemp[i].val > 25) {
+    if ( m_bIsGap )
+    {
+
+      p_fTemp = new doubleVal[m_iNumBehaviorSpecies];
+      for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
+        p_fTemp[i].code = mp_iWhatSpecies[i];
+
+      //**********************************
+      //Gap STR and beta. I stupidly used to split these by function so ensure
+      //backwards compatibility. Going forward it will be weibull only (to
+      //avoid a name change)
+      //**********************************
+      //Make sure we can tell if there are missing values
+      for (i = 0; i < m_iNumBehaviorSpecies; i++) {
+        mp_fBeta[gap][i] = -9999;
+        mp_fStr[gap][i] = -9999;
+        p_fTemp[i].val = -9999;
+      }
+      FillSpeciesSpecificValue( p_oElement, "di_weibullGapBeta", "di_wgbVal", p_fTemp, m_iNumBehaviorSpecies, p_oPop, false );
+      for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
+        if (p_fTemp[i].val > -9999) {
+          mp_fBeta[gap] [mp_iIndexes[p_fTemp[i].code]] = p_fTemp[i].val;
+        }
+      }
+      for (i = 0; i < m_iNumBehaviorSpecies; i++) {
+        p_fTemp[i].val = -9999;
+      }
+      FillSpeciesSpecificValue( p_oElement, "di_lognormalGapBeta", "di_lgbVal", p_fTemp, m_iNumBehaviorSpecies, p_oPop, false );
+      for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
+        if (p_fTemp[i].val > -9999) {
+          mp_fBeta[gap] [mp_iIndexes[p_fTemp[i].code]] = p_fTemp[i].val;
+        }
+      }
+      for (i = 0; i < m_iNumBehaviorSpecies; i++) {
+        if (mp_fBeta[gap] [i] > 25) {
           modelErr stcErr;
           stcErr.iErrorCode = BAD_DATA;
           stcErr.sFunction = "clSpatialDispersal::GetParameterFileData" ;
           stcErr.sMoreInfo = "One or more beta values is too large and will cause math errors.";
           throw( stcErr );
         }
+        if (mp_fBeta[gap] [i] < -9990) {
+          modelErr stcErr;
+          stcErr.iErrorCode = BAD_DATA;
+          stcErr.sFunction = "clSpatialDispersal::GetParameterFileData" ;
+          stcErr.sMoreInfo = "Missing beta value.";
+          throw( stcErr );
+        }
       }
 
-      //STR
-      FillSpeciesSpecificValue( p_oElement, "di_lognormalCanopySTR", "di_lcsVal", p_fTemp, iNumFunctionSpecies, p_oPop, true );
-      //Transfer to permanent array
-      for ( i = 0; i < iNumFunctionSpecies; i++ )
-        mp_fStr[lognormal] [canopy] [mp_iIndexes[p_fTemp[i].code]] = p_fTemp[i].val;
-    } //end of if (iNumFunctionSpecies > 0)
 
-    if ( m_bIsGap )
-    {
+      FillSpeciesSpecificValue( p_oElement, "di_weibullGapSTR", "di_wgsVal", p_fTemp, m_iNumBehaviorSpecies, p_oPop, false );
+      for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
+        if (p_fTemp[i].val > -9999) {
+          mp_fStr[gap] [mp_iIndexes[p_fTemp[i].code]] = p_fTemp[i].val;
+        }
+      }
+      for (i = 0; i < m_iNumBehaviorSpecies; i++) {
+        p_fTemp[i].val = -9999;
+      }
+      FillSpeciesSpecificValue( p_oElement, "di_lognormalGapSTR", "di_lgsVal", p_fTemp, m_iNumBehaviorSpecies, p_oPop, false );
+      for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
+        if (p_fTemp[i].val > -9999) {
+          mp_fStr[gap] [mp_iIndexes[p_fTemp[i].code]] = p_fTemp[i].val;
+        }
+      }
+      for (i = 0; i < m_iNumBehaviorSpecies; i++) {
+        if (mp_fStr[gap][i] < -9990) {
+          modelErr stcErr;
+          stcErr.iErrorCode = BAD_DATA;
+          stcErr.sFunction = "clSpatialDispersal::GetParameterFileData" ;
+          stcErr.sMoreInfo = "Missing STR value.";
+          throw( stcErr );
+        }
+      }
 
       //Maximum gap density
       FillSingleValue( p_oElement, "di_maxGapDensity", & m_iMaxGapDensity, true );
@@ -560,26 +676,6 @@ void clSpatialDispersal::GetParameterFileData( xercesc::DOMDocument * p_oDoc )
             throw( stcErr );
           }
         }
-
-        //mp_fBeta
-        FillSpeciesSpecificValue( p_oElement, "di_weibullGapBeta", "di_wgbVal", p_fTemp, iNumFunctionSpecies, p_oPop, true );
-        //Transfer to permanent array
-        for ( i = 0; i < iNumFunctionSpecies; i++ ) {
-          mp_fBeta[weibull] [gap] [mp_iIndexes[p_fTemp[i].code]] = p_fTemp[i].val;
-          if (p_fTemp[i].val > 25) {
-            modelErr stcErr;
-            stcErr.iErrorCode = BAD_DATA;
-            stcErr.sFunction = "clSpatialDispersal::GetParameterFileData" ;
-            stcErr.sMoreInfo = "One or more beta values is too large and will cause math errors.";
-            throw( stcErr );
-          }
-        }
-
-        //mp_fStr
-        FillSpeciesSpecificValue( p_oElement, "di_weibullGapSTR", "di_wgsVal", p_fTemp, iNumFunctionSpecies, p_oPop, true );
-        //Transfer to permanent array
-        for ( i = 0; i < iNumFunctionSpecies; i++ )
-          mp_fStr[weibull] [gap] [mp_iIndexes[p_fTemp[i].code]] = p_fTemp[i].val;
       } //end of if (iNumFunctionSpecies > 0) {
 
       //**********************************
@@ -620,26 +716,6 @@ void clSpatialDispersal::GetParameterFileData( xercesc::DOMDocument * p_oDoc )
         //Transfer to permanent array
         for ( i = 0; i < iNumFunctionSpecies; i++ )
           mp_fThetaXb[lognormal] [gap] [mp_iIndexes[p_fTemp[i].code]] = p_fTemp[i].val;
-
-        //Beta
-        FillSpeciesSpecificValue( p_oElement, "di_lognormalGapBeta", "di_lgbVal", p_fTemp, iNumFunctionSpecies, p_oPop, true );
-        //Transfer to permanent array
-        for ( i = 0; i < iNumFunctionSpecies; i++ ) {
-          mp_fBeta[lognormal] [gap] [mp_iIndexes[p_fTemp[i].code]] = p_fTemp[i].val;
-          if (p_fTemp[i].val > 25) {
-            modelErr stcErr;
-            stcErr.iErrorCode = BAD_DATA;
-            stcErr.sFunction = "clSpatialDispersal::GetParameterFileData" ;
-            stcErr.sMoreInfo = "One or more beta values is too large and will cause math errors.";
-            throw( stcErr );
-          }
-        }
-
-        //STR
-        FillSpeciesSpecificValue( p_oElement, "di_lognormalGapSTR", "di_lgsVal", p_fTemp, iNumFunctionSpecies, p_oPop, true );
-        //Transfer to permanent array
-        for ( i = 0; i < iNumFunctionSpecies; i++ )
-          mp_fStr[lognormal] [gap] [mp_iIndexes[p_fTemp[i].code]] = p_fTemp[i].val;
       }
     }
 
@@ -744,8 +820,8 @@ void clSpatialDispersal::CalcFecAndFunctions()
           {
 
             mp_fFecundity[i] [j] [mp_iIndexes[mp_iWhatSpecies[k]]] =
-                 mp_fStr[i] [j] [mp_iIndexes[mp_iWhatSpecies[k]]]
-                 / pow( 30, mp_fBeta[i] [j] [mp_iIndexes[mp_iWhatSpecies[k]]] );
+                 mp_fStr[j] [mp_iIndexes[mp_iWhatSpecies[k]]]
+                 / pow( 30, mp_fBeta[j][mp_iIndexes[mp_iWhatSpecies[k]]] );
 
             mp_fCumProb[i] [j] [k] = new double[m_iMaxDistance];
 
@@ -765,8 +841,8 @@ void clSpatialDispersal::CalcFecAndFunctions()
         {
 
           mp_fFecundity[i] [canopy] [mp_iIndexes[mp_iWhatSpecies[k]]] =
-               mp_fStr[i] [canopy] [mp_iIndexes[mp_iWhatSpecies[k]]]
-               / pow( 30, mp_fBeta[i] [canopy] [mp_iIndexes[mp_iWhatSpecies[k]]] );
+               mp_fStr[canopy] [mp_iIndexes[mp_iWhatSpecies[k]]]
+               / pow( 30, mp_fBeta[canopy] [mp_iIndexes[mp_iWhatSpecies[k]]] );
 
           mp_fCumProb[i] [canopy] [k] = new double[m_iMaxDistance];
 
@@ -1042,7 +1118,7 @@ void clSpatialDispersal::SpatialDisperse( clTree * p_oTree, clTreePopulation * p
       //For stumps - I'm kind of guessing here.  I don't have confirmation that
       //this is how this is supposed to be calculated.
       fSurvivalChance = ( mp_fStumpStr[iSpIndex] * ( pow( ( fDbh / 30 ), mp_fStumpBeta[iSpIndex] ) ) )
-           / ( mp_fStr[iGapFunc] [gap] [iSpIndex] * ( pow( ( fDbh / 30 ), mp_fBeta[iGapFunc] [gap] [iSpIndex] ) ) );
+           / ( mp_fStr[gap] [iSpIndex] * ( pow( ( fDbh / 30 ), mp_fBeta[gap] [iSpIndex] ) ) );
 
     }
     else
@@ -1050,7 +1126,7 @@ void clSpatialDispersal::SpatialDisperse( clTree * p_oTree, clTreePopulation * p
 
       //To calculate the number of seeds for live trees, use the maximum of gap
       //STR and canopy STR.
-      if ( mp_fStr[iCanFunc] [canopy] [iSpIndex] >= mp_fStr[iGapFunc] [gap] [iSpIndex] )
+      if ( mp_fStr[canopy] [iSpIndex] >= mp_fStr[gap] [iSpIndex] )
       {
         fNumSeeds = GetNumberOfSeeds( fDbh, iSp, canopy, iCanFunc );
       }
@@ -1059,8 +1135,8 @@ void clSpatialDispersal::SpatialDisperse( clTree * p_oTree, clTreePopulation * p
         fNumSeeds = GetNumberOfSeeds( fDbh, iSp, gap, iGapFunc );
       }
 
-      fSurvivalChance = ( mp_fStr[iGapFunc] [gap] [iSpIndex] * ( pow( ( fDbh / 30 ), mp_fBeta[iGapFunc] [gap] [iSpIndex] ) ) )
-           / ( mp_fStr[iCanFunc] [canopy] [iSpIndex] * ( pow( ( fDbh / 30 ), mp_fBeta[iCanFunc] [canopy] [iSpIndex] ) ) );
+      fSurvivalChance = ( mp_fStr[gap] [iSpIndex] * ( pow( ( fDbh / 30 ), mp_fBeta[gap] [iSpIndex] ) ) )
+           / ( mp_fStr[canopy] [iSpIndex] * ( pow( ( fDbh / 30 ), mp_fBeta[canopy] [iSpIndex] ) ) );
     }
 
     //***************************************
@@ -1505,7 +1581,7 @@ void clSpatialDispersal::SetNameData(std::string sNameString)
 float clSpatialDispersal::GetNumberOfSeeds(float fDbh, short int iSp, int iCover, int iFunc )
 {
   return clModelMath::RandomRound( mp_fFecundity[iFunc] [iCover] [mp_iIndexes[iSp]]
-       * pow( fDbh, mp_fBeta[iFunc] [iCover] [mp_iIndexes[iSp]] ) * m_iNumYearsPerTimestep );
+       * pow( fDbh, mp_fBeta[iCover] [mp_iIndexes[iSp]] ) * m_iNumYearsPerTimestep );
 }
 
 /*/ ////////////////////////////////////////////////////////////////////////////

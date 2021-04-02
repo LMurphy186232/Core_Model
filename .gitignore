@@ -11,4 +11,5 @@ Release
 .cproject
 coremodel.exe
 *.dll
+*.exe
 /HarvestTrees.txt

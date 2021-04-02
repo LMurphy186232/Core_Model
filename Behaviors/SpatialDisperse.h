@@ -43,6 +43,8 @@ class clTree;
 * <br>Edit history:
 * <br>-----------------
 * <br>October 20, 2011 - Wiped the slate clean for SORTIE 7.0 (LEM)
+* <br>April 2, 2021 - Unified beta and STR for the two functions because
+* those are always the same
 */
 class clSpatialDispersal : virtual public clDisperseBase {
 //note: need the virtual keyword to avoid base class ambiguity.
@@ -85,15 +87,13 @@ protected:
    * The third index is species. This value comes from the parameter file.*/
   double ***mp_fThetaXb;
 
-  /**STR parameter. The array is 3D - first index is which disperse function is
-   * used. The second index is cover. The third index is species. This value
-   * comes from the parameter file.*/
-  double ***mp_fStr;
+  /**STR parameter. The first index is cover. The second index is species.
+   * This value comes from the parameter file.*/
+  double **mp_fStr;
 
-  /**Beta parameter. The array is 3D - first index is which disperse function is
-   * used. The second index is cover. The third index is species. This value
-   * comes from the parameter file.*/
-  double ***mp_fBeta;
+  /**Beta parameter. The first index is cover. The second index is species.
+   * This value comes from the parameter file.*/
+  double **mp_fBeta;
 
   /**Fecundity for 30 cm dbh tree for each species. The array is 3D - first
    * index is which disperse function is used. The second index is cover. The

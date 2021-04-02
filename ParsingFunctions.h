@@ -69,7 +69,7 @@ class clTreePopulation;
  * translating species names into codes
  * @param bRequired Whether or not this value is required.
  * @throw Error if the value is required and it is not found, or if it is found
- * and not all species are present (whether or not it is required).
+ * and not all species are present.
  */
 //void FillSpeciesSpecificValue(xercesc::DOMElement *p_oParent, std::string sTagName,
 //    std::string sSubTagName, floatVal *p_array, int iNumSpecies,
