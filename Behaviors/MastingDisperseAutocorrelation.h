@@ -222,7 +222,12 @@ public:
    * <ul>
    * <li>The function codes are not valid enums</li>
    * <li>A beta value is greater than 25 (to prevent pow overflows)</li>
-   * <li>A value in mp_fFractionParticipating is not between 0 and 1</li>
+   * <li>c in fraction participating is not between 0 and 1</li>
+   * <li>Masting level input is not between 0 and 1</li>
+   * <li>Rho noise < 0</li>
+   * <li>Max DBH < min DBH</li>
+   * <li>A in fraction participating = 0</li>
+   * <li>Seed producer score standard deviation < 0</li>
    * </ul>
    * @param p_oPop Tree population object.
    */

@@ -313,7 +313,7 @@ void clMastingDisperseAutocorrelation::GetParameterFileData( xercesc::DOMElement
     }
 
     //Beta
-    FillSpeciesSpecificValue( p_oElement, "di_spatialBeta", "di_sbVal", p_fTemp,
+    FillSpeciesSpecificValue( p_oElement, "di_weibullCanopyBeta", "di_wcbVal", p_fTemp,
                             m_iNumBehaviorSpecies, p_oPop, true );
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
       mp_fBeta[i] = p_fTemp[i].val;
@@ -327,7 +327,7 @@ void clMastingDisperseAutocorrelation::GetParameterFileData( xercesc::DOMElement
     }
 
     //Mean STR
-    FillSpeciesSpecificValue( p_oElement, "di_spatialSTR", "di_sstrVal", p_fTemp,
+    FillSpeciesSpecificValue( p_oElement, "di_weibullCanopySTR", "di_wcsVal", p_fTemp,
                             m_iNumBehaviorSpecies, p_oPop, true );
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       mp_fStrMean[i] = p_fTemp[i].val;
@@ -365,18 +365,11 @@ void clMastingDisperseAutocorrelation::GetParameterFileData( xercesc::DOMElement
       }
     }
 
-    //Autocorrelation factor for rho - make sure isn't 0
+    //Autocorrelation factor for rho
     FillSpeciesSpecificValue( p_oElement, "di_mdaRhoACF", "di_mdaraVal", p_fTemp,
         m_iNumBehaviorSpecies, p_oPop, true );
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
       mp_fACF[i] = p_fTemp[i].val;
-      if (p_fTemp[i].val <=  0) {
-        modelErr stcErr;
-        stcErr.iErrorCode = BAD_DATA;
-        stcErr.sFunction = "clMastingDisperseAutocorrelation::GetParameterFileData" ;
-        stcErr.sMoreInfo = "Rho autocorrelation factor cannot be less than or equal to 0.";
-        throw( stcErr );
-      }
     }
 
     //Standard deviation for noise for rho - must be greater than 0
