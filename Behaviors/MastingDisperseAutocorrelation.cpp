@@ -399,7 +399,7 @@ void clMastingDisperseAutocorrelation::GetParameterFileData( xercesc::DOMElement
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       mp_fPRB[i] = p_fTemp[i].val;
 
-    //Seed producer standard deviation. Must be greater than 0.
+    //Seed producer standard deviation. Must be greater than or equal to 0.
     FillSpeciesSpecificValue( p_oElement, "di_mdaSPSSD", "di_mdaspssdVal", p_fTemp,
         m_iNumBehaviorSpecies, p_oPop, true );
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ ) {
@@ -407,7 +407,7 @@ void clMastingDisperseAutocorrelation::GetParameterFileData( xercesc::DOMElement
         modelErr stcErr;
         stcErr.iErrorCode = BAD_DATA;
         stcErr.sFunction = "clMastingDisperseAutocorrelation::GetParameterFileData" ;
-        stcErr.sMoreInfo = "Standard deviation of rho noise cannot be less than 0";
+        stcErr.sMoreInfo = "Standard deviation of seed producer score cannot be less than 0";
         throw( stcErr );
       }
       mp_fSPSSD[i] = p_fTemp[i].val;
@@ -761,7 +761,14 @@ void clMastingDisperseAutocorrelation::AddSeeds()
       // Get the tree's sps code - assign if new
       p_oTree->GetValue(mp_iSpsCodes[iSp][iType], &fSps);
       if (fSps == 0) {
-        fSps = 1 + clModelMath::NormalRandomDraw(mp_fSPSSD[mp_iIndexes[iSp]]);
+
+        // If the standard deviation is 0, this indicates that the user didn't
+        // want random sps's. Set to 1
+        if (mp_fSPSSD[mp_iIndexes[iSp]] < 0.000000001) {
+          fSps = 1;
+        } else {
+          fSps = 1 + clModelMath::NormalRandomDraw(mp_fSPSSD[mp_iIndexes[iSp]]);
+        }
         p_oTree->SetValue(mp_iSpsCodes[iSp][iType], fSps);
       }
 

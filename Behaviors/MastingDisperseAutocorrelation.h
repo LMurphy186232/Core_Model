@@ -17,7 +17,9 @@
  *
  * The number of seeds an individual tree produces is itself a function of its
  * seed producer score (fixed trait assigned at "birth"), its size, and the
- * number of seeds it produced last year.
+ * number of seeds it produced last year. The seed producer score is randomized
+ * with a mean of 1. If the user enters 0 for the standard deviation, this is
+ * turned off and all trees get 1s.
  *
  * Once the number of seeds produced by a tree is known, they are dispersed
  * using the common kernels - Weibull or lognormal.
