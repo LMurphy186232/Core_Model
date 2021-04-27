@@ -1101,7 +1101,7 @@ void clDetailedSubstrate::SetupSubstrateGrids() {
         modelErr stcErr;
         stcErr.iErrorCode = BAD_DATA;
         stcErr.sFunction = "clDetailedSubstrate::SetupSubstrateGrid" ;
-        stcErr.sMoreInfo = "Grid map setup values for grid \"substratecalcs\" did not contain all required grid data members.";
+        stcErr.sMoreInfo = "Grid map setup values for grid \"substratecalcs\" did not contain the \"newtipup\" required grid data member.";
         throw( stcErr );
       }
 
@@ -1127,7 +1127,7 @@ void clDetailedSubstrate::SetupSubstrateGrids() {
               modelErr stcErr;
               stcErr.iErrorCode = BAD_DATA;
               stcErr.sFunction = "clDetailedSubstrate::SetupSubstrateGrid" ;
-              stcErr.sMoreInfo = "Grid map setup values for grid \"detailedsubstratecalcs\" did not contain all required grid data members.";
+              stcErr.sMoreInfo = "Grid map setup values for grid \"detailedsubstratecalcs\" did not contain all \"newloggroup\" required grid data members.";
               throw( stcErr );
             }
 
@@ -1140,7 +1140,7 @@ void clDetailedSubstrate::SetupSubstrateGrids() {
                 modelErr stcErr;
                 stcErr.iErrorCode = BAD_DATA;
                 stcErr.sFunction = "clDetailedSubstrate::SetupSubstrateGrid" ;
-                stcErr.sMoreInfo = "Grid map setup values for grid \"detailedsubstratecalcs\" did not contain all required grid data members.";
+                stcErr.sMoreInfo = "Grid map setup values for grid \"detailedsubstratecalcs\" did not contain all \"loggroup\" required grid data members.";
                 throw( stcErr );
               }
             } //end for t (decay timesteps)

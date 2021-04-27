@@ -577,7 +577,7 @@ void clSubstrate::SetupSubstrateGrids()
         modelErr stcErr;
         stcErr.iErrorCode = BAD_DATA;
         stcErr.sFunction = "clSubstrate::SetupSubstrateGrid" ;
-        stcErr.sMoreInfo = "Grid map setup values for grid \"substratecalcs\" did not contain all required grid data members.";
+        stcErr.sMoreInfo = "Grid map setup values for grid \"substratecalcs\" did not contain required \"newtipup\" grid data member.";
         throw( stcErr );
       }
       mp_iFLogCalcsCode = new short int[m_iMaxDecayTimesteps];
@@ -585,25 +585,29 @@ void clSubstrate::SetupSubstrateGrids()
       for ( i = 0; i < m_iMaxDecayTimesteps; i++ ) {
         sLabel << "freshlog_" << i;
         mp_iFLogCalcsCode[i] = mp_oCalcGrid->GetFloatDataCode(sLabel.str());
-        sLabel.str("");
         if (-1 == mp_iFLogCalcsCode[i]) {
+          std::stringstream sMsg;
+          sMsg << "Grid map setup values for grid \"substratecalcs\" did not contain required " << sLabel.str() << " grid data member.";
           modelErr stcErr;
           stcErr.iErrorCode = BAD_DATA;
           stcErr.sFunction = "clSubstrate::SetupSubstrateGrid" ;
-          stcErr.sMoreInfo = "Grid map setup values for grid \"substratecalcs\" did not contain all required grid data members.";
+          stcErr.sMoreInfo = sMsg.str();
           throw( stcErr );
         }
+        sLabel.str("");
 
         sLabel << "declog_" << i;
         mp_iDecLogCalcsCode[i] = mp_oCalcGrid->GetFloatDataCode(sLabel.str());
-        sLabel.str("");
         if (-1 == mp_iDecLogCalcsCode[i]) {
+          std::stringstream sMsg;
+          sMsg << "Grid map setup values for grid \"substratecalcs\" did not contain required " << sLabel.str() << " grid data member.";
           modelErr stcErr;
           stcErr.iErrorCode = BAD_DATA;
           stcErr.sFunction = "clSubstrate::SetupSubstrateGrid" ;
           stcErr.sMoreInfo = "Grid map setup values for grid \"substratecalcs\" did not contain all required grid data members.";
           throw( stcErr );
         }
+        sLabel.str("");
       }
     }
 
