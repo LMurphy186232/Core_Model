@@ -446,7 +446,6 @@ void clSubstrate::SetupSubstrateGrids()
     {
 
       //The grid was created from a map file.  Validate it.
-      m_bParFileHasSubstrateMap = true;
 
       //Make sure the cell lengths are right
       if ( ( fXCellLength > 0 && mp_oSubstrateGrid->GetLengthXCells() != fXCellLength )
@@ -523,6 +522,69 @@ void clSubstrate::SetupSubstrateGrids()
           throw( stcErr );
         }
       }
+
+
+      //----------------------------------------------------------------------/
+      // Check to see if there is actually data in the grid, or if the grid was
+      // only for setting cell size
+      //----------------------------------------------------------------------/
+      m_bParFileHasSubstrateMap = false;
+      clPackage *p_oCohort;
+      int iNumXCells = mp_oSubstrateGrid->GetNumberXCells(),
+          iNumYCells = mp_oSubstrateGrid->GetNumberYCells(),
+          iX, iY;
+      float fVal;
+
+      for (iX = 0; iX < iNumXCells; iX++) {
+        for (iY = 0; iY < iNumYCells; iY++) {
+
+          //Any values in this cell?
+          mp_oSubstrateGrid->GetValueOfCell( iX, iY, m_iScarSoilCode, &fVal );
+          if (fVal > 0) {
+            m_bParFileHasSubstrateMap = true;
+            break;
+          }
+
+          mp_oSubstrateGrid->GetValueOfCell( iX, iY, m_iFFMossCode, &fVal );
+          if (fVal > 0) {
+            m_bParFileHasSubstrateMap = true;
+            break;
+          }
+
+          mp_oSubstrateGrid->GetValueOfCell( iX, iY, m_iFFLitterCode, &fVal );
+          if (fVal > 0) {
+            m_bParFileHasSubstrateMap = true;
+            break;
+          }
+
+          mp_oSubstrateGrid->GetValueOfCell( iX, iY, m_iTipupCode, &fVal );
+          if (fVal > 0) {
+            m_bParFileHasSubstrateMap = true;
+            break;
+          }
+
+          mp_oSubstrateGrid->GetValueOfCell( iX, iY, m_iFreshLogCode, &fVal );
+          if (fVal > 0) {
+            m_bParFileHasSubstrateMap = true;
+            break;
+          }
+
+          mp_oSubstrateGrid->GetValueOfCell( iX, iY, m_iDecLogCode, &fVal );
+          if (fVal > 0) {
+            m_bParFileHasSubstrateMap = true;
+            break;
+          }
+
+         //Any cohorts present?
+         p_oCohort = mp_oSubstrateGrid->GetFirstPackageOfCell(iX, iY);
+         if (p_oCohort != NULL) {
+            m_bParFileHasSubstrateMap = true;
+            break;
+         }
+        }
+      }
+
+      //----------------------------------------------------------------------/
     }
 
     //**************************************

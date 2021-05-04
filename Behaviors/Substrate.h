@@ -268,7 +268,8 @@ class clSubstrate : virtual public clBehaviorBase {
   short int m_iTipupCalcsCode;    /**<Code for using newtipup data member of calculations grid*/
 
   /**Whether or not the parameter file had a substrate map in it.  If it did,
-  * initial conditions will not be populated.*/
+  * initial conditions will not be populated. Grid cell size change alone
+  * does not count as a map.*/
   bool m_bParFileHasSubstrateMap;
 
   /**Whether to use directional tree fall.  If true, trees fall in a random
