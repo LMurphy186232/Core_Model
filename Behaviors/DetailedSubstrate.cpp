@@ -935,7 +935,7 @@ void clDetailedSubstrate::SetupSubstrateGrids() {
             sLabel << "loggroup" << i+1 << p_cSizes[j] << "decay" << k;
             mp_iLogCodes[i][j][k-1] = mp_oSubstrateGrid->RegisterFloat(sLabel.str());
             sLabel.str("");
-            sLabel << "vloggroup" << i+1 << p_cSizes[j] << "decay%d" << k;
+            sLabel << "vloggroup" << i+1 << p_cSizes[j] << "decay" << k;
             mp_iLogVolCodes[i][j][k-1] = mp_oSubstrateGrid->RegisterFloat(sLabel.str());
             sLabel.str("");
           } //end for k
