@@ -594,6 +594,9 @@ void clSnagDecomp::Action() {
       iSp = p_oTree->GetSpecies();
       iTp = p_oTree->GetType();
 
+      //Double check that we're using this tree
+      if (mp_iDeadCodes[iSp][iTp] == -1) goto nextTree;
+
       p_oTree->GetValue(mp_iDeadCodes[iSp][iTp], &iDead);
 
       if (iTp==clTreePopulation::adult && notdead == iDead) //tree is still alive
@@ -738,7 +741,7 @@ void clSnagDecomp::RegisterTreeDataMembers() {
 
   clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
   char cDeadLabel[] = "dead";
-  short int i;
+  short int i, j;
 
   m_iNumSpecies = p_oPop->GetNumberOfSpecies();
 
@@ -751,6 +754,12 @@ void clSnagDecomp::RegisterTreeDataMembers() {
     mp_iSnagDCCode[i] = new short int [clTreePopulation::snag + 1];
     mp_iNewBreakCode[i] = new short int [clTreePopulation::snag + 1];
     mp_iDeadCodes[i] = new short int [clTreePopulation::snag + 1];
+
+    // Pre-set dead codes with -1 and we can use that as a flag for which
+    // trees this applies to
+    for (j = 0; j < clTreePopulation::snag + 1; j++) {
+      mp_iDeadCodes[i][j] = -1;
+    }
 
   } //end for
 

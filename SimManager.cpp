@@ -623,7 +623,7 @@ unsigned long clSimManager::RunSim( int iNumStepsToRun )
         msg << "Timestep " << iTimestep << ": Starting behavior " << p_oBehavior->GetName() << " at " << clock();
         out << "Timestep " << iTimestep << ": Starting behavior " << p_oBehavior->GetName() << " at " << clock() << "\n";
         out.close();
-        strcpy( stcMsg.cMoreInfo, msg.str().c_str() );
+        stcMsg.sMoreInfo = msg.str();
         SendMessage( stcMsg );
 #endif
 

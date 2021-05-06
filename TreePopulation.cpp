@@ -2578,7 +2578,7 @@ void clTreePopulation::UpdateTree(clTree * p_oTree, short int iCode, bool bValue
   {
     modelErr stcErr;
     stcErr.iErrorCode = UNKNOWN;
-    stcErr.sFunction = "clTreePopulation::UpdateTree(int)" ;
+    stcErr.sFunction = "clTreePopulation::UpdateTree(bool)" ;
     throw(stcErr);
   }
 }
