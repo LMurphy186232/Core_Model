@@ -1179,6 +1179,9 @@ void clSpatialDispersal::SpatialDisperse( clTree * p_oTree, clTreePopulation * p
 
       //Get a random direction to pitch the seed
       fRand = clModelMath::GetRand();
+      //Prevent errors when fRand is 0 or 1
+      if ( fRand == 0 ) fRand = 0.0001;
+      if ( fRand == 1 ) fRand = 0.9999;
       fAngle = 2.0 * M_PI * ( fRand );
 
       //Using the angle and distance, get an X and Y value for the seed
