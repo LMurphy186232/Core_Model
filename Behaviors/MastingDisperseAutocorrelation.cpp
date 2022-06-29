@@ -894,6 +894,7 @@ void clMastingDisperseAutocorrelation::DisperseOneParentSeeds( clTree * p_oTree,
       //Get a random direction to pitch the seed
       fRand = clModelMath::GetRand();
       fAngle = 2.0 * M_PI * fRand;
+      fAngle = std::max(2.0 * M_PI * fRand, (2.0 * M_PI)-0.00001);
 
       //Using the angle and distance, get an X and Y value for the seed
       fSeedX = p_oPlot->CorrectX( cos( fAngle ) * fDistance + fX );
