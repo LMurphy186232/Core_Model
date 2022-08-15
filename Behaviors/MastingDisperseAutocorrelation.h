@@ -63,7 +63,7 @@ public:
     void RegisterTreeDataMembers();
 
   /**
-    * Get mast level for a timestep. Only for testing.
+    * Get mast level for a timestep.
     * @param iTs Timestep, 1 to number of timesteps.
     * @return Value of mast, or -1 if timestep is invalid.
     */
@@ -231,6 +231,7 @@ public:
    * <li>A in fraction participating = 0</li>
    * <li>Seed producer score standard deviation < 0</li>
    * </ul>
+   * @param p_oParent Parent parameters tag from parsed XML file
    * @param p_oPop Tree population object.
    */
    void GetParameterFileData(xercesc::DOMElement *p_oParent, clTreePopulation * p_oPop);

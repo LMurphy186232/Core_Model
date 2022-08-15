@@ -116,6 +116,7 @@
 #include "SizeDependentLogisticMortality.h"
 #include "ClimateImporter.h"
 #include "MastingDisperseAutocorrelation.h"
+#include "DensDepRodentSeedPredation.h"
 //Test objects
 #include "RandomSeedLogger.h"
 
@@ -965,6 +966,11 @@ void clBehaviorManager::CreateBehavior(behaviorData * p_data)
     {
       clSubstrateDepSeedSurvival * p_oSeedSurvival = new clSubstrateDepSeedSurvival(mp_oSimManager);
       mp_oObjectArray[iIndex] = p_oSeedSurvival;
+    }
+    else if (p_data->sNameString.compare("DensDepRodentSeedPredation") == 0)
+    {
+      clDensDepRodentSeedPredation * p_oPredation = new clDensDepRodentSeedPredation(mp_oSimManager);
+      mp_oObjectArray[iIndex] = p_oPredation;
     }
 
     //*************************************************
