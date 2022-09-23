@@ -882,7 +882,7 @@ class clTreePopulation : public clPopulationBase {
   *
   * p_oChangedTree Tree whose position is to be updated.
   */
-  inline void UpdateTreeInHashTable(clTree *p_oChangedTree);
+  void UpdateTreeInHashTable(clTree *p_oChangedTree);
 
   /**
   * Removes a tree from the hash table. The gap it left in the linked list is
