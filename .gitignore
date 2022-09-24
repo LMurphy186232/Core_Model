@@ -13,3 +13,4 @@ coremodel.exe
 *.dll
 *.exe
 /HarvestTrees.txt
+/Default/

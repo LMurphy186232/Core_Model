@@ -847,6 +847,17 @@ class clTreePopulation : public clPopulationBase {
   void CreateTreesFromInitialDensities(xercesc::DOMDocument *p_oDoc);
 
   /**
+    * Creates snags according to initial density information in an input file.
+    * If initial density information it is not present, no trees are created.
+    * This is not considered an error condition. In addition to as many DBH size
+    * classes as the user wants, this can also handle three height classes for
+    * seedling initial densities.
+    *
+    * @param p_oDoc DOM tree of parsed input file.
+    */
+    void CreateSnagsFromInitialDensities(xercesc::DOMDocument *p_oDoc);
+
+  /**
   * Creates trees according to tree map information in an input file.
   * If tree map information it is not present, no trees are created. This
   * is not considered an error condition.
