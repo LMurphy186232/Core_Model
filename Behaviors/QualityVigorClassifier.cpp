@@ -703,7 +703,7 @@ void clQualityVigorClassifier::HandleInitialConditionsTrees(DOMDocument * p_oDoc
     delete[] p_fMaxDBH;
     modelErr stcErr;
     stcErr.iErrorCode = UNKNOWN;
-    stcErr.sFunction = "clTreePopulation::CreateTreesFromInitialDensities" ;
+    stcErr.sFunction = "clQualityVigorClassifier::HandleInitialConditionsTrees" ;
     throw( stcErr );
   }
 }
