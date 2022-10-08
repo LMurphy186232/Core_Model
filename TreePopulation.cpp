@@ -557,6 +557,7 @@ void clTreePopulation::GetData(DOMDocument * p_oDoc) {
       DataMemberRegistrations();
     }
     CreateTreesFromInitialDensities(p_oDoc);
+    CreateSnagsFromInitialDensities(p_oDoc);
     CreateTreesFromTreeMap(p_oDoc);
     CreateTreesFromTextTreeMap(p_oDoc);
 
@@ -1368,7 +1369,7 @@ void clTreePopulation::CreateSnagsFromInitialDensities(DOMDocument * p_oDoc) {
 
     // If this run has no behaviors that deal with snags, do not continue no
     // matter what info is supplied
-    if (!m_bMakeSnags) return;
+    if (!m_bMakeSnag) return;
 
     using namespace std;
     DOMNodeList * p_oNodeList, * p_oInitDensities;
@@ -1378,18 +1379,17 @@ void clTreePopulation::CreateSnagsFromInitialDensities(DOMDocument * p_oDoc) {
     clPlot * p_oPlot = mp_oSimManager->GetPlotObject(); //for getting the area of the plot
     char *cData;
     double * p_fDensities = new double[m_iNumSpecies];
+    double fLowerLimit = 0, fUpperLimit = 0; //size class size limits
     float fX, fY, //new tree coordinates
     fDiam, //new tree diameter
     fPlotAreaInHec= p_oPlot->GetPlotArea(), //plot area in hectares
     fRand, //random number
-    fLowerLimit = 0, fUpperLimit = 0, //size class size limits
     fNumTrees, //number of trees to create
     k; //loop counter in case number of trees is large
     int iSpecies; //species code
     unsigned short int iNumSpecies, //for counting the number of species
     iNumClasses, //for counting one species's size classes
-    i, j, //loop counters
-    iType; //type code
+    i, j; //loop counters
     bool bFound; //for verifying size classes
 
     //Look for initial density data
@@ -1412,7 +1412,7 @@ void clTreePopulation::CreateSnagsFromInitialDensities(DOMDocument * p_oDoc) {
     //Start parsin' - go though each species's data
     p_oDocNode = p_oNodeList->item(0);
     p_oElement = (DOMElement *) p_oDocNode;
-    sVal = XMLString::transcode("tr_idVals");
+    sVal = XMLString::transcode("tr_sidVals");
     //one tr_idVal holds the initial density data for one species
     p_oNodeList = p_oElement->getElementsByTagName(sVal);
     XMLString::release(&sVal);
@@ -1463,6 +1463,17 @@ void clTreePopulation::CreateSnagsFromInitialDensities(DOMDocument * p_oDoc) {
         sVal = XMLString::transcode("sizeClass");
         cData = XMLString::transcode(p_oElement->getAttributeNode(sVal)->getNodeValue());
         XMLString::release(&sVal);
+        if (strcmp("Seedling", cData) == 0)
+        {
+          modelErr stcErr;
+          stcErr.iErrorCode = BAD_DATA;
+          stcErr.sFunction = "clTreePopulation::CreateSnagsFromInitialDensities";
+          std::stringstream s;
+          s << "Seedling size classes are not allowed for snag initial densities.";
+          stcErr.sMoreInfo = s.str();
+          delete[] p_fDensities;
+          throw(stcErr);
+        }
 
         //parse out the size data
         string strData = cData;
@@ -1552,10 +1563,7 @@ void clTreePopulation::CreateSnagsFromInitialDensities(DOMDocument * p_oDoc) {
               fY = p_oPlot->CorrectY(fRand * m_fPlotLengthY);
 
               //Figure out whether this is a sapling or adult
-              if (fDiam < mp_fMinAdultDbh[iSpecies]) iType = sapling;
-              else
-                iType = adult;
-              CreateTree(fX, fY, iSpecies, iType, fDiam);
+              CreateTree(fX, fY, iSpecies, clTreePopulation::snag, fDiam);
             } // end of for (k = 0; k < fNumTrees; k++)
           }
         } // end of if (fUpperLimit != 0)
