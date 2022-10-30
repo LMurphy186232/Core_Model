@@ -7,6 +7,7 @@
 #include "Constants.h"
 #include "ModelMath.h"
 #include <string.h>
+#include <sstream>
 
 class clAllometry;
 class clGhostTreePopulation;
@@ -567,6 +568,30 @@ class clTreePopulation : public clPopulationBase {
   * @return true if snags will be made from dead trees, false if they will not.
   */
   bool GetUsesSnags() {return m_bMakeSnag;};
+
+  /**
+   * Gets the number of size classes defined.
+   * @return Number of size classes.
+   */
+  int GetNumberSizeClasses() {return m_iNumSizeClasses;};
+
+  /**
+   * Gets a particular size class, up to number of size classes (0 indexing).
+   * @throw Error if the size class number is not valid.
+   * @return The size class.
+   */
+  float GetSizeClass(int iSizeClass) {
+    if (iSizeClass < 0 || iSizeClass >= m_iNumSizeClasses) {
+      modelErr stcErr;
+      stcErr.iErrorCode = BAD_DATA;
+      stcErr.sFunction = "clTreePopulation::GetSizeClass";
+      std::stringstream s;
+      s << "Invalid tree size class number: \"" << iSizeClass << "\".";
+      stcErr.sMoreInfo = s.str();
+      throw(stcErr);
+    }
+    return mp_fSizeClasses[iSizeClass];
+  };
 
   /**
   * Gets the length in the X direction of the tree's internal grid (should
