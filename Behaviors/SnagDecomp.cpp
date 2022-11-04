@@ -118,11 +118,105 @@ clSnagDecomp::~clSnagDecomp() {
 void clSnagDecomp::GetData(xercesc::DOMDocument * p_oDoc) {
   try
   {
-    DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
     clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
 
     char cQueryTemp[75];
     char cQueryPiece[5]; //for assembling the search query
+    int i; //loop counters
+
+    float fPopGridCellArea; //the area of each cell in the tree population grid (used as a basis for cut basal area grid)
+
+    ReadParameterFileData(p_oDoc);
+
+    m_iNumSpecies = p_oPop->GetNumberOfSpecies();
+
+    //------------------------------------------------------------------------/
+    // Format query string
+    //------------------------------------------------------------------------/
+
+    //Do a species search on all the species
+    strcpy( cQueryTemp, "species=" );
+    for ( i = 0; i < m_iNumBehaviorSpecies - 1; i++ )
+    {
+      sprintf( cQueryPiece, "%d%s", mp_iWhatSpecies[i], "," );
+      strcat( cQueryTemp, cQueryPiece );
+    }
+
+    sprintf( cQueryPiece, "%d", mp_iWhatSpecies[m_iNumBehaviorSpecies - 1] );
+    strcat( cQueryTemp, cQueryPiece );
+
+    strcat( cQueryTemp, "::type=" );
+    sprintf( cQueryPiece, "%d,%d", clTreePopulation::adult, clTreePopulation::snag);
+    strcat( cQueryTemp, cQueryPiece );
+
+    //Now put it in m_cQuery, sized correctly
+    m_cQuery = new char[strlen( cQueryTemp ) + 1];
+    strcpy( m_cQuery, cQueryTemp );
+
+    //------------------------------------------------------------------------/
+    // Set-up the basal area and cut basal area grids
+    //------------------------------------------------------------------------/
+
+    //------------------------------------------------------------------------/
+    // Find the resolution for the basal area grids that is the closest square
+    // multiple of the tree population grid to 400 m2.  This is so the grid
+    // cells are compatible with the harvest results grid.
+    //------------------------------------------------------------------------/
+    fPopGridCellArea = pow(p_oPop->GetGridCellSize(),2);
+
+    i=1;
+    while (pow(i,2)*fPopGridCellArea < 400)
+    i++;
+
+    if ((400 - pow(i-1,2)*fPopGridCellArea) < (pow(i,2)*fPopGridCellArea - 400))
+    m_fGridCellLength = (i-1)*pow(fPopGridCellArea,0.5);
+    else
+    m_fGridCellLength = i*pow(fPopGridCellArea,0.5);
+
+    //create the basal area grid
+    mp_oBasalAreaGrid = mp_oSimManager->CreateGrid( "Snag Decay Class Dynamics Basal Area", //grid name
+        0, //number of int data members
+        2, //num float data members
+        0, //number of char data members
+        0, //number of bool data members
+        m_fGridCellLength, //X cell length
+        m_fGridCellLength ); //Y cell length
+
+    //Register the data members
+    m_iLiveBACode = mp_oBasalAreaGrid->RegisterFloat( "Live BA Per Ha" );
+    m_iCutBACode = mp_oBasalAreaGrid->RegisterFloat( "Cut BA Per Ha" );
+
+    // Take care of assigning classes to any snags created in initial conditions
+    AssignInitialSnagDecayClasses(p_oDoc);
+
+  }
+  catch ( modelErr & err )
+  {
+    throw( err );
+  }
+  catch ( modelMsg & msg )
+  {
+    throw( msg );
+  } //non-fatal error
+  catch ( ... )
+  {
+    modelErr stcErr;
+    stcErr.iErrorCode = UNKNOWN;
+    stcErr.sFunction = "clSnagDecomp::GetData" ;
+    throw( stcErr );
+  }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// ReadParameterFileData()
+/////////////////////////////////////////////////////////////////////////////
+void clSnagDecomp::ReadParameterFileData(xercesc::DOMDocument *p_oDoc) {
+  try
+  {
+    DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
+    clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
+
     int i,j,k; //loop counters
     const static char * cDCArrayCodes[] = {"Live","1", "2", "3", "4", "5"}; //correspond to tags in parameter file
     char cConcatenatedCode[50]; //strings holding names of XML tags
@@ -131,9 +225,6 @@ void clSnagDecomp::GetData(xercesc::DOMDocument * p_oDoc) {
     int iYearsPerTimestep = mp_oSimManager->GetNumberOfYearsPerTimestep();
     float * p_fProbGEk; //for holding cumulative transition probabilities during timestep rescaling
 
-    float fPopGridCellArea; //the area of each cell in the tree population grid (used as a basis for cut basal area grid)
-
-    m_iNumSpecies = p_oPop->GetNumberOfSpecies();
     mp_iIndexes = new short int [m_iNumSpecies];
 
     //Make the list of indexes
@@ -145,10 +236,6 @@ void clSnagDecomp::GetData(xercesc::DOMDocument * p_oDoc) {
     p_fTempValues = new doubleVal[m_iNumBehaviorSpecies];
     for (i = 0; i < m_iNumBehaviorSpecies; i++)
     p_fTempValues[i].code = mp_iWhatSpecies[i];
-
-    //*************************
-    // Read in parameters
-    //*************************
 
 
     //Set up our doubleVal array that will extract values only for the species
@@ -269,60 +356,6 @@ void clSnagDecomp::GetData(xercesc::DOMDocument * p_oDoc) {
 
     } //end for (j, matrix columns)
 
-    //*************************
-    // Format query string
-    //*************************
-
-    //Do a species search on all the species
-    strcpy( cQueryTemp, "species=" );
-    for ( i = 0; i < m_iNumBehaviorSpecies - 1; i++ )
-    {
-      sprintf( cQueryPiece, "%d%s", mp_iWhatSpecies[i], "," );
-      strcat( cQueryTemp, cQueryPiece );
-    }
-
-    sprintf( cQueryPiece, "%d", mp_iWhatSpecies[m_iNumBehaviorSpecies - 1] );
-    strcat( cQueryTemp, cQueryPiece );
-
-    strcat( cQueryTemp, "::type=" );
-    sprintf( cQueryPiece, "%d,%d", clTreePopulation::adult, clTreePopulation::snag);
-    strcat( cQueryTemp, cQueryPiece );
-
-    //Now put it in m_cQuery, sized correctly
-    m_cQuery = new char[strlen( cQueryTemp ) + 1];
-    strcpy( m_cQuery, cQueryTemp );
-
-    /************************************************
-     * Set-up the basal area and cut basal area grids
-     * **********************************************/
-
-    /* Find the resolution for the basal area grids that is
-     * the closest square multiple of the tree population
-     * grid to 400 m2.  This is so the grid cells are compatible
-     * with the harvest results grid. */
-    fPopGridCellArea = pow(p_oPop->GetGridCellSize(),2);
-
-    i=1;
-    while (pow(i,2)*fPopGridCellArea < 400)
-    i++;
-
-    if ((400 - pow(i-1,2)*fPopGridCellArea) < (pow(i,2)*fPopGridCellArea - 400))
-    m_fGridCellLength = (i-1)*pow(fPopGridCellArea,0.5);
-    else
-    m_fGridCellLength = i*pow(fPopGridCellArea,0.5);
-
-    //create the basal area grid
-    mp_oBasalAreaGrid = mp_oSimManager->CreateGrid( "Snag Decay Class Dynamics Basal Area", //grid name
-        0, //number of int data members
-        2, //num float data members
-        0, //number of char data members
-        0, //number of bool data members
-        m_fGridCellLength, //X cell length
-        m_fGridCellLength ); //Y cell length
-
-    //Register the data members
-    m_iLiveBACode = mp_oBasalAreaGrid->RegisterFloat( "Live BA Per Ha" );
-    m_iCutBACode = mp_oBasalAreaGrid->RegisterFloat( "Cut BA Per Ha" );
 
   }
   catch ( modelErr & err )
@@ -337,11 +370,10 @@ void clSnagDecomp::GetData(xercesc::DOMDocument * p_oDoc) {
   {
     modelErr stcErr;
     stcErr.iErrorCode = UNKNOWN;
-    stcErr.sFunction = "clSnagDecomp::GetData" ;
+    stcErr.sFunction = "clSnagDecomp::ReadParameterFileData" ;
     throw( stcErr );
   }
 }
-
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -847,9 +879,328 @@ void clSnagDecomp::RegisterTreeDataMembers() {
               mp_whatSpeciesTypeCombos[i].iSpecies, clTreePopulation::snag);
 
     } //end else
-
-
   } //end for combos
+}
 
 
+
+
+/////////////////////////////////////////////////////////////////////////////
+// AssignInitialSnagDecayClasses()
+/////////////////////////////////////////////////////////////////////////////
+void clSnagDecomp::AssignInitialSnagDecayClasses(xercesc::DOMDocument *p_oDoc) {
+  float *p_fSizeClasses = NULL, *p_fClassProbabilities = new float[5],
+      *p_fCumulativeProbs = new float[5];
+  try
+  {
+    DOMElement * p_oElement = GetParentParametersElement(p_oDoc);
+    clTreePopulation * p_oPop = ( clTreePopulation * ) mp_oSimManager->GetPopulationObject( "treepopulation" );
+    clTreeSearch * p_oAllSnags;
+    clTree * p_oSnag;
+    std::stringstream sQuery;
+    DOMNodeList *p_oNodeList, *p_oProbsNoteList;
+    DOMNode * p_oDocNode;
+    XMLCh *sVal;
+    std::string strData;
+    char *cData;
+    float fUpperLimit, fLowerLimit, fProbTotal, fDBH, fRand;
+    int iNumSizeClasses, iInitDecayClass, iNumParFileClasses, iSpecies,
+        iDecayClass;
+    short int iSp, iTp, ic, i, k;
+    bool bFound;
+
+    sQuery << "type=" << clTreePopulation::snag;
+
+    //------------------------------------------------------------------------/
+    // Step 1: do we even have initial conditions data for decay class? If not,
+    // everybody gets decay class 1.
+    //------------------------------------------------------------------------/
+    sVal = XMLString::transcode("sd_snagDecompInitialClasses");
+    p_oNodeList = p_oElement->getElementsByTagName(sVal);
+    XMLString::release(&sVal);
+    if (0 == p_oNodeList->getLength()) {
+
+      // No initial conditions info is present in the parameter file. Give
+      // any snags that might have been created in the initial conditions a
+      // decay class of 1.
+      iInitDecayClass = 1;
+      p_oAllSnags = p_oPop->Find( sQuery.str() );
+      p_oSnag = p_oAllSnags->NextTree();
+
+      while (p_oSnag) {
+        iSp = p_oSnag->GetSpecies();
+        iTp = p_oSnag->GetType();
+        p_oSnag->SetValue(mp_iSnagDCCode[iSp][iTp], iInitDecayClass);
+
+        p_oSnag = p_oAllSnags->NextTree();
+      }
+      return;
+    }
+
+
+    //------------------------------------------------------------------------/
+    // Step 2: If we are still here, we do have info on assigning decay classes
+    // for initial conditions snags. Parse it out and assign.
+    //------------------------------------------------------------------------/
+    // Our node list is the number of elements titled
+    // "sd_snagDecompInitialClasses", of which there should only be one. So
+    // get the first, and implicitly ignore any others.
+    p_oDocNode = p_oNodeList->item(0);
+    p_oElement = (DOMElement *) p_oDocNode;
+
+    // Now get the important list, which is a list of all species/size class
+    // groupings.
+    sVal = XMLString::transcode("sd_idVals");
+    p_oNodeList = p_oElement->getElementsByTagName(sVal);
+    XMLString::release(&sVal);
+    iNumParFileClasses = p_oNodeList->getLength();
+
+    //------------------------------------------------------------------------/
+    // Once again: if there is nothing in here, give any snags that might have
+    // been created in the initial conditions a decay class of 1.
+    if (0 == iNumParFileClasses) {
+      iInitDecayClass = 1;
+      p_oAllSnags = p_oPop->Find( sQuery.str() );
+      p_oSnag = p_oAllSnags->NextTree();
+
+      while (p_oSnag) {
+        iSp = p_oSnag->GetSpecies();
+        iTp = p_oSnag->GetType();
+        p_oSnag->SetValue(mp_iSnagDCCode[iSp][iTp], iInitDecayClass);
+
+        p_oSnag = p_oAllSnags->NextTree();
+      }
+      return;
+    }
+    //------------------------------------------------------------------------/
+
+
+    //------------------------------------------------------------------------/
+    //Fetch the size classes from the tree population
+    iNumSizeClasses = p_oPop->GetNumberSizeClasses();
+    p_fSizeClasses = new float[iNumSizeClasses];
+    for (i = 0; i < iNumSizeClasses; i++) {
+      p_fSizeClasses[i] = p_oPop->GetSizeClass(i);
+    }
+    //------------------------------------------------------------------------/
+
+
+    //------------------------------------------------------------------------/
+    // Loop through each designation
+    for (ic = 0; ic < iNumParFileClasses; ic++) {
+      p_oDocNode = p_oNodeList->item(ic);
+      p_oElement = (DOMElement *) p_oDocNode;
+
+      // Now: each of these subchunks is the data for a species and size class.
+
+      //----------------------------------------------------------------------/
+      // Parse out species
+      sVal = XMLString::transcode("whatSpecies");
+      cData = XMLString::transcode(p_oElement->getAttributeNode(sVal)->getNodeValue());
+      XMLString::release(&sVal);
+      iSpecies = p_oPop->TranslateSpeciesNameToCode(cData);
+      delete[] cData; cData = NULL;
+      //----------------------------------------------------------------------/
+
+
+      //----------------------------------------------------------------------/
+      // Parse out size class
+      sVal = XMLString::transcode("whatSizeClass");
+      cData = XMLString::transcode(p_oElement->getAttributeNode(sVal)->getNodeValue());
+      XMLString::release(&sVal);
+      std::string strData = cData;
+      delete[] cData; cData = NULL;
+      strData.erase(0, 1);
+      fUpperLimit = atof(strData.c_str());
+      //----------------------------------------------------------------------/
+
+
+      //----------------------------------------------------------------------/
+      // Make sure we recognize this size class, and identify the size class
+      // lower than it
+      if (fUpperLimit != 0) {
+        //Get the lower limit of this size class - making sure we recognize
+        //this value
+        bFound = false;
+        fLowerLimit = 0;
+        for (k = 0; k < iNumSizeClasses; k++) {
+          if (fUpperLimit == p_fSizeClasses[k]) {
+            bFound = true;
+            if (0 == k)
+              fLowerLimit = 0;
+            else
+              fLowerLimit = p_fSizeClasses[k - 1];
+          }
+        }
+        //Make sure that we found the size class
+        if (false == bFound) {
+          modelErr stcErr;
+          stcErr.iErrorCode = BAD_DATA;
+          stcErr.sFunction = "clSnagDecomp::AssignInitialSnagDecayClasses";
+          std::stringstream s;
+          s << "Found unrecognized tree size class: \"" << fUpperLimit << "\".";
+          stcErr.sMoreInfo = s.str();
+          throw(stcErr);
+        }
+      } else {
+        modelErr stcErr;
+        stcErr.iErrorCode = BAD_DATA;
+        stcErr.sFunction = "clSnagDecomp::AssignInitialSnagDecayClasses";
+        std::stringstream s;
+        s << "Found unrecognized tree size class: \"" << fUpperLimit << "\".";
+        stcErr.sMoreInfo = s.str();
+        throw(stcErr);
+      }
+      //----------------------------------------------------------------------/
+
+
+      //----------------------------------------------------------------------/
+      // We have a good species, and a good size class. Now get the
+      // probabilities for each decay class within.
+      //----------------------------------------------------------------------/
+
+      for (k = 0; k < 5; k++) p_fClassProbabilities[k] = 0;
+
+      //----------------------------------------------------------------------/
+      // Get the size class list and make sure we have 5 values
+      sVal = XMLString::transcode("sd_id");
+      p_oProbsNoteList = p_oElement->getElementsByTagName(sVal);
+      XMLString::release(&sVal);
+
+      if (p_oProbsNoteList->getLength() != 5) {
+        modelErr stcErr;
+        stcErr.iErrorCode = BAD_DATA;
+        stcErr.sFunction = "clSnagDecomp::AssignInitialSnagDecayClasses";
+        std::stringstream s;
+        s << "Didn't find all 5 decay classes for species: \"" << iSpecies <<
+            "\" and size class \"" << fUpperLimit << "\".";
+        stcErr.sMoreInfo = s.str();
+        throw(stcErr);
+      }
+      //----------------------------------------------------------------------/
+
+
+
+      //----------------------------------------------------------------------/
+      // Parse out each class probability and load into our probabilities
+      // array
+      for (k = 0; k < 5; k++) {
+        p_oDocNode = p_oProbsNoteList->item(k);
+        p_oElement = (DOMElement *) p_oDocNode;
+        sVal = XMLString::transcode("decayClass");
+        cData = XMLString::transcode(p_oElement->getAttributeNode(sVal)->getNodeValue());
+        XMLString::release(&sVal);
+        iDecayClass = atoi(cData);
+
+        if (iDecayClass < 1 || iDecayClass > 5) {
+          modelErr stcErr;
+          stcErr.iErrorCode = BAD_DATA;
+          stcErr.sFunction = "clSnagDecomp::AssignInitialSnagDecayClasses";
+          std::stringstream s;
+          s << "Unrecognized decay class \"" << cData << "\" for species: \"" <<
+              iSpecies << "\" and size class \"" << fUpperLimit << "\".";
+          stcErr.sMoreInfo = s.str();
+          delete cData; cData = NULL;
+          throw(stcErr);
+        }
+
+        delete cData; cData = NULL;
+        cData = XMLString::transcode(p_oElement->getFirstChild()->getNodeValue());
+        p_fClassProbabilities[(iDecayClass - 1)] = atof(cData);
+        delete cData; cData = NULL;
+      }
+      //----------------------------------------------------------------------/
+
+
+      //----------------------------------------------------------------------/
+      // Verify probabilities
+      fProbTotal = 0;
+      for (k = 0; k < 5; k++) {
+        fProbTotal += p_fClassProbabilities[k];
+      }
+      if (abs(fProbTotal - 1) > 0.0001) {
+        modelErr stcErr;
+        stcErr.iErrorCode = BAD_DATA;
+        stcErr.sFunction = "clSnagDecomp::AssignInitialSnagDecayClasses";
+        std::stringstream s;
+        s << "Probabilities for species: \"" << iSpecies <<
+            "\" and size class \"" << fUpperLimit << "\" don't add to 1.";
+        stcErr.sMoreInfo = s.str();
+        throw(stcErr);
+      }
+      //----------------------------------------------------------------------/
+
+
+      //----------------------------------------------------------------------/
+      // Fully validated data! Let's assign the snags for this species and
+      // size class.
+      // Transform probs into cumulative
+      p_fCumulativeProbs[0] = p_fClassProbabilities[0];
+      for (k = 1; k < 5; k++) {
+         p_fCumulativeProbs[k] = p_fCumulativeProbs[k-1] + p_fClassProbabilities[k];
+      }
+
+      p_oAllSnags = p_oPop->Find( sQuery.str() );
+      p_oSnag = p_oAllSnags->NextTree();
+
+      while (p_oSnag) {
+        iSp = p_oSnag->GetSpecies();
+        iTp = p_oSnag->GetType();
+
+        // Is this snag of our species and size class?
+        if (iSp == iSpecies) {
+          p_oSnag->GetValue(p_oPop->GetDbhCode(iSp,iTp), & fDBH);
+          if (fDBH > fLowerLimit && fDBH <= fUpperLimit) {
+
+            // Use a random number to determine the decay class
+            fRand = clModelMath::GetRand();
+            iInitDecayClass = 4;
+            for (k = 0; k < 5; k++) {
+              if (fRand <= p_fCumulativeProbs[k]) {
+                iInitDecayClass = k;
+                break;
+              }
+            }
+            // Start at 1, not 0
+            iInitDecayClass++;
+
+            p_oSnag->SetValue(mp_iSnagDCCode[iSp][iTp], iInitDecayClass);
+          }
+        }
+
+        p_oSnag = p_oAllSnags->NextTree();
+      }
+
+      //----------------------------------------------------------------------/
+    }
+
+
+    delete[] p_fSizeClasses;
+    delete[] p_fClassProbabilities;
+    delete[] p_fCumulativeProbs;
+  }
+  catch ( modelErr & err )
+  {
+    delete[] p_fSizeClasses;
+    delete[] p_fClassProbabilities;
+    delete[] p_fCumulativeProbs;
+    throw( err );
+  }
+  catch ( modelMsg & msg )
+  {
+    delete[] p_fSizeClasses;
+    delete[] p_fClassProbabilities;
+    delete[] p_fCumulativeProbs;
+    throw( msg );
+  } //non-fatal error
+  catch ( ... )
+  {
+    delete[] p_fSizeClasses;
+    delete[] p_fClassProbabilities;
+    delete[] p_fCumulativeProbs;
+    modelErr stcErr;
+    stcErr.iErrorCode = UNKNOWN;
+    stcErr.sFunction = "clSnagDecomp::AssignInitialSnagDecayClasses" ;
+    throw( stcErr );
+  }
 }
