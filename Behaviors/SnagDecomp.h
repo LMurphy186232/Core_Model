@@ -44,8 +44,8 @@ class clGrid;
 * matrix values must be non-negative and the sum of each column should add up
 * to 1.
 *
-* All parameters are based on a five-year timestep; the behavior will
-* adjust fall probabilities for other timestep lengths if necessary.
+* All parameters are based on a five-year timestep; the behavior will adjust
+* fall probabilities for other timestep lengths if necessary.
 *
 * This class's namestring and parameter call string are both
 * "SnagDecayClassDynamics".
@@ -100,6 +100,8 @@ class clSnagDecomp : virtual public clBehaviorBase {
   * <ol>
   * <li>Reads values from the parameter file and validates them.</li>
   * <li>Formats the query string, which is used to do tree searches</li>
+  * <li>Assigns decay classes to snags in the initial conditions file, if
+  * applicable</li>
   * </ol>
   * @param p_oDoc DOM tree of parsed input file.
   * @throw modelErr if:
@@ -174,6 +176,29 @@ class clSnagDecomp : virtual public clBehaviorBase {
 
   /**Keep a copy of this for the destructor*/
   int m_iNumSpecies;
+
+  /**
+   * Assigns decay classes for any snags in the initial conditions. If we have
+   * no parameters for what to do, they will get a class of 1.
+   *
+   * This will check for the appropriate entries in the parameter file. Since
+   * none of this appplies after setup has occurred, we can read the parameters
+   * here and then forget them.
+   */
+  void AssignInitialSnagDecayClasses(xercesc::DOMDocument *p_oDoc);
+
+  /**
+   * Reads data from the parameter file, and rescales the transition
+   * probabilities for the timestep length.
+   * @param p_oDoc DOM tree of parsed input file.
+   * @throws modelErr if:
+   * <ul>
+   * <li>Max break height is less than min break height</li>
+   * <li>The probabilities for entering a decay class do not add up to 1</li>
+   * </ul>
+   */
+   void ReadParameterFileData(xercesc::DOMDocument *p_oDoc);
+
 };
 //---------------------------------------------------------------------------
 

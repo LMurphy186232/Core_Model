@@ -557,6 +557,7 @@ void clTreePopulation::GetData(DOMDocument * p_oDoc) {
       DataMemberRegistrations();
     }
     CreateTreesFromInitialDensities(p_oDoc);
+    CreateSnagsFromInitialDensities(p_oDoc);
     CreateTreesFromTreeMap(p_oDoc);
     CreateTreesFromTextTreeMap(p_oDoc);
 
@@ -1354,6 +1355,252 @@ void clTreePopulation::CreateTreesFromInitialDensities(DOMDocument * p_oDoc) {
     modelErr stcErr;
     stcErr.iErrorCode = UNKNOWN;
     stcErr.sFunction = "clTreePopulation::CreateTreesFromInitialDensities" ;
+    throw(stcErr);
+  }
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// CreateSnagsFromInitialDensities()
+//////////////////////////////////////////////////////////////////////////////
+void clTreePopulation::CreateSnagsFromInitialDensities(DOMDocument * p_oDoc) {
+  try
+  {
+
+    // If this run has no behaviors that deal with snags, do not continue no
+    // matter what info is supplied
+    if (!m_bMakeSnag) return;
+
+    using namespace std;
+    DOMNodeList * p_oNodeList, * p_oInitDensities;
+    DOMNode * p_oDocNode;
+    DOMElement * p_oElement;
+    XMLCh *sVal;
+    clPlot * p_oPlot = mp_oSimManager->GetPlotObject(); //for getting the area of the plot
+    char *cData;
+    double * p_fDensities = new double[m_iNumSpecies];
+    double fLowerLimit = 0, fUpperLimit = 0; //size class size limits
+    float fX, fY, //new tree coordinates
+    fDiam, //new tree diameter
+    fPlotAreaInHec= p_oPlot->GetPlotArea(), //plot area in hectares
+    fRand, //random number
+    fNumTrees, //number of trees to create
+    k; //loop counter in case number of trees is large
+    int iSpecies; //species code
+    unsigned short int iNumSpecies, //for counting the number of species
+    iNumClasses, //for counting one species's size classes
+    i, j; //loop counters
+    bool bFound; //for verifying size classes
+
+    //Look for initial density data
+    sVal = XMLString::transcode("tr_snagInitialDensities");
+    p_oNodeList = p_oDoc->getElementsByTagName(sVal);
+    XMLString::release(&sVal);
+    if (0 == p_oNodeList->getLength()) return; //nothing found - nothing to do
+
+    //Make sure there were size classes defined - if not, error out
+    if (NULL == mp_fSizeClasses)
+    {
+      delete[] p_fDensities;
+      modelErr stcErr;
+      stcErr.sFunction = "clTreePopulation::CreateSnagsFromInitialDensities" ;
+      stcErr.iErrorCode = DATA_MISSING;
+      stcErr.sMoreInfo = "Size classes must be defined to use initial densities.";
+      throw(stcErr);
+    }
+
+    //Start parsin' - go though each species's data
+    p_oDocNode = p_oNodeList->item(0);
+    p_oElement = (DOMElement *) p_oDocNode;
+    sVal = XMLString::transcode("tr_sidVals");
+    //one tr_idVal holds the initial density data for one species
+    p_oNodeList = p_oElement->getElementsByTagName(sVal);
+    XMLString::release(&sVal);
+
+    iNumSpecies = p_oNodeList->getLength();
+    if (0 == iNumSpecies) return; //nothing found - we're out
+
+    //************************************************
+    //cycle through each of the species that are present - a species is not
+    //required to be present
+    //************************************************
+    for (i = 0; i < iNumSpecies; i++)
+    {
+
+      //Get the species code for this set of initial densities
+      p_oDocNode = p_oNodeList->item(i);
+      p_oElement = (DOMElement *) p_oDocNode;
+      sVal = XMLString::transcode("whatSpecies");
+      cData = XMLString::transcode(p_oElement->getAttributeNode(sVal)->getNodeValue());
+      XMLString::release(&sVal);
+      iSpecies = TranslateSpeciesNameToCode(cData);
+      if (-1 == iSpecies)
+      { //if it's not a species we recognize error out
+        modelErr stcErr;
+        stcErr.sFunction = "clTreePopulation::CreateSnagsFromInitialDensities" ;
+        stcErr.iErrorCode = BAD_DATA;
+        stcErr.sMoreInfo = "Unrecognized species in initial densities:  ";
+        stcErr.sMoreInfo += cData;
+        delete[] cData; cData = NULL;
+        delete[] p_fDensities;
+        throw(stcErr);
+      }
+      delete[] cData; cData = NULL;
+
+      //*******************************************
+      //Go through each of the size classes for this species
+      //*******************************************
+      sVal = XMLString::transcode("tr_snagInitialDensity");
+      p_oInitDensities = p_oElement->getElementsByTagName(sVal);
+      XMLString::release(&sVal);
+      iNumClasses = p_oInitDensities->getLength();
+      for (j = 0; j < iNumClasses; j++)
+      {
+
+        //What size class is this? Parse out the text data
+        p_oDocNode = p_oInitDensities->item(j);
+        p_oElement = (DOMElement *) p_oDocNode;
+        sVal = XMLString::transcode("sizeClass");
+        cData = XMLString::transcode(p_oElement->getAttributeNode(sVal)->getNodeValue());
+        XMLString::release(&sVal);
+        if (strcmp("Seedling", cData) == 0)
+        {
+          modelErr stcErr;
+          stcErr.iErrorCode = BAD_DATA;
+          stcErr.sFunction = "clTreePopulation::CreateSnagsFromInitialDensities";
+          std::stringstream s;
+          s << "Seedling size classes are not allowed for snag initial densities.";
+          stcErr.sMoreInfo = s.str();
+          delete[] p_fDensities;
+          throw(stcErr);
+        }
+
+        //parse out the size data
+        string strData = cData;
+        delete[] cData; cData = NULL;
+        strData.erase(0, 1);
+        fUpperLimit = atof(strData.c_str());
+        if (fUpperLimit != 0)
+        {
+          //Get the lower limit of this size class - making sure we recognize
+          //this value
+          bFound = false;
+          fLowerLimit = 0;
+          for (k = 0; k < m_iNumSizeClasses; k++) {
+            if (fUpperLimit == mp_fSizeClasses[(int)k]) {
+              bFound = true;
+              if (0 == k)
+                fLowerLimit = 0;
+              else
+                fLowerLimit = mp_fSizeClasses[(int)k - 1];
+            }
+          }
+          //Make sure that we found the size class
+          if (false == bFound) {
+            modelErr stcErr;
+            stcErr.iErrorCode = BAD_DATA;
+            stcErr.sFunction = "clTreePopulation::CreateSnagsFromInitialDensities";
+            std::stringstream s;
+            s << "Found unrecognized tree size class: \"" << fUpperLimit << "\".";
+            stcErr.sMoreInfo = s.str();
+            delete[] p_fDensities;
+            throw(stcErr);
+          }
+
+          //The lower bound must not be below the minimum adult diameter for
+          //this species.
+          fLowerLimit = max(fLowerLimit, mp_fMinAdultDbh[iSpecies]);
+
+          //parse out the number of trees per hectare
+          cData = XMLString::transcode(p_oElement->getFirstChild()->getNodeValue());
+          fNumTrees = atof(cData);
+          //If negative throw an error
+          if (fNumTrees < 0) {
+            modelErr stcErr;
+            stcErr.iErrorCode = BAD_DATA;
+            stcErr.sFunction = "clTreePopulation::CreateSnagsFromInitialDensities";
+            std::stringstream s;
+            s << "Found negative tree density: \"" << fNumTrees << "\".";
+            stcErr.sMoreInfo = s.str();
+            delete[] cData; cData = NULL;
+            delete[] p_fDensities;
+            throw(stcErr);
+          }
+          if (fNumTrees == 0) {
+            //If zero, verify that it really is supposed to be zero and
+            //the character string just couldn't be parsed
+            if (cData[0] != '0') {
+              modelErr stcErr;
+              stcErr.iErrorCode = BAD_DATA;
+              stcErr.sFunction = "clTreePopulation::CreateSnagsFromInitialDensities";
+              std::stringstream s;
+              s << "Tree density is not a number: \"" << cData << "\".";
+              stcErr.sMoreInfo = s.str();
+              delete[] cData; cData = NULL;
+              delete[] p_fDensities;
+              throw(stcErr);
+            }
+          }
+          delete[] cData; cData = NULL;
+
+          //transform this to a number of total trees
+          fNumTrees = clModelMath::Round(fNumTrees * fPlotAreaInHec, 0);
+
+          //Create all trees, assuming this size class is larger than the
+          //adult minimum
+          if (fLowerLimit < fUpperLimit) {
+            for (k = 0; k < fNumTrees; k++)
+            {
+
+              //Get a diameter for this tree
+              fRand = clModelMath::GetRand();
+              fDiam = fUpperLimit - (fRand * (fUpperLimit - fLowerLimit));
+
+              //Get coordinates for this tree
+              fRand = clModelMath::GetRand();
+              fX = p_oPlot->CorrectX(fRand * m_fPlotLengthX);
+              fRand = clModelMath::GetRand();
+              fY = p_oPlot->CorrectY(fRand * m_fPlotLengthY);
+
+              //Figure out whether this is a sapling or adult
+              CreateTree(fX, fY, iSpecies, clTreePopulation::snag, fDiam);
+            } // end of for (k = 0; k < fNumTrees; k++)
+          }
+        } // end of if (fUpperLimit != 0)
+        else {
+          //The upper limit came out as zero - make sure that the first
+          //character is '0' to make sure this isn't a bad string instead
+          if (strData[0] != '0') {
+            modelErr stcErr;
+            stcErr.iErrorCode = BAD_DATA;
+            stcErr.sFunction = "clTreePopulation::CreateSnagsFromInitialDensities";
+            std::stringstream s;
+            s << "Unrecognized tree size class \"" << cData << "\".";
+            stcErr.sMoreInfo = s.str();
+            delete[] cData; cData = NULL;
+            delete[] p_fDensities;
+            throw(stcErr);
+          }
+        }
+      } //end of for (j = 0; j < iNumClasses; j++)
+    } //end of for (i = 0; i < iNumNodes; i++)
+
+    delete[] p_fDensities;
+
+  } //end of try block
+  catch (modelErr & err)
+  {
+    throw(err);
+  }
+  catch (modelMsg & msg)
+  {
+    throw(msg);
+  } //non-fatal error
+  catch (...)
+  {
+    modelErr stcErr;
+    stcErr.iErrorCode = UNKNOWN;
+    stcErr.sFunction = "clTreePopulation::CreateSnagsFromInitialDensities" ;
     throw(stcErr);
   }
 }
