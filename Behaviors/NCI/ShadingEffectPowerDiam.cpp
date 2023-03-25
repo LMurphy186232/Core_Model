@@ -152,7 +152,8 @@ void clShadingEffectPowerDiam::DoSetup(clTreePopulation *p_oPop, clBehaviorBase 
   //If this is a seedling or sapling, do diam10; otherwise do DBH
   for (i = 0; i < p_oNCI->GetNumSpeciesTypeCombos(); i++) {
     c = p_oNCI->GetSpeciesTypeCombo(i);
-    if (c.iType == clTreePopulation::seedling || clTreePopulation::sapling) {
+    if (c.iType == clTreePopulation::seedling ||
+        c.iType == clTreePopulation::sapling) {
       mp_iDiamCodes[c.iSpecies][c.iType] = p_oPop->GetDiam10Code(c.iSpecies, c.iType);
     } else {
       mp_iDiamCodes[c.iSpecies][c.iType] = p_oPop->GetDbhCode(c.iSpecies, c.iType);

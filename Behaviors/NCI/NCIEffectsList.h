@@ -6,7 +6,8 @@
  */
 enum shading_effect {
   no_shading, /**<No shading (class clNoShadingEffect) */
-  default_shading /**<Default shading (class clDefaultShadingEffect) */
+  default_shading, /**<Default shading (class clDefaultShadingEffect) */
+  power_diam /**<Power function of diameter (class clShadingEffectPowerDiam) */
 };
 
 /**

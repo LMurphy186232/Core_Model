@@ -14,6 +14,7 @@
 #include "NCI/DamageEffectDefault.h"
 #include "NCI/ShadingEffectDefault.h"
 #include "NCI/ShadingEffectNone.h"
+#include "NCI/ShadingEffectPowerDiam.h"
 #include "NCI/NCITermBARatio.h"
 #include "NCI/NCITermBARatioDBHDefault.h"
 #include "NCI/NCITermDefault.h"
@@ -93,6 +94,8 @@ void clNCIBehaviorBase::ReadParameterFile(DOMElement * p_oElement,
       mp_oShadingEffect = new clShadingEffectNone();
     } else if (iVal == default_shading) {
       mp_oShadingEffect = new clShadingEffectDefault();
+    } else if (iVal == power_diam) {
+      mp_oShadingEffect = new clShadingEffectPowerDiam();
     } else {
       modelErr err;
       err.sFunction = "clNCIBehaviorBase::ReadParameterFile";
