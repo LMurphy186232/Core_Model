@@ -7,7 +7,7 @@
 enum shading_effect {
   no_shading, /**<No shading (class clNoShadingEffect) */
   default_shading, /**<Default shading (class clDefaultShadingEffect) */
-  power_diam /**<Power function of diameter (class clShadingEffectPowerDiam) */
+  power_shading /**<Power function of light (class clShadingEffectPower) */
 };
 
 /**
@@ -21,7 +21,8 @@ enum size_effect {
   size_effect_shifted_lognormal, /**<Shifted lognormal size effect (class clShiftedLognormalSizeEffect) */
   size_effect_compound_exp, /**<Compound exponential size effect (class clSizeEffectCompoundExponential) */
   size_effect_shifted_log_inf, /**<Shifted lognormal w/ infection size effect (class clSizeEffectShiftedLogInf) */
-  size_effect_compound_exp_inf /**<Compound exponential w/ infection size effect (class clSizeEffectCompoundExpInf) */
+  size_effect_compound_exp_inf, /**<Compound exponential w/ infection size effect (class clSizeEffectCompoundExpInf) */
+  size_effect_exp_height /**<Exponential function of height (class clSizeEffectExponentialHeight) */
 };
 
 /**

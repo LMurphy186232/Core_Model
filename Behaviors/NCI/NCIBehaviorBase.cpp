@@ -14,7 +14,7 @@
 #include "NCI/DamageEffectDefault.h"
 #include "NCI/ShadingEffectDefault.h"
 #include "NCI/ShadingEffectNone.h"
-#include "NCI/ShadingEffectPowerDiam.h"
+#include "NCI/ShadingEffectPower.h"
 #include "NCI/NCITermBARatio.h"
 #include "NCI/NCITermBARatioDBHDefault.h"
 #include "NCI/NCITermDefault.h"
@@ -45,6 +45,7 @@
 #include "NCI/SizeEffectCompoundExponential.h"
 #include "NCI/SizeEffectShiftedLogInf.h"
 #include "NCI/SizeEffectCompoundExpInf.h"
+#include "NCI/SizeEffectExponentialHeight.h"
 
 #include <stdio.h>
 #include <sstream>
@@ -94,8 +95,8 @@ void clNCIBehaviorBase::ReadParameterFile(DOMElement * p_oElement,
       mp_oShadingEffect = new clShadingEffectNone();
     } else if (iVal == default_shading) {
       mp_oShadingEffect = new clShadingEffectDefault();
-    } else if (iVal == power_diam) {
-      mp_oShadingEffect = new clShadingEffectPowerDiam();
+    } else if (iVal == power_shading) {
+      mp_oShadingEffect = new clShadingEffectPower();
     } else {
       modelErr err;
       err.sFunction = "clNCIBehaviorBase::ReadParameterFile";
@@ -198,6 +199,8 @@ void clNCIBehaviorBase::ReadParameterFile(DOMElement * p_oElement,
       mp_oSizeEffect = new clSizeEffectShiftedLogInf();
     } else if (iVal == size_effect_compound_exp_inf) {
       mp_oSizeEffect = new clSizeEffectCompoundExpInf();
+    } else if (iVal == size_effect_exp_height) {
+      mp_oSizeEffect = new clSizeEffectExponentialHeight();
     } else {
       modelErr err;
       err.sFunction = "clNCIBehaviorBase::ReadParameterFile";

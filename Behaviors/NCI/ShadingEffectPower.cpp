@@ -33,7 +33,7 @@ clShadingEffectPower::~clShadingEffectPower() {
 // CalculateShadingEffect
 //////////////////////////////////////////////////////////////////////////////
 double clShadingEffectPower::CalculateShadingEffect(clTree *p_oTree) {
-  float fGLI, fDiam;
+  float fGLI;
   double fShadingEffect;
   int iSpecies = p_oTree->GetSpecies(), iType = p_oTree->GetType();
 
@@ -78,14 +78,14 @@ void clShadingEffectPower::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_o
   }
 
   //Shading "a"
-  FillSpeciesSpecificValue( p_oElement, "nciShadingPowerDiamA", "nspdaVal",
+  FillSpeciesSpecificValue( p_oElement, "nciShadingPowerA", "nspaVal",
       p_fTempValues, iNumBehaviorSpecies, p_oPop, true);
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
     mp_fA[p_fTempValues[i].code] = p_fTempValues[i].val;
 
   //Shading "i"
-  FillSpeciesSpecificValue( p_oElement, "nciShadingPowerDiamI", "nspdiVal",
+  FillSpeciesSpecificValue( p_oElement, "nciShadingPowerI", "nspiVal",
       p_fTempValues, iNumBehaviorSpecies, p_oPop, true);
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
@@ -94,7 +94,7 @@ void clShadingEffectPower::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_o
   delete[] p_fTempValues;
 
   // GLI scaler
-  FillSingleValue(p_oElement, "nciShadingPowerDiamGLIScale", &m_fGLIScaler, true);
+  FillSingleValue(p_oElement, "nciShadingPowerGLIScale", &m_fGLIScaler, true);
   //-------------------------------------------------------------------------//
 
 

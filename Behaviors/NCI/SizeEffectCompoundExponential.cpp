@@ -12,6 +12,7 @@ clSizeEffectCompoundExponential::clSizeEffectCompoundExponential() {
   mp_fB = NULL;
   mp_fC = NULL;
   mp_fD = NULL;
+  m_fScaler = 0.01;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -28,11 +29,11 @@ clSizeEffectCompoundExponential::~clSizeEffectCompoundExponential() {
 // CalculateSizeEffect
 ////////////////////////////////////////////////////////////////////////////
 double clSizeEffectCompoundExponential::CalculateSizeEffect(clTree *p_oTree, const float &fDiam) {
-  double fSizeEffect;
+  double fSizeEffect, fSize = fDiam * m_fScaler;
   int iSpecies = p_oTree->GetSpecies();
 
-  fSizeEffect = (1-mp_fA[iSpecies]*exp(mp_fB[iSpecies]*(fDiam/100)))*
-                 exp(mp_fC[iSpecies]*pow((fDiam/100),mp_fD[iSpecies]));
+  fSizeEffect = (1-mp_fA[iSpecies]*exp(mp_fB[iSpecies]*(fSize)))*
+                 exp(mp_fC[iSpecies]*pow((fSize),mp_fD[iSpecies]));
   //Make sure it's bounded between 0 and 1
   if ( fSizeEffect < 0 ) fSizeEffect = 0;
   if ( fSizeEffect > 1 ) fSizeEffect = 1;
@@ -84,6 +85,9 @@ void clSizeEffectCompoundExponential::DoSetup(clTreePopulation *p_oPop, clBehavi
   //Transfer to the appropriate array buckets
   for ( i = 0; i < iNumBehaviorSpecies; i++ )
     mp_fD[p_dTempValues[i].code] = p_dTempValues[i].val;
+
+  //Scaler, not required
+  FillSingleValue(p_oElement, "nciSizeEffectSizeScaler", &m_fScaler, false);
 
   delete[] p_dTempValues;
 
