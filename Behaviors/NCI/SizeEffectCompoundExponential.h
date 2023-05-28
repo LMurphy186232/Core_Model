@@ -6,12 +6,14 @@
 /**
  * Calculates the size effect with a compound exponential function.
  * Size Effect is calculated as:
- * <center><i>SE = (1-a*exp(b*(diam/100)))*exp(c*((diam/100)<sup>d</sup>))</i></center>
+ * <center><i>SE = (1-a*exp(b*diam))*exp(c*(diam<sup>d</sup>))</i></center>
  *
  * where <i>diam</i> is the diameter of the target tree, in cm (d10 for
  * seedlings, DBH for everyone else); and <i>a, b, c,</i> and <i>d</i> are
  * parameters.
- */
+ *
+ * Size can be scaled to appropriate units with the scaler.
+  */
 class clSizeEffectCompoundExponential: virtual public clSizeEffectBase {
 public:
 
@@ -53,6 +55,12 @@ protected:
 
   /**d in Size Effect equation above. Array is sized number of species.*/
   double *mp_fD;
+
+  /**Size scaler. Can be used to change units of size from SORTIE defaults.
+   * For backwards compatibility, this will be set to 0.01 to transform DBH
+   * units to meters by default.
+   */
+  double m_fScaler;
 };
 
 #endif /* DEFAULTSIZEEFFECT_H_ */
