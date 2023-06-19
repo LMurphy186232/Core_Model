@@ -61,6 +61,7 @@ clDisturbance::clDisturbance(clSimManager * p_oSimManager) :
     m_iTallestFirstCode = -1;
     m_iCutIDCode = -1;
     m_iHarvestTypeCode = -1;
+    m_iMaxSnagClassCode = -1;
     mp_oPop = NULL;
     m_fPopCellLen = 0;
     m_iReasonCode = harvest;
@@ -304,12 +305,26 @@ void clDisturbance::ReadHarvestParameterFileData(xercesc::DOMDocument * p_oDoc) 
       p_oNewPackage->SetValue(m_iAmountTypeCode, iTemp);
     }
 
+    //-----------------------------------------------------------------------//
     //Get the tallest first flag type
+    //-----------------------------------------------------------------------//
     bTemp = true;
     FillSingleValue(p_oElement, "ha_tallestFirst", &bTemp, false);
     p_oNewPackage->SetValue(m_iTallestFirstCode, bTemp);
 
+
+    //-----------------------------------------------------------------------//
+    //Get the max snag decay class to consider - not required; set to -1
+    //by default for backwards compatibility
+    //-----------------------------------------------------------------------//
+    iTemp = -1;
+    FillSingleValue(p_oElement, "ha_maxSnagDecayClass", &iTemp, false);
+    p_oNewPackage->SetValue(m_iMaxSnagClassCode, iTemp);
+
+
+    //-----------------------------------------------------------------------//
     //Get the cut ranges
+    //-----------------------------------------------------------------------//
     sVal = XMLString::transcode("ha_dbhRange");
     p_oCutSpecificsList = p_oElement->getElementsByTagName(sVal);
     XMLString::release(&sVal);
@@ -602,6 +617,12 @@ void clDisturbance::ReadMortEpParameterFileData(xercesc::DOMDocument * p_oDoc) {
     //Make tallest-first always true - I should come back and change
     //this at some point
     p_oNewPackage->SetValue(m_iTallestFirstCode, true);
+
+    //Get the max snag decay class to consider - not required; set to -1
+    //by default for backwards compatibility
+    iTemp = -1;
+    FillSingleValue(p_oElement, "ds_maxSnagDecayClass", &iTemp, false);
+    p_oNewPackage->SetValue(m_iMaxSnagClassCode, iTemp);
 
     //Get species values and assign them
     sVal = XMLString::transcode("ds_applyToSpecies");
@@ -1082,7 +1103,7 @@ void clDisturbance::SetupGrids() {
 
       //Now adjust for the package data members
       mp_oMasterCutsGrid->ChangePackageDataStructure(
-          4 + m_iNumAllowedPriorities, //int data members
+          5 + m_iNumAllowedPriorities, //int data members
           (3 * m_iNumAllowedCutRanges) + iNumSpecies + (2 * m_iNumAllowedPriorities), //float data members
           m_iNumAllowedPriorities, //char data members
           iNumSpecies+1); //bool data members
@@ -1094,6 +1115,7 @@ void clDisturbance::SetupGrids() {
       m_iCutTypeCode = mp_oMasterCutsGrid->RegisterPackageInt("cuttype");
       m_iAmountTypeCode = mp_oMasterCutsGrid->RegisterPackageInt("amttype");
       m_iTallestFirstCode = mp_oMasterCutsGrid->RegisterPackageBool("tallestfirst");
+      m_iMaxSnagClassCode = mp_oMasterCutsGrid->RegisterPackageInt("maxsnagclass");
 
       for (i = 0; i < m_iNumAllowedCutRanges; i++) {
         sLabel << "rangemin" << i;
@@ -1206,7 +1228,7 @@ void clDisturbance::SetupGrids() {
       }
 
       //Now adjust for the package data members
-      mp_oMasterCutsGrid->ChangePackageDataStructure(3, //number of package int data members
+      mp_oMasterCutsGrid->ChangePackageDataStructure(4, //number of package int data members
           (3 * m_iNumAllowedCutRanges) + iNumSpecies, //number of package float data members
           0, //number of package char data members
           iNumSpecies+1); //number of package bool data members
@@ -1217,6 +1239,7 @@ void clDisturbance::SetupGrids() {
       m_iMasterIDCode = mp_oMasterCutsGrid->RegisterPackageInt("id");
       m_iAmountTypeCode = mp_oMasterCutsGrid->RegisterPackageInt("amttype");
       m_iTallestFirstCode = mp_oMasterCutsGrid->RegisterPackageBool("tallestfirst");
+      m_iMaxSnagClassCode = mp_oMasterCutsGrid->RegisterPackageInt("maxsnagclass");
 
       for (i = 0; i < m_iNumAllowedCutRanges; i++) {
         sLabel << "rangemin" << i;
@@ -1379,6 +1402,7 @@ void clDisturbance::CutTrees(clPackage * p_oMasterPackage) {
         iAmountType, //in what terms the cut is expressed
         iCutType, //type of cut to be performed
         iPriorityType,
+        iMaxSnagDecayClass, //max allowed snag decay class - -1 if no snags
         iNumCellsInCutArea; //number of cells in cut area
     short int iSp, i, j;
     bool bTallestFirst, bKeepCuttingAfterPriority = true;
@@ -1420,6 +1444,9 @@ void clDisturbance::CutTrees(clPackage * p_oMasterPackage) {
 
     //Get the "tallest first" flag
     p_oMasterPackage->GetValue(m_iTallestFirstCode, &bTallestFirst);
+
+    //Get the max allowed snag decay class
+    p_oMasterPackage->GetValue(m_iMaxSnagClassCode, &iMaxSnagDecayClass);
 
     //If the cut type is percent of basal area - declare the total basal area
     //arrays
@@ -1494,7 +1521,8 @@ void clDisturbance::CutTrees(clPackage * p_oMasterPackage) {
           for (i = 0; i < m_iNumAllowedCutRanges; i++)
             p_fTotalBasalArea[i] = 0;
 
-          GetBasalArea(p_cutArea, p_treeArea, iSp, p_fTotalBasalArea, p_fLoDbh, p_fHiDbh);
+          GetBasalArea(p_cutArea, p_treeArea, iSp, p_fTotalBasalArea,
+              p_fLoDbh, p_fHiDbh, iMaxSnagDecayClass);
         }
 
         //Reset the amount removed array
@@ -1514,16 +1542,19 @@ void clDisturbance::CutTrees(clPackage * p_oMasterPackage) {
                 bKeepCuttingAfterPriority = CutSpeciesPercentBAPriority(iSp, p_cutArea,
                     p_treeArea, p_fLoDbh, p_fHiDbh,
                     p_fAmountToRemove, p_fAmountRemoved, p_fTotalBasalArea,
-                    sPriorityName, iPriorityType, fPriorityMin, fPriorityMax, bTallestFirst);
+                    sPriorityName, iPriorityType, fPriorityMin, fPriorityMax,
+                    bTallestFirst, iMaxSnagDecayClass);
               else if (absDen == iAmountType)
                 CutSpeciesAbsDenPriority(iSp, p_cutArea, p_treeArea, p_fLoDbh, p_fHiDbh,
                     p_fAmountToRemove, p_fAmountRemoved, sPriorityName,
-                    iPriorityType, fPriorityMin, fPriorityMax, bTallestFirst);
+                    iPriorityType, fPriorityMin, fPriorityMax, bTallestFirst,
+                    iMaxSnagDecayClass);
               else if (absBA == iAmountType)
                 bKeepCuttingAfterPriority = CutSpeciesAbsBAPriority(iSp, p_cutArea,
                     p_treeArea, p_fLoDbh, p_fHiDbh,
                     p_fAmountToRemove, p_fAmountRemoved, sPriorityName,
-                    iPriorityType, fPriorityMin, fPriorityMax, bTallestFirst);
+                    iPriorityType, fPriorityMin, fPriorityMax, bTallestFirst,
+                    iMaxSnagDecayClass);
             }
           }
         }
@@ -1532,16 +1563,19 @@ void clDisturbance::CutTrees(clPackage * p_oMasterPackage) {
         if (bKeepCuttingAfterPriority) {
           if (percentDen == iAmountType)
             CutSpeciesPercentDen(iSp, p_cutArea, p_treeArea, p_fLoDbh, p_fHiDbh,
-                p_fAmountToRemove, p_fAmountRemoved);
+                p_fAmountToRemove, p_fAmountRemoved, iMaxSnagDecayClass);
           else if (percentBA == iAmountType)
             CutSpeciesPercentBA(iSp, p_cutArea, p_treeArea, p_fLoDbh, p_fHiDbh,
-                p_fAmountToRemove, p_fAmountRemoved, p_fTotalBasalArea, bTallestFirst);
+                p_fAmountToRemove, p_fAmountRemoved, p_fTotalBasalArea,
+                bTallestFirst, iMaxSnagDecayClass);
           else if (absDen == iAmountType)
             CutSpeciesAbsDen(iSp, p_cutArea, p_treeArea, p_fLoDbh, p_fHiDbh,
-                p_fAmountToRemove, p_fAmountRemoved, bTallestFirst);
+                p_fAmountToRemove, p_fAmountRemoved, bTallestFirst,
+                iMaxSnagDecayClass);
           else // absBA == iAmountType)
             CutSpeciesAbsBA(iSp, p_cutArea, p_treeArea, p_fLoDbh, p_fHiDbh,
-                p_fAmountToRemove, p_fAmountRemoved, bTallestFirst);
+                p_fAmountToRemove, p_fAmountRemoved, bTallestFirst,
+                iMaxSnagDecayClass);
         }
 
       } //end of if (p_bSpeciesCut[iSp])
@@ -1600,7 +1634,8 @@ void clDisturbance::CutTrees(clPackage * p_oMasterPackage) {
 //////////////////////////////////////////////////////////////////////////////
 void clDisturbance::CutSpeciesPercentBA(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
-    float *p_fAmountRemoved, float *p_fTotalBasalArea, bool bTallestFirst) {
+    float *p_fAmountRemoved, float *p_fTotalBasalArea, bool bTallestFirst,
+    const int &iMaxSnagDecayClass) {
 
   clTree * p_oTree, //tree we're working with
   *p_oNextTree; //placeholder for getting the next tree
@@ -1622,7 +1657,8 @@ void clDisturbance::CutSpeciesPercentBA(int iSp, stcGridList * & p_cutArea, stcT
   if (bTreeIsDead) return;
 
   //Now remove the trees
-  p_oTree = GetFirstTreeInCutArea(p_cutArea, p_treeArea, iSp, bTallestFirst);
+  p_oTree = GetFirstTreeInCutArea(p_cutArea, p_treeArea, iSp, bTallestFirst,
+      iMaxSnagDecayClass);
   while (p_oTree) {
     bTreeIsDead = false;
     fThisBA = 0;
@@ -1663,7 +1699,8 @@ void clDisturbance::CutSpeciesPercentBA(int iSp, stcGridList * & p_cutArea, stcT
       } //end of (fDbh >= p_fLoDbh[i] && fDbh <= p_fHiDbh[i])
     } //end of for (i = 0; i < m_iNumAllowedCutRanges; i++)
 
-    p_oNextTree = GetNextTreeInCutArea(p_cutArea, p_treeArea, iSp, bTallestFirst);
+    p_oNextTree = GetNextTreeInCutArea(p_cutArea, p_treeArea, iSp,
+        bTallestFirst, iMaxSnagDecayClass);
     if (bTreeIsDead) {
 
       AddTreeStatsToResults(p_oTree, p_fLoDbh, p_fHiDbh, fDbh);
@@ -1681,7 +1718,7 @@ void clDisturbance::CutSpeciesPercentBA(int iSp, stcGridList * & p_cutArea, stcT
 //////////////////////////////////////////////////////////////////////////////
 void clDisturbance::CutSpeciesAbsBA(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
-    float *p_fAmountRemoved, bool bTallestFirst) {
+    float *p_fAmountRemoved, bool bTallestFirst, const int &iMaxSnagDecayClass) {
 
   clTree * p_oTree, //tree we're working with
   *p_oNextTree; //placeholder for getting the next tree
@@ -1697,7 +1734,8 @@ void clDisturbance::CutSpeciesAbsBA(int iSp, stcGridList * & p_cutArea, stcTreeG
   if (bTreeIsDead) return;
 
   //Now remove the trees
-  p_oTree = GetFirstTreeInCutArea(p_cutArea, p_treeArea, iSp, bTallestFirst);
+  p_oTree = GetFirstTreeInCutArea(p_cutArea, p_treeArea, iSp, bTallestFirst,
+      iMaxSnagDecayClass);
   while (p_oTree) {
     bTreeIsDead = false;
     fThisBA = 0;
@@ -1738,7 +1776,8 @@ void clDisturbance::CutSpeciesAbsBA(int iSp, stcGridList * & p_cutArea, stcTreeG
       } //end of (fDbh >= p_fLoDbh[i] && fDbh <= p_fHiDbh[i])
     } //end of for (i = 0; i < m_iNumAllowedCutRanges; i++)
 
-    p_oNextTree = GetNextTreeInCutArea(p_cutArea, p_treeArea, iSp, bTallestFirst);
+    p_oNextTree = GetNextTreeInCutArea(p_cutArea, p_treeArea, iSp,
+        bTallestFirst, iMaxSnagDecayClass);
     if (bTreeIsDead) {
 
       AddTreeStatsToResults(p_oTree, p_fLoDbh, p_fHiDbh, fDbh);
@@ -1754,7 +1793,7 @@ void clDisturbance::CutSpeciesAbsBA(int iSp, stcGridList * & p_cutArea, stcTreeG
 //////////////////////////////////////////////////////////////////////////////
 void clDisturbance::CutSpeciesPercentDen(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
-    float *p_fAmountRemoved) {
+    float *p_fAmountRemoved, const int &iMaxSnagDecayClass) {
 
   clTree * p_oTree, //tree we're working with
   *p_oNextTree; //placeholder for getting the next tree
@@ -1765,13 +1804,15 @@ void clDisturbance::CutSpeciesPercentDen(int iSp, stcGridList * & p_cutArea, stc
   bool bTreeIsDead; //whether or not a particular tree dies
 
   //Now remove the trees
-  p_oTree = GetFirstTreeInCutArea(p_cutArea, p_treeArea, iSp, true);
+  p_oTree = GetFirstTreeInCutArea(p_cutArea, p_treeArea, iSp, true,
+      iMaxSnagDecayClass);
   while (p_oTree) {
     bTreeIsDead = false;
     //fThisBA = 0;
 
     p_oTree->GetValue(mp_oPop->GetDbhCode(iSp, p_oTree->GetType()),
         &fDbh);
+
 
     //Go through each cut range and see if a tree is in it
     for (i = 0; i < m_iNumAllowedCutRanges; i++) {
@@ -1785,7 +1826,8 @@ void clDisturbance::CutSpeciesPercentDen(int iSp, stcGridList * & p_cutArea, stc
       } //end of (fDbh >= p_fLoDbh[i] && fDbh <= p_fHiDbh[i])
     } //end of for (i = 0; i < m_iNumAllowedCutRanges; i++)
 
-    p_oNextTree = GetNextTreeInCutArea(p_cutArea, p_treeArea, iSp, true);
+    p_oNextTree = GetNextTreeInCutArea(p_cutArea, p_treeArea, iSp, true,
+        iMaxSnagDecayClass);
     if (bTreeIsDead) {
 
       AddTreeStatsToResults(p_oTree, p_fLoDbh, p_fHiDbh, fDbh);
@@ -1801,7 +1843,7 @@ void clDisturbance::CutSpeciesPercentDen(int iSp, stcGridList * & p_cutArea, stc
 //////////////////////////////////////////////////////////////////////////////
 void clDisturbance::CutSpeciesAbsDen(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
-    float *p_fAmountRemoved, bool bTallestFirst) {
+    float *p_fAmountRemoved, bool bTallestFirst, const int &iMaxSnagDecayClass) {
   clTree * p_oTree, //tree we're working with
   *p_oNextTree; //placeholder for getting the next tree
   float fDbh;
@@ -1816,7 +1858,8 @@ void clDisturbance::CutSpeciesAbsDen(int iSp, stcGridList * & p_cutArea, stcTree
   if (bTreeIsDead) return;
 
   //Now remove the trees
-  p_oTree = GetFirstTreeInCutArea(p_cutArea, p_treeArea, iSp, bTallestFirst);
+  p_oTree = GetFirstTreeInCutArea(p_cutArea, p_treeArea, iSp, bTallestFirst,
+      iMaxSnagDecayClass);
   while (p_oTree) {
     bTreeIsDead = false;
     //fThisBA = 0;
@@ -1836,7 +1879,8 @@ void clDisturbance::CutSpeciesAbsDen(int iSp, stcGridList * & p_cutArea, stcTree
       } //end of (fDbh >= p_fLoDbh[i] && fDbh <= p_fHiDbh[i])
     } //end of for (i = 0; i < m_iNumAllowedCutRanges; i++)
 
-    p_oNextTree = GetNextTreeInCutArea(p_cutArea, p_treeArea, iSp, bTallestFirst);
+    p_oNextTree = GetNextTreeInCutArea(p_cutArea, p_treeArea, iSp,
+        bTallestFirst, iMaxSnagDecayClass);
     if (bTreeIsDead) {
 
       AddTreeStatsToResults(p_oTree, p_fLoDbh, p_fHiDbh, fDbh);
@@ -1853,7 +1897,8 @@ void clDisturbance::CutSpeciesAbsDen(int iSp, stcGridList * & p_cutArea, stcTree
 bool clDisturbance::CutSpeciesPercentBAPriority(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
     float *p_fAmountRemoved, float *p_fTotalBasalArea, std::string sPriorityName,
-    int &iPriorityType, float &fPriorityMin, float &fPriorityMax, bool bTallestFirst) {
+    int &iPriorityType, float &fPriorityMin, float &fPriorityMax,
+    bool bTallestFirst, const int &iMaxSnagDecayClass) {
 
   clTree * p_oTree, //tree we're working with
   *p_oNextTree; //placeholder for getting the next tree
@@ -1876,7 +1921,8 @@ bool clDisturbance::CutSpeciesPercentBAPriority(int iSp, stcGridList * & p_cutAr
   if (bTreeIsDead) return false; //Don't need to look for more trees in the non-priority section
 
   //Now remove the trees
-  p_oTree = GetFirstTreeInCutArea(p_cutArea, p_treeArea, iSp, bTallestFirst);
+  p_oTree = GetFirstTreeInCutArea(p_cutArea, p_treeArea, iSp, bTallestFirst,
+      iMaxSnagDecayClass);
   while (p_oTree) {
     bTreeIsDead = false;
     fThisBA = 0;
@@ -1945,7 +1991,8 @@ bool clDisturbance::CutSpeciesPercentBAPriority(int iSp, stcGridList * & p_cutAr
       } //end of (fDbh >= p_fLoDbh[i] && fDbh <= p_fHiDbh[i])
     } //end of for (i = 0; i < m_iNumAllowedCutRanges; i++)
 
-    p_oNextTree = GetNextTreeInCutArea(p_cutArea, p_treeArea, iSp, bTallestFirst);
+    p_oNextTree = GetNextTreeInCutArea(p_cutArea, p_treeArea, iSp,
+        bTallestFirst, iMaxSnagDecayClass);
     if (bTreeIsDead) {
 
       AddTreeStatsToResults(p_oTree, p_fLoDbh, p_fHiDbh, fDbh);
@@ -1964,7 +2011,8 @@ bool clDisturbance::CutSpeciesPercentBAPriority(int iSp, stcGridList * & p_cutAr
 bool clDisturbance::CutSpeciesAbsBAPriority(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
     float *p_fAmountRemoved, std::string sPriorityName, int &iPriorityType,
-    float &fPriorityMin, float &fPriorityMax, bool bTallestFirst) {
+    float &fPriorityMin, float &fPriorityMax, bool bTallestFirst,
+    const int &iMaxSnagDecayClass) {
 
   clTree * p_oTree, //tree we're working with
   *p_oNextTree; //placeholder for getting the next tree
@@ -1981,7 +2029,8 @@ bool clDisturbance::CutSpeciesAbsBAPriority(int iSp, stcGridList * & p_cutArea, 
   if (bTreeIsDead) return false; //Don't need to look for more trees in the non-priority section
 
   //Now remove the trees
-  p_oTree = GetFirstTreeInCutArea(p_cutArea, p_treeArea, iSp, bTallestFirst);
+  p_oTree = GetFirstTreeInCutArea(p_cutArea, p_treeArea, iSp, bTallestFirst,
+      iMaxSnagDecayClass);
   while (p_oTree) {
     bTreeIsDead = false;
     fThisBA = 0;
@@ -2050,7 +2099,8 @@ bool clDisturbance::CutSpeciesAbsBAPriority(int iSp, stcGridList * & p_cutArea, 
       } //end of (fDbh >= p_fLoDbh[i] && fDbh <= p_fHiDbh[i])
     } //end of for (i = 0; i < m_iNumAllowedCutRanges; i++)
 
-    p_oNextTree = GetNextTreeInCutArea(p_cutArea, p_treeArea, iSp, bTallestFirst);
+    p_oNextTree = GetNextTreeInCutArea(p_cutArea, p_treeArea, iSp,
+        bTallestFirst, iMaxSnagDecayClass);
     if (bTreeIsDead) {
 
       AddTreeStatsToResults(p_oTree, p_fLoDbh, p_fHiDbh, fDbh);
@@ -2065,10 +2115,12 @@ bool clDisturbance::CutSpeciesAbsBAPriority(int iSp, stcGridList * & p_cutArea, 
 //////////////////////////////////////////////////////////////////////////////
 // CutSpeciesAbsDenPriority()
 //////////////////////////////////////////////////////////////////////////////
-void clDisturbance::CutSpeciesAbsDenPriority(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
+void clDisturbance::CutSpeciesAbsDenPriority(int iSp, stcGridList * & p_cutArea,
+    stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
     float *p_fAmountRemoved, std::string sPriorityName, int &iPriorityType,
-    float &fPriorityMin, float &fPriorityMax, bool bTallestFirst) {
+    float &fPriorityMin, float &fPriorityMax, bool bTallestFirst,
+    const int &iMaxSnagDecayClass) {
   clTree * p_oTree, //tree we're working with
   *p_oNextTree; //placeholder for getting the next tree
   float fDbh,
@@ -2084,7 +2136,8 @@ void clDisturbance::CutSpeciesAbsDenPriority(int iSp, stcGridList * & p_cutArea,
   if (bTreeIsDead) return;
 
   //Now remove the trees
-  p_oTree = GetFirstTreeInCutArea(p_cutArea, p_treeArea, iSp, bTallestFirst);
+  p_oTree = GetFirstTreeInCutArea(p_cutArea, p_treeArea, iSp, bTallestFirst,
+      iMaxSnagDecayClass);
   while (p_oTree) {
     bTreeIsDead = false;
     //fThisBA = 0;
@@ -2131,7 +2184,8 @@ void clDisturbance::CutSpeciesAbsDenPriority(int iSp, stcGridList * & p_cutArea,
       } //end of (fDbh >= p_fLoDbh[i] && fDbh <= p_fHiDbh[i])
     } //end of for (i = 0; i < m_iNumAllowedCutRanges; i++)
 
-    p_oNextTree = GetNextTreeInCutArea(p_cutArea, p_treeArea, iSp, bTallestFirst);
+    p_oNextTree = GetNextTreeInCutArea(p_cutArea, p_treeArea, iSp,
+        bTallestFirst, iMaxSnagDecayClass);
     if (bTreeIsDead) {
 
       AddTreeStatsToResults(p_oTree, p_fLoDbh, p_fHiDbh, fDbh);
@@ -2314,7 +2368,7 @@ int clDisturbance::AssembleCutArea(clPackage * p_oMasterPackage,
 //////////////////////////////////////////////////////////////////////////////
 void clDisturbance::GetBasalArea(stcGridList * p_cutArea, stcTreeGridList * & p_treeArea,
     const short int & iSpecies, float * p_fTotalBasalArea, float * p_fLoDbh,
-    float * p_fHiDbh) {
+    float * p_fHiDbh, const int &iMaxSnagDecayClass) {
   clTree * p_oTree; //tree whose basal area we're getting
   stcTreeGridList * p_treeRecord = NULL; //grid cell
   float fDbh; //tree's dbh
@@ -2326,17 +2380,18 @@ void clDisturbance::GetBasalArea(stcGridList * p_cutArea, stcTreeGridList * & p_
     p_oTree = mp_oPop->GetTallestTreeInCell(p_treeRecord->iTreeX, p_treeRecord->iTreeY);
     while (p_oTree) {
       iTreeSpecies = p_oTree->GetSpecies();
-      if (iSpecies == iTreeSpecies && IsTreeInCutArea(p_oTree, p_cutArea)) {
-        iTreeType = p_oTree->GetType();
-        if (clTreePopulation::seedling != iTreeType && clTreePopulation::snag
-            != iTreeType) {
-          p_oTree->GetValue(mp_oPop->GetDbhCode(iTreeSpecies, iTreeType),
-              &fDbh);
-          for (i = 0; i < m_iNumAllowedCutRanges; i++)
-            if (fDbh >= p_fLoDbh[i] && fDbh <= p_fHiDbh[i])
-              p_fTotalBasalArea[i] += clModelMath::CalculateBasalArea(fDbh);
-        }
-      } //end of if (iSpecies == iTreeSpecies)
+      iTreeType = p_oTree->GetType();
+      if (iSpecies == iTreeSpecies            &&
+          IsTreeInCutArea(p_oTree, p_cutArea) &&
+          IsTreeOkay(p_oTree, iMaxSnagDecayClass)) {
+
+
+        //----- If everything else is good, validate size -------------------//
+        p_oTree->GetValue(mp_oPop->GetDbhCode(iTreeSpecies, iTreeType), &fDbh);
+        for (i = 0; i < m_iNumAllowedCutRanges; i++)
+          if (fDbh >= p_fLoDbh[i] && fDbh <= p_fHiDbh[i])
+            p_fTotalBasalArea[i] += clModelMath::CalculateBasalArea(fDbh);
+      } //end of if (iSpecies == iTreeSpecies...)
       p_oTree = p_oTree->GetShorter();
     } //end of while (p_oTree)
     p_treeRecord = p_treeRecord->next;
@@ -2347,25 +2402,24 @@ void clDisturbance::GetBasalArea(stcGridList * p_cutArea, stcTreeGridList * & p_
 // GetFirstTreeInCutArea()
 //////////////////////////////////////////////////////////////////////////////
 clTree* clDisturbance::GetFirstTreeInCutArea(stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
-   const short int &iSpecies, const bool bTallestFirst) {
+   const short int &iSpecies, const bool bTallestFirst, const int &iMaxSnagDecayClass) {
   if (bTallestFirst) {
-    return GetTallestTreeInCutArea(p_cutArea, p_treeArea, iSpecies);
+    return GetTallestTreeInCutArea(p_cutArea, p_treeArea, iSpecies, iMaxSnagDecayClass);
   }
-  return GetShortestTreeInCutArea(p_cutArea, p_treeArea, iSpecies);
+  return GetShortestTreeInCutArea(p_cutArea, p_treeArea, iSpecies, iMaxSnagDecayClass);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 // GetTallestTreeInCutArea()
 //////////////////////////////////////////////////////////////////////////////
 clTree * clDisturbance::GetTallestTreeInCutArea(stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
-    const short int & iSpecies) {
+    const short int & iSpecies, const int &iMaxSnagDecayClass) {
   clTree * p_oTree; //a tree we're working with
   stcTreeGridList * p_sortedCutArea = NULL, //where to put the sorted list
       *p_cellRecord, //one record in the cut area list
       *p_cellHolder, //for holding our place in the linked list
       *p_sorter; //for sorting the linked list
   float fDbh; //tree's dbh
-  int iTemp, iDeadCode;
 
   //Go through each of the cell list records and find the tallest tree of
   //the given species
@@ -2381,93 +2435,88 @@ clTree * clDisturbance::GetTallestTreeInCutArea(stcGridList * & p_cutArea, stcTr
     p_oTree = mp_oPop->GetTallestTreeInCell(p_cellRecord->iTreeX,
         p_cellRecord->iTreeY);
     while (p_oTree) {
-      if (p_oTree->GetSpecies() == iSpecies) {
-        //See if this tree already died in another SORTIE disturbance
-        iDeadCode = mp_oPop->GetIntDataCode("dead", p_oTree->GetSpecies(),
-            p_oTree->GetType());
-        if (-1 != iDeadCode) {
-          p_oTree->GetValue(iDeadCode, &iTemp);
-        } else iTemp = notdead;
-        if (iTemp == notdead  && p_oTree->GetType() != clTreePopulation::snag
-            && IsTreeInCutArea(p_oTree, p_cutArea)) {
-          if (clTreePopulation::seedling == p_oTree->GetType()) {
-            //No more trees to bother with here - null the pointer and break
-            //the loop
-            p_oTree = NULL;
-            break;
-          } else {
-            break;
-          }
+      if (p_oTree->GetSpecies() == iSpecies       &&
+          IsTreeOkay(p_oTree, iMaxSnagDecayClass) &&
+          IsTreeInCutArea(p_oTree, p_cutArea)) {
+
+          //Found one that will do!
+          break;
+      } else {
+        if (clTreePopulation::seedling == p_oTree->GetType()) {
+          //No more trees to bother with here - null the pointer and break
+          //the loop
+          p_oTree = NULL;
+          break;
         }
       }
+
       p_oTree = p_oTree->GetShorter();
     } //end of while (p_oTree)
 
-    //Get the dbh of our tree, if it exists
-    if (p_oTree)
-      p_oTree->GetValue(mp_oPop->GetDbhCode(iSpecies, p_oTree->GetType()),
-          &fDbh);
-    else
-      fDbh = 0;
+  //Get the dbh of our tree, if it exists
+  if (p_oTree)
+    p_oTree->GetValue(mp_oPop->GetDbhCode(iSpecies, p_oTree->GetType()),
+        &fDbh);
+  else
+    fDbh = 0;
 
-    //Assign the values
-    p_cellRecord->p_oTree = p_oTree;
-    p_cellRecord->fDbh = fDbh;
+  //Assign the values
+  p_cellRecord->p_oTree = p_oTree;
+  p_cellRecord->fDbh = fDbh;
 
-    //Sort our record (tallest tree or not) into the new list
-    p_sorter = p_sortedCutArea;
-    if (NULL != p_sorter) {
-      while (p_sorter) {
+  //Sort our record (tallest tree or not) into the new list
+  p_sorter = p_sortedCutArea;
+  if (NULL != p_sorter) {
+    while (p_sorter) {
 
-        //Does our record come first?
-        if (p_sorter == p_sortedCutArea && p_sorter->fDbh <= fDbh) {
-          p_cellRecord->next = p_sorter;
-          p_sortedCutArea = p_cellRecord;
-          break;
-        }
+      //Does our record come first?
+      if (p_sorter == p_sortedCutArea && p_sorter->fDbh <= fDbh) {
+        p_cellRecord->next = p_sorter;
+        p_sortedCutArea = p_cellRecord;
+        break;
+      }
 
-        //Evaluate the other cases independently of the first - no else if here
-        //Does our record come last?
-        if (NULL == p_sorter->next) {
-          p_sorter->next = p_cellRecord;
-          break;
+      //Evaluate the other cases independently of the first - no else if here
+      //Does our record come last?
+      if (NULL == p_sorter->next) {
+        p_sorter->next = p_cellRecord;
+        break;
 
-          //Our record comes somewhere in the middle
-        } else if (p_sorter->next->fDbh <= fDbh) {
+        //Our record comes somewhere in the middle
+      } else if (p_sorter->next->fDbh <= fDbh) {
 
-          //The new record goes after p_sorter
-          p_cellRecord->next = p_sorter->next;
-          p_sorter->next = p_cellRecord;
-          break;
-        }
+        //The new record goes after p_sorter
+        p_cellRecord->next = p_sorter->next;
+        p_sorter->next = p_cellRecord;
+        break;
+      }
 
-        p_sorter = p_sorter->next;
-      } //end of while (p_sorter)
-    } else
-      //this is first one to be sorted
-      p_sortedCutArea = p_cellRecord;
+      p_sorter = p_sorter->next;
+    } //end of while (p_sorter)
+  } else
+    //this is first one to be sorted
+    p_sortedCutArea = p_cellRecord;
 
-    p_cellRecord = p_cellHolder;
-  } //end of while (p_cellRecord)
+  p_cellRecord = p_cellHolder;
+} //end of while (p_cellRecord)
 
-  //OK, we're all sorted - return the tree in the first block and re-assign
-  //the linked list
-  p_treeArea = p_sortedCutArea;
-  return (p_treeArea->p_oTree);
+//OK, we're all sorted - return the tree in the first block and re-assign
+//the linked list
+p_treeArea = p_sortedCutArea;
+return (p_treeArea->p_oTree);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 // GetShortestTreeInCutArea()
 //////////////////////////////////////////////////////////////////////////////
 clTree * clDisturbance::GetShortestTreeInCutArea(stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
-    const short int & iSpecies) {
+    const short int & iSpecies, const int &iMaxSnagDecayClass) {
   clTree * p_oTree; //a tree we're working with
   stcTreeGridList * p_sortedCutArea = NULL, //where to put the sorted list
       *p_cellRecord, //one record in the cut area list
       *p_cellHolder, //for holding our place in the linked list
       *p_sorter; //for sorting the linked list
   float fDbh; //tree's dbh
-  int iTemp, iDeadCode;
 
   //Go through each of the cell list records and find the shortest tree of
   //the given species
@@ -2483,17 +2532,12 @@ clTree * clDisturbance::GetShortestTreeInCutArea(stcGridList * & p_cutArea, stcT
     p_oTree = mp_oPop->GetShortestTreeInCell(p_cellRecord->iTreeX,
         p_cellRecord->iTreeY);
     while (p_oTree) {
-      if (p_oTree->GetType() != clTreePopulation::seedling && p_oTree->GetSpecies() == iSpecies) {
-        //See if this tree already died in another SORTIE disturbance
-        iDeadCode = mp_oPop->GetIntDataCode("dead", p_oTree->GetSpecies(),
-            p_oTree->GetType());
-        if (-1 != iDeadCode) {
-          p_oTree->GetValue(iDeadCode, &iTemp);
-        } else iTemp = notdead;
-        if (iTemp == notdead  && p_oTree->GetType() != clTreePopulation::snag
-            && IsTreeInCutArea(p_oTree, p_cutArea)) {
-          break;
-        }
+      if (p_oTree->GetSpecies() == iSpecies       &&
+          IsTreeOkay(p_oTree, iMaxSnagDecayClass) &&
+          IsTreeInCutArea(p_oTree, p_cutArea)) {
+
+        //Found one that will do!
+        break;
       }
       p_oTree = p_oTree->GetTaller();
     } //end of while (p_oTree)
@@ -2555,24 +2599,25 @@ clTree * clDisturbance::GetShortestTreeInCutArea(stcGridList * & p_cutArea, stcT
 // GetNextTreeInCutArea()
 //////////////////////////////////////////////////////////////////////////////
 clTree * clDisturbance::GetNextTreeInCutArea(stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
-    const short int & iSpecies, const bool bTallestFirst) {
+    const short int & iSpecies, const bool bTallestFirst, const int &iMaxSnagDecayClass) {
 
   if (bTallestFirst) {
-    return GetNextTallestTreeInCutArea(p_cutArea, p_treeArea, iSpecies);
+    return GetNextTallestTreeInCutArea(p_cutArea, p_treeArea,
+        iSpecies, iMaxSnagDecayClass);
   }
-  return GetNextShortestTreeInCutArea(p_cutArea, p_treeArea, iSpecies);
+  return GetNextShortestTreeInCutArea(p_cutArea, p_treeArea,
+      iSpecies, iMaxSnagDecayClass);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 // GetNextTallestTreeInCutArea()
 //////////////////////////////////////////////////////////////////////////////
 clTree * clDisturbance::GetNextTallestTreeInCutArea(stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
-    const short int & iSpecies) {
+    const short int & iSpecies, const int &iMaxSnagDecayClass) {
   clTree * p_oTree; //for finding the next tallest tree
   stcTreeGridList * p_cellRecord, //an individual record
   *p_sorter; //for sorting the list
   float fDbh; //tree's dbh
-  int iTemp, iDeadCode;
 
   //If we've already returned all the trees return NULL
   if (NULL == p_treeArea->p_oTree)
@@ -2583,25 +2628,22 @@ clTree * clDisturbance::GetNextTallestTreeInCutArea(stcGridList * & p_cutArea, s
   //of that species
   p_oTree = p_treeArea->p_oTree->GetShorter();
   while (p_oTree) {
-    if (p_oTree->GetSpecies() == iSpecies) {
-      //See if this tree already died in another SORTIE disturbance
-      iDeadCode = mp_oPop->GetIntDataCode("dead", p_oTree->GetSpecies(),
-          p_oTree->GetType());
-      if (-1 != iDeadCode) {
-        p_oTree->GetValue(iDeadCode, &iTemp);
-      } else iTemp = notdead;
-      if (iTemp == notdead  && p_oTree->GetType() != clTreePopulation::snag &&
-          IsTreeInCutArea(p_oTree, p_cutArea)) {
-        if (clTreePopulation::seedling == p_oTree->GetType()) {
-          //No more trees to bother with here - null the pointer and break
-          //the loop
-          p_oTree = NULL;
-          break;
-        } else {
-          break;
-        }
+
+    if (p_oTree->GetSpecies() == iSpecies       &&
+        IsTreeOkay(p_oTree, iMaxSnagDecayClass) &&
+        IsTreeInCutArea(p_oTree, p_cutArea)) {
+
+      //Found one that will do!
+      break;
+    } else {
+      if (clTreePopulation::seedling == p_oTree->GetType()) {
+        //No more trees to bother with here - null the pointer and break
+        //the loop
+        p_oTree = NULL;
+        break;
       }
     }
+
     p_oTree = p_oTree->GetShorter();
   } //end of while (p_oTree)
 
@@ -2646,12 +2688,11 @@ clTree * clDisturbance::GetNextTallestTreeInCutArea(stcGridList * & p_cutArea, s
 // GetNextShortestTreeInCutArea()
 //////////////////////////////////////////////////////////////////////////////
 clTree * clDisturbance::GetNextShortestTreeInCutArea(stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
-    const short int & iSpecies) {
+    const short int & iSpecies, const int &iMaxSnagDecayClass) {
   clTree * p_oTree; //for finding the next shortest tree
   stcTreeGridList * p_cellRecord, //an individual record
   *p_sorter; //for sorting the list
   float fDbh; //tree's dbh
-  int iTemp, iDeadCode;
 
   //If we've already returned all the trees return NULL
   if (NULL == p_treeArea->p_oTree)
@@ -2662,18 +2703,14 @@ clTree * clDisturbance::GetNextShortestTreeInCutArea(stcGridList * & p_cutArea, 
   //of that species
   p_oTree = p_treeArea->p_oTree->GetTaller();
   while (p_oTree) {
-    if (p_oTree->GetType() != clTreePopulation::seedling && p_oTree->GetSpecies() == iSpecies) {
-      //See if this tree already died in another SORTIE disturbance
-      iDeadCode = mp_oPop->GetIntDataCode("dead", p_oTree->GetSpecies(),
-          p_oTree->GetType());
-      if (-1 != iDeadCode) {
-        p_oTree->GetValue(iDeadCode, &iTemp);
-      } else iTemp = notdead;
-      if (iTemp == notdead  && p_oTree->GetType() != clTreePopulation::snag &&
-          IsTreeInCutArea(p_oTree, p_cutArea)) {
-        break;
-      }
+    if (p_oTree->GetSpecies() == iSpecies       &&
+        IsTreeOkay(p_oTree, iMaxSnagDecayClass) &&
+        IsTreeInCutArea(p_oTree, p_cutArea)) {
+
+      //Found one that will do!
+      break;
     }
+
     p_oTree = p_oTree->GetTaller();
   } //end of while (p_oTree)
 
@@ -2818,4 +2855,71 @@ void clDisturbance::KillSeedlings(stcGridList *p_cutArea, stcTreeGridList * & p_
   } //end of while (p_cellRecord)
 
 
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// IsTreeOkay
+//////////////////////////////////////////////////////////////////////////////
+bool clDisturbance::IsTreeOkay(clTree *p_oTree, const int &iMaxSnagDecayClass) {
+  int iCode, iValue, iSpecies = p_oTree->GetSpecies(),
+      iType = p_oTree->GetType();
+
+  //----- Is this tree dead? ------------------------------------------------//
+  iCode = mp_oPop->GetIntDataCode("dead", iSpecies, iType);
+  if (-1 != iCode) {
+    p_oTree->GetValue(iCode, &iValue);
+  } else {
+    // No trees are ever dead - unlikely but we'll roll with it
+    iValue = notdead;
+  }
+
+  if (iValue != notdead) {
+    //This tree is dead and therefore not okay!
+    return false;
+  }
+
+  //----- What is this tree's life history stage? ---------------------------//
+  if (clTreePopulation::adult   == iType ||
+      clTreePopulation::sapling == iType) {
+
+    //This is a tree type we will always consider. It's okay!
+    return true;
+  }
+
+  if (clTreePopulation::seedling == iType) {
+
+    //Seedlings are never okay!
+    return false;
+  }
+
+  //Check to see if this is snag AND snags are okay
+  if (clTreePopulation::snag == iType) {
+
+    if (iMaxSnagDecayClass < 0) {
+      //For this run, snags are never okay
+      return false;
+    }
+
+    //Get decay class, allowing for it not to exist
+    iCode = mp_oPop->GetIntDataCode("SnagDecayClass", iSpecies, iType);
+    if (iCode == -1) {
+      //Snag decay classes don't exist, but snags should be considered
+      return true;
+
+    } else {
+      //Retrieve the current decay class
+      p_oTree->GetValue(iCode, &iValue);
+      if (iValue <= iMaxSnagDecayClass) {
+        //Snag decay class exists, and it's less than the max; okay
+        return true;
+      } else {
+        //Snag decay class exists, but it's too high; not okay
+        return false;
+      }
+    }
+  }
+
+  //Whatever this tree is, we have no idea what to do with it. It's probably
+  //not okay
+  return false;
 }

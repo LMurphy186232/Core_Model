@@ -12,7 +12,7 @@ class clTree;
 using namespace whyDead;
 
 /**
-* Disturbance - Version 2.1
+* Disturbance
 *
 * This class allows for highly specific disturbance events. Two kinds of
 * disturbance can be performed: harvest or episodic mortality (disease,
@@ -54,6 +54,13 @@ using namespace whyDead;
 * those found in the cut area. The kill rate is species specific and does not
 * have to be the same as the species being harvested.
 *
+* Snags may be included if desired, optionally by decay class. There is a field
+* for max snag decay class. If the value is -1, no snags will be cut. If decay
+* class is not defined for snags, then any non-zero value will cause all snags
+* to be eligible for cutting like any other tree. If decay class is defined for
+* snags, then snags with a decay class less than or equal to the max value will
+* be eligible for cutting like any other tree.
+*
 * Episodic mortality events are processed like harvest partial cuts.
 *
 * The disturbance event data is stored in a grid. Each cut event, defined as
@@ -73,6 +80,7 @@ using namespace whyDead;
 * <br>October 20, 2011 - Wiped the slate clean for SORTIE 7.0 (LEM)
 * <br>February 23, 2012 - Added priorities (LEM)
 * <br>April 18, 2017 - Allowed reverse cut order (LEM)
+* <br>May 28, 2023 - Included snags (LEM)
 */
 class clDisturbance : virtual public clBehaviorBase {
 
@@ -193,7 +201,7 @@ class clDisturbance : virtual public clBehaviorBase {
   * </tr>
   * <tr>
   * <td>species(x)</td>     <td>bool</td> <td>One of each of these for each
-  *                                       species.  If true, this species is
+  *                                       species. If true, this species is
   *                                       being cut.</td>
   * </tr>
   * <tr>
@@ -240,6 +248,10 @@ class clDisturbance : virtual public clBehaviorBase {
   * <td>seedling(x)</td>    <td>float</td><td>Proportion (0-1) of seedlings
   *                                       of each species to destroy.</td>
   * </tr>
+  * <tr>
+  * <td>maxsnagclass</td>  <td>int   </td><td>Max snag decay class to include
+  *                                       in cut. -1 excludes snags.</td>
+  * <tr>
   * </table>
   */
   clGrid  *mp_oMasterCutsGrid;
@@ -326,6 +338,7 @@ class clDisturbance : virtual public clBehaviorBase {
   * <tr>
   * <td>Cut Seedlings_sp</td> <td>int</td>      <td>Number of seedlings cut in
   *                                             the current timestep.</td>
+  * </tr>
   * </table>
   */
   clGrid *mp_oResultsGrid;
@@ -370,6 +383,8 @@ class clDisturbance : virtual public clBehaviorBase {
   /**prioritymaxx data member codes in "harvestmastercuts" grid. Array size is
    * number priorities*/
   short int *mp_iPriorityMaxCodes;
+  /**snagclassmax data member code in "harvestmastercuts" grid.*/
+  short int m_iMaxSnagClassCode;
 
   //"harvestcutevents/mortepisodecutevents" grid data members
   /**timestep data member code in "harvestcutevents" grid*/
@@ -390,6 +405,8 @@ class clDisturbance : virtual public clBehaviorBase {
   /**Cut Seedlings data member codes in "Harvest Results" grid. Array size is
    * number of species.*/
   short int *mp_iSeedlingCutCodes;
+
+
 
   /**Disturbance grid cell X length*/
   float m_fDistXCellLen;
@@ -502,10 +519,13 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param p_fAmountRemoved Amount already removed.
    * @param bTallestFirst Whether to cut the tallest trees first (true)
    * or shortest first (false).
+   * @param iMaxSnagDecayClass Max decay class of snags that should be cut; -1
+   * means no snags.
    */
   void CutSpeciesAbsDen(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
-    float *p_fAmountRemoved, bool bTallestFirst);
+    float *p_fAmountRemoved, bool bTallestFirst,
+    const int &iMaxSnagDecayClass);
 
   /**
    * Cut trees for a species with a priority - absolute density.
@@ -522,11 +542,14 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param fPriorityMax Priority maximum value.
    * @param bTallestFirst Whether to cut the tallest trees first (true)
    * or shortest first (false).
+   * @param iMaxSnagDecayClass Max decay class of snags that should be cut; -1
+   * means no snags.
    */
   void CutSpeciesAbsDenPriority(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
     float *p_fAmountRemoved, std::string sPriorityName, int &iPriorityType,
-    float &fPriorityMin, float &fPriorityMax, bool bTallestFirst);
+    float &fPriorityMin, float &fPriorityMax, bool bTallestFirst,
+    const int &iMaxSnagDecayClass);
 
   /**
    * Cut trees for a species - absolute basal area.
@@ -539,10 +562,12 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param p_fAmountRemoved Amount already removed.
    * @param bTallestFirst Whether to cut the tallest trees first (true)
    * or shortest first (false).
+   * @param iMaxSnagDecayClass Max decay class of snags that should be cut; -1
+   * means no snags.
    */
   void CutSpeciesAbsBA(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
-    float *p_fAmountRemoved, bool bTallestFirst);
+    float *p_fAmountRemoved, bool bTallestFirst, const int &iMaxSnagDecayClass);
 
   /**
    * Cut trees for a species with a priority - absolute basal area.
@@ -559,6 +584,8 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param fPriorityMax Priority maximum value.
    * @param bTallestFirst Whether to cut the tallest trees first (true)
    * or shortest first (false).
+   * @param iMaxSnagDecayClass Max decay class of snags that should be cut; -1
+   * means no snags.
    * @return Whether to keep cutting (true) or stop the harvest (false).
    * False indicates that there are more priority trees left but they
    * were not cut because we were too close to the target. It would not
@@ -567,7 +594,8 @@ class clDisturbance : virtual public clBehaviorBase {
   bool CutSpeciesAbsBAPriority(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
     float *p_fAmountRemoved, std::string sPriorityName, int &iPriorityType,
-    float &fPriorityMin, float &fPriorityMax, bool bTallestFirst);
+    float &fPriorityMin, float &fPriorityMax, bool bTallestFirst,
+    const int &iMaxSnagDecayClass);
 
   /**
    * Cut trees for a species - percent density.
@@ -578,10 +606,12 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param p_fHiDbh Array of the high dbhs of the package's cut ranges.
    * @param p_fAmountToRemove Amount to remove in each cut range.
    * @param p_fAmountRemoved Amount already removed.
+   * @param iMaxSnagDecayClass Max decay class of snags that should be cut; -1
+   * means no snags.
    */
   void CutSpeciesPercentDen(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
-    float *p_fAmountRemoved);
+    float *p_fAmountRemoved, const int &iMaxSnagDecayClass);
 
   /**
    * Cut trees for a species - percent basal area.
@@ -595,10 +625,13 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param p_fTotalBasalArea Total basal area.
    * @param bTallestFirst Whether to cut the tallest trees first (true)
    * or shortest first (false).
+   * @param iMaxSnagDecayClass Max decay class of snags that should be cut; -1
+   * means no snags.
    */
   void CutSpeciesPercentBA(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
-    float *p_fAmountRemoved, float *p_fTotalBasalArea, bool bTallestFirst);
+    float *p_fAmountRemoved, float *p_fTotalBasalArea, bool bTallestFirst,
+    const int &iMaxSnagDecayClass);
 
   /**
    * Cut trees for a species with a priority - percent basal area.
@@ -616,6 +649,8 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param fPriorityMax Priority maximum value.
    * @param bTallestFirst Whether to cut the tallest trees first (true)
    * or shortest first (false).
+   * @param iMaxSnagDecayClass Max decay class of snags that should be cut; -1
+   * means no snags.
    * @return Whether to keep cutting (true) or stop the harvest (false).
    * False indicates that there are more priority trees left but they
    * were not cut because we were too close to the target. It would not
@@ -624,7 +659,8 @@ class clDisturbance : virtual public clBehaviorBase {
   bool CutSpeciesPercentBAPriority(int iSp, stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
     float *p_fLoDbh, float *p_fHiDbh, float *p_fAmountToRemove,
     float *p_fAmountRemoved, float *p_fTotalBasalArea, std::string sPriorityName,
-    int &iPriorityType, float &fPriorityMin, float &fPriorityMax, bool bTallestFirst);
+    int &iPriorityType, float &fPriorityMin, float &fPriorityMax,
+    bool bTallestFirst, const int &iMaxSnagDecayClass);
 
   /**
    * Add tree to results grid.
@@ -682,9 +718,11 @@ class clDisturbance : virtual public clBehaviorBase {
    * the cut ranges that have been defined.
    * @param p_fHiDbh Array (size m_iNumAllowedCutRanges) of upper-limit dbhs for
    * the cut ranges that have been defined.
+   * @param iMaxSnagDecayClass Max decay class of snags that should be cut; -1
+   * means no snags.
    */
   void GetBasalArea(stcGridList *p_cutArea, stcTreeGridList * & p_treeArea, const short int &iSpecies,
-     float *p_fTotalBasalArea, float *p_fLoDbh, float *p_fHiDbh);
+     float *p_fTotalBasalArea, float *p_fLoDbh, float *p_fHiDbh, const int &iMaxSnagDecayClass);
 
   /**
    * Kills seedlings for a harvest or mortality episode event. Unlike with
@@ -707,11 +745,13 @@ class clDisturbance : virtual public clBehaviorBase {
   * @param iSpecies Species of tree to populate.
   * @param bTallestFirst Whether to cut trees from tallest to shortest (true)
   * or the reverse (false).
+  * @param iMaxSnagDecayClass Max decay class of snags that should be cut; -1
+  * means no snags.
   * @return Either the tallest or the shortest tree in the area, depending on
   * m_bTallestFirst, or NULL if there are no trees of the desired species.
   */
   clTree* GetFirstTreeInCutArea(stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
-   const short int &iSpecies, const bool bTallestFirst);
+   const short int &iSpecies, const bool bTallestFirst, const int &iMaxSnagDecayClass);
 
  /**
   * Finds the tallest tree of a species within a cut area.  The cut area is
@@ -722,11 +762,13 @@ class clDisturbance : virtual public clBehaviorBase {
   * @param p_cutArea Pointer to the linked list of cut grid cells.
   * @param p_treeArea Pointer to the linked list of tree grid cells.
   * @param iSpecies Species of tree to populate.
+  * @param iMaxSnagDecayClass Max decay class of snags that should be cut; -1
+  * means no snags.
   * @return Tallest tree in the area, or NULL if there are no trees of the
   * desired species.
   */
   clTree* GetTallestTreeInCutArea(stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
-   const short int &iSpecies);
+   const short int &iSpecies, const int &iMaxSnagDecayClass);
 
   /**
   * Finds the shortest tree of a species within a cut area.  The cut area is
@@ -737,11 +779,13 @@ class clDisturbance : virtual public clBehaviorBase {
   * @param p_cutArea Pointer to the linked list of cut grid cells.
   * @param p_treeArea Pointer to the linked list of tree grid cells.
   * @param iSpecies Species of tree to populate.
+  * @param iMaxSnagDecayClass Max decay class of snags that should be cut; -1
+  * means no snags.
   * @return Shortest tree in the area, or NULL if there are no trees of the
   * desired species.
   */
   clTree* GetShortestTreeInCutArea(stcGridList * & p_cutArea, stcTreeGridList * & p_treeArea,
-   const short int &iSpecies);
+   const short int &iSpecies, const int &iMaxSnagDecayClass);
 
   /**
    * Finds the next tree of a species within a cut area to cut, based on bTallestFirst.
@@ -753,11 +797,13 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param iSpecies Species being cut.
    * @param bTallestFirst Whether to cut trees from tallest to shortest (true)
    * or the reverse (false).
+   * @param iMaxSnagDecayClass Max decay class of snags that should be cut; -1
+  * means no snags.
    * @return Next tallest tree in the area, or NULL if there are no trees of the
    * desired species.
    */
   clTree* GetNextTreeInCutArea(stcGridList *&p_cutArea, stcTreeGridList * & p_treeArea,
-      const short int &iSpecies, const bool bTallestFirst);
+      const short int &iSpecies, const bool bTallestFirst, const int &iMaxSnagDecayClass);
 
    /**
    * Gets the next tallest tree of a species within a cut area.  The cut area is
@@ -769,11 +815,13 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param p_cutArea Pointer to the linked list of cut grid cells.
    * @param p_treeArea Pointer to the linked list of tree grid cells.
    * @param iSpecies Species being cut.
+   * @param iMaxSnagDecayClass Max decay class of snags that should be cut; -1
+  * means no snags.
    * @return Next tallest tree in the area, or NULL if there are no trees of the
    * desired species.
    */
   clTree* GetNextTallestTreeInCutArea(stcGridList *&p_cutArea, stcTreeGridList * & p_treeArea,
-      const short int &iSpecies);
+      const short int &iSpecies, const int &iMaxSnagDecayClass);
 
   /**
    * Gets the next shortest tree of a species within a cut area.  The cut area is
@@ -785,11 +833,13 @@ class clDisturbance : virtual public clBehaviorBase {
    * @param p_cutArea Pointer to the linked list of cut grid cells.
    * @param p_treeArea Pointer to the linked list of tree grid cells.
    * @param iSpecies Species being cut.
+   * @param iMaxSnagDecayClass Max decay class of snags that should be cut; -1
+  * means no snags.
    * @return Next tallest tree in the area, or NULL if there are no trees of the
    * desired species.
    */
   clTree* GetNextShortestTreeInCutArea(stcGridList *&p_cutArea, stcTreeGridList * & p_treeArea,
-      const short int &iSpecies);
+      const short int &iSpecies, const int &iMaxSnagDecayClass);
 
   /**
    * Sets the Harvest Type data member of the Harvest Results grid.  For each
@@ -807,6 +857,20 @@ class clDisturbance : virtual public clBehaviorBase {
    * @return True if the tree falls in the cut area, false if not
    */
   bool IsTreeInCutArea(clTree *p_oTree, stcGridList *p_cutArea);
+
+  /**
+   * Validates tree's eligibility for consideration. First: checks to make
+   * sure tree is alive (or an active ("alive") snag). If the tree is dead,
+   * it is not okay.
+   *
+   * If the tree is alive and not a snag or sapling, it's automatically okay.
+   * If the tree is a snag, we check the decay class code. If the code is -1,
+   * snags are not okay. If the code is 0 or higher, and decay class codes
+   * are not defined for snags, all snags are okay. If decay class codes are
+   * defined for snags, and the decay class of the snag is less than or equal
+   * to the max, the snag is okay; otherwise it is not okay.
+   */
+  bool IsTreeOkay(clTree *p_oTree, const int &iMaxSnagDecayClass);
 
 };
 //---------------------------------------------------------------------------
