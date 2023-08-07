@@ -12,5 +12,6 @@ Release
 coremodel.exe
 *.dll
 *.exe
+/.settings
 /HarvestTrees.txt
 /Default/

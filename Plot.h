@@ -6,7 +6,7 @@
 #include "WorkerBase.h"
 #include <math.h>
 /**
-* PLOT CLASS - Version 1.0
+* PLOT CLASS
 * This class represents the underlying plot.  It controls for torus topology
 * and manages the grid coordinates. It also contains geographic and climate
 * information about the plot, for those behaviors that require it.
@@ -23,7 +23,7 @@
 * This class inherits from clWorkerBase to take advantage of the XML parsing
 * functions in that class.
 *
-* Copyright 2003 Charles D. Canham.
+* Copyright Charles D. Canham.
 * @author Lora E. Murphy
 *
 * <br>Edit history:
@@ -31,6 +31,7 @@
 * <br>October 20, 2011 - Wiped the slate clean for SORTIE 7.0 (LEM)
 * <br>June 27, 2013 - Added N deposition value (LEM)
 * <br>October 31, 2013 - Added water deficit and seasonal precipitation
+* <br>August 5, 2023 - Added long-term means (LEM)
 */
 class clPlot : virtual public clWorkerBase {
 
@@ -99,6 +100,19 @@ class clPlot : virtual public clWorkerBase {
     {m_fMeanAnnualPrecipMm = fMeanAnnualPrecip;};
 
   /**
+   * Gets the long-term mean annual precipitation.
+   * @return Long-term mean annual precipitation, in mm.
+   */
+  double GetLTMAnnualPrecip() {return m_fLTMPrecipMm;};
+
+  /**
+   * Sets the long-term mean annual precipitation.
+   * @param fLTMPrecip Long-term mean annual precipitation, in mm.
+   */
+  void SetLTMAnnualPrecip(double fLTMPrecip)
+  {m_fLTMPrecipMm = fLTMPrecip;};
+
+  /**
    * Gets the mean annual temperature.
    * @return Mean annual precipitation, in degrees C.
    */
@@ -110,6 +124,83 @@ class clPlot : virtual public clWorkerBase {
    */
   void SetMeanAnnualTemp(double fMeanTemp)
     {m_fMeanTempC = fMeanTemp;};
+
+  /**
+   * Gets the long-term mean annual temperature.
+   * @return Long-term mean annual precipitation, in degrees C.
+   */
+  double GetLTMAnnualTemp() {return m_fLTMTempC;};
+
+  /**
+   * Sets the long-term mean annual temperature.
+   * @param fLTMTemp Mean annual precipitation, in degrees C.
+   */
+  void SetLTMAnnualTemp(double fLTMTemp)
+  {m_fLTMTempC = fLTMTemp;};
+
+  /**
+   * Gets the annual seasonal precipitation.
+   * @return The annual seasonal precipitation.
+   */
+  double GetSeasonalPrecipitation() {
+    return m_fSeasonalPrecipitation;
+  }
+
+  /**
+   * Sets the annual seasonal precipitation.
+   * @param fSeasonalPrecipitation The annual seasonal precipitation.
+   */
+  void SetSeasonalPrecipitation(double fSeasonalPrecipitation) {
+    m_fSeasonalPrecipitation = fSeasonalPrecipitation;
+  }
+
+  /**
+   * Gets the long-term mean seasonal precipitation.
+   * @return The long-term mean seasonal precipitation.
+   */
+  double GetLTMSeasonalPrecipitation() {
+    return m_fLTMSeasonalPrecipitation;
+  }
+
+  /**
+   * Sets the long-term mean seasonal precipitation.
+   * @param fLTMSeasonalPrecipitation Long-term mean seasonal precipitation.
+   */
+  void SetLTMSeasonalPrecipitation(double fLTMSeasonalPrecipitation) {
+    m_fLTMSeasonalPrecipitation = fLTMSeasonalPrecipitation;
+  }
+
+  /**
+   * Gets the annual water deficit.
+   * @return The annual water deficit.
+   */
+  double GetWaterDeficit() {
+    return m_fWaterDeficit;
+  }
+
+  /**
+   * Sets the annual water deficit.
+   * @param fWaterDeficit The annual water deficit.
+   */
+  void SetWaterDeficit(double fWaterDeficit) {
+    m_fWaterDeficit = fWaterDeficit;
+  }
+
+  /**
+   * Gets the long-term mean annual water deficit.
+   * @return The long-term mean annual water deficit.
+   */
+  double GetLTMWaterDeficit() {
+    return m_fLTMWaterDeficit;
+  }
+
+  /**
+   * Sets the long-term mean annual water deficit.
+   * @param fLTMWaterDeficit The long-term mean annual water deficit.
+   */
+  void SetLTMWaterDeficit(double fLTMWaterDeficit) {
+    m_fLTMWaterDeficit = fLTMWaterDeficit;
+  }
 
   /**
    * Gets the annual N deposition.
@@ -288,21 +379,6 @@ class clPlot : virtual public clWorkerBase {
     else return fTemp2;
   }
 
-  double GetSeasonalPrecipitation() {
-    return m_fSeasonalPrecipitation;
-  }
-
-  void SetSeasonalPrecipitation(double fSeasonalPrecipitation) {
-    m_fSeasonalPrecipitation = fSeasonalPrecipitation;
-  }
-
-  double GetWaterDeficit() {
-    return m_fWaterDeficit;
-  }
-
-  void SetWaterDeficit(double fWaterDeficit) {
-    m_fWaterDeficit = fWaterDeficit;
-  }
 
  protected:
 
@@ -352,14 +428,26 @@ class clPlot : virtual public clWorkerBase {
   /**Mean annual precipitation, mm.*/
   double m_fMeanAnnualPrecipMm;
 
+  /**Long-term mean annual precipitation, mm*/
+  double m_fLTMPrecipMm;
+
   /**Water deficit*/
   double m_fWaterDeficit;
+
+  /**Long-term mean water deficit, mm*/
+  double m_fLTMWaterDeficit;
 
   /** Seasonal precipitation */
   double m_fSeasonalPrecipitation;
 
+  /**Long-term mean seasonal precip, mm*/
+  double m_fLTMSeasonalPrecipitation;
+
   /**Mean annual temperature, degrees Celsius.*/
   double m_fMeanTempC;
+
+  /**Long-term mean annual temperature, C*/
+  double m_fLTMTempC;
 
   /**Annual N deposition.*/
   double m_fNDep;

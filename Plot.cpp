@@ -43,6 +43,10 @@ clPlot::clPlot(clSimManager * p_oSimManager) : clWorkerBase(p_oSimManager)
     m_fMaxY = 0;
     m_fWaterDeficit = 0;
     m_fSeasonalPrecipitation = 0;
+    m_fLTMPrecipMm = 0;
+    m_fLTMTempC = 0;
+    m_fLTMWaterDeficit = 0;
+    m_fLTMSeasonalPrecipitation = 0;
 
     //Allowed file types
     m_iNumAllowedTypes = 2;
@@ -96,23 +100,43 @@ void clPlot::GetData(DOMDocument * p_oDoc)
     p_oDocNode = p_oNodeList->item(0);
     p_oElement = (DOMElement *) p_oDocNode;
 
-    //latitude
+    //----- Latitude --------------------------------------------------------//
     FillSingleValue(p_oElement, "plot_latitude", & m_fLatitude, true);
-    //plot length in the x direction
+
+    //----- Plot length in the X direction ----------------------------------//
     FillSingleValue(p_oElement, "plot_lenX", & m_fPlotLenX, true);
-    //plot length in the y direction
+
+    //----- Plot length in the Y direction ----------------------------------//
     FillSingleValue(p_oElement, "plot_lenY", & m_fPlotLenY, true);
-    //plot mean annual precip, mm
-    FillSingleValue(p_oElement, "plot_precip_mm_yr", & m_fMeanAnnualPrecipMm, true);
-    //plot mean annual temp, C
-    FillSingleValue(p_oElement, "plot_temp_C", & m_fMeanTempC, true);
-    //plot annual N deposition, not required
+
+    //----- Plot mean annual precip, mm; not required -----------------------//
+    FillSingleValue(p_oElement, "plot_precip_mm_yr", & m_fMeanAnnualPrecipMm, false);
+
+    //----- Long-term mean annual precip; not required ----------------------//
+    FillSingleValue(p_oElement, "plot_ltm_precip", & m_fLTMPrecipMm, false);
+
+    //----- Plot mean annual temp, C; not required --------------------------//
+    FillSingleValue(p_oElement, "plot_temp_C", & m_fMeanTempC, false);
+
+    //----- Plot long-term temperature; not required ------------------------//
+    FillSingleValue(p_oElement, "plot_ltm_temp", & m_fLTMTempC, false);
+
+    //----- Plot annual N deposition; not required --------------------------//
     FillSingleValue(p_oElement, "plot_n_dep", & m_fNDep, false);
-    //seasonal precipitation, not required
+
+    //----- Seasonal precipitation; not required ----------------------------//
     FillSingleValue(p_oElement, "plot_seasonal_precipitation", & m_fSeasonalPrecipitation, false);
-    //water deficit, not required
+
+    //----- Long-term mean seasonal precip; not required --------------------//
+    FillSingleValue(p_oElement, "plot_ltm_seasonal_precipitation", & m_fLTMSeasonalPrecipitation, false);
+
+    //----- Water deficit; not required -------------------------------------//
     FillSingleValue(p_oElement, "plot_water_deficit", & m_fWaterDeficit, false);
-    //plot title - not required
+
+    //----- Long-term water deficit; not required ---------------------------//
+    FillSingleValue(p_oElement, "plot_ltm_water_deficit", & m_fLTMWaterDeficit, false);
+
+    //----- Plot title; not required ----------------------------------------//
     sTag = XMLString::transcode("plot_title");
     p_oNodeList = p_oElement->getElementsByTagName(sTag);
     XMLString::release(&sTag);
