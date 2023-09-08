@@ -50,7 +50,7 @@ public:
   * Performs calculations like either clGrowthBase::PreGrowthCalcs or
   * clMortalityBase::PreMortCalcs.
   */
-  virtual void PreCalcs( clTreePopulation *p_oPop ){;};
+  virtual void PreCalcs(clTreePopulation *p_oPop){;};
 
 
 

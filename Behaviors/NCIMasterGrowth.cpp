@@ -279,6 +279,9 @@ void clNCIMasterGrowth::PreGrowthCalcs(clTreePopulation * p_oPop) {
     p_fPrecipEffect = new float[p_oPop->GetNumberOfSpecies()];
     p_fTempEffect = new float[p_oPop->GetNumberOfSpecies()];
     p_fNEffect = new float[p_oPop->GetNumberOfSpecies()];
+
+    mp_oPrecipEffect->PreCalcs(p_oPlot);
+    mp_oTempEffect->PreCalcs(p_oPlot);
     //Calculate climate effects for all species
     for (i = 0; i < m_iNumBehaviorSpecies; i++ ) {
       p_fPrecipEffect[mp_iWhatSpecies[i]] = mp_oPrecipEffect->CalculatePrecipitationEffect(p_oPlot, mp_iWhatSpecies[i]);

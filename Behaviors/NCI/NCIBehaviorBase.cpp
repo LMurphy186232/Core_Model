@@ -29,9 +29,11 @@
 #include "NCI/TemperatureEffectNone.h"
 #include "NCI/TemperatureEffectWeibull.h"
 #include "NCI/TemperatureEffectDoubleLogistic.h"
+#include "NCI/TemperatureEffectDoubleNoLocalDiff.h"
 #include "NCI/PrecipitationEffectNone.h"
 #include "NCI/PrecipitationEffectWeibull.h"
 #include "NCI/PrecipitationEffectDoubleLogistic.h"
+#include "NCI/PrecipitationEffectDoubleNoLocalDiff.h"
 #include "NCI/SizeEffectNone.h"
 #include "NCI/SizeEffectDefault.h"
 #include "NCI/SizeEffectLowerBounded.h"
@@ -238,7 +240,9 @@ void clNCIBehaviorBase::ReadParameterFile(DOMElement * p_oElement,
     mp_oPrecipEffect = new clPrecipitationEffectWeibull();
   } else if (iVal == double_logistic_precip_effect) {
     mp_oPrecipEffect = new clPrecipitationEffectDoubleLogistic();
-  } else {
+  } else if (iVal == double_no_local_diff_precip_effect) {
+    mp_oPrecipEffect = new clPrecipitationEffectDoubleNoLocalDiff();
+  }else {
     modelErr err;
     err.sFunction = "clNCIBehaviorBase::ReadParameterFile";
     err.iErrorCode = BAD_DATA;
@@ -263,6 +267,8 @@ void clNCIBehaviorBase::ReadParameterFile(DOMElement * p_oElement,
     mp_oTempEffect = new clTemperatureEffectWeibull();
   } else if (iVal == double_logistic_temp_effect) {
     mp_oTempEffect = new clTemperatureEffectDoubleLogistic();
+  } else if (iVal == double_no_local_diff_temp_effect) {
+    mp_oTempEffect = new clTemperatureEffectDoubleNoLocalDiff();
   } else {
     modelErr err;
     err.sFunction = "clNCIBehaviorBase::ReadParameterFile";

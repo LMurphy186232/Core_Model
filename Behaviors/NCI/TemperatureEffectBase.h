@@ -35,6 +35,13 @@ public:
   virtual void DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) = 0;
 
   /**
+    * Performs calculations like either clGrowthBase::PreGrowthCalcs or
+    * clMortalityBase::PreMortCalcs.
+    * @param p_oPlot Plot object for querying for temperature values.
+    */
+    virtual void PreCalcs(clPlot *p_oPlot){;};
+
+  /**
    * Destructor
    */
   virtual ~clTemperatureEffectBase(){};

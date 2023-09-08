@@ -206,9 +206,9 @@ float clNCIMasterQuadratGrowth::CalcDiameterGrowthValue(clTree * p_oTree,
 // PreGrowthCalcs
 ////////////////////////////////////////////////////////////////////////////
 void clNCIMasterQuadratGrowth::PreGrowthCalcs(clTreePopulation * p_oPop) {
-  float *p_fTempEffect,
-        *p_fPrecipEffect,
-        *p_fNEffect;
+  float *p_fTempEffect = NULL,
+        *p_fPrecipEffect = NULL,
+        *p_fNEffect = NULL;
   try
   {
 
