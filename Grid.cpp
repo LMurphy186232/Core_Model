@@ -1673,8 +1673,8 @@ void clGrid::ReadMapFile(DOMDocument *p_oDoc) {
     iNumPackages,           //Number of packages for a cell
     i, j, k, m,             //loop counters
     iTemp = 0;              //For initializing grid values
-    short int iNumInts, iNumFloats, iNumStrings, iNumBools,
-    iNumCohInts, iNumCohFloats, iNumCohStrings, iNumCohBools,
+    short int iNumInts = 0, iNumFloats = 0, iNumStrings = 0, iNumBools = 0,
+    iNumCohInts = 0, iNumCohFloats = 0, iNumCohStrings = 0, iNumCohBools = 0,
     iMapCode,         //codes for values read from the map file
     iGridCode;        //code translated from map to grid values
     bool bFound = false,        //for searching for a map in par file
