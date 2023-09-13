@@ -23,9 +23,9 @@ clTemperatureEffectDoubleNoLocalDiff::clTemperatureEffectDoubleNoLocalDiff() {
   mp_fPrevC = NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // Destructor
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 clTemperatureEffectDoubleNoLocalDiff::~clTemperatureEffectDoubleNoLocalDiff() {
   delete [] mp_fCurrA;
   delete [] mp_fCurrBLo;
@@ -37,9 +37,9 @@ clTemperatureEffectDoubleNoLocalDiff::~clTemperatureEffectDoubleNoLocalDiff() {
   delete [] mp_fPrevC;
 }
 
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // CalculateTemperatureEffect
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 double clTemperatureEffectDoubleNoLocalDiff::CalculateTemperatureEffect(clPlot *p_oPlot, int iSpecies) {
   double fEffect, fPrev, fCurrent, fTemp;
 
@@ -77,9 +77,9 @@ void clTemperatureEffectDoubleNoLocalDiff::PreCalcs(clPlot *p_oPlot) {
   m_fCurrTemp = p_oPlot->GetMeanAnnualTemp();
 }
 
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // DoSetup
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 void clTemperatureEffectDoubleNoLocalDiff::DoSetup(clTreePopulation *p_oPop, clBehaviorBase *p_oNCI, xercesc::DOMElement *p_oElement) {
   doubleVal * p_fTempValues; //for getting species-specific values
 
@@ -100,7 +100,7 @@ void clTemperatureEffectDoubleNoLocalDiff::DoSetup(clTreePopulation *p_oPop, clB
   p_fTempValues = new doubleVal[iNumBehaviorSpecies];
   for ( i = 0; i < iNumBehaviorSpecies; i++ ) p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
 
-  //----- Temperature effect current a ------------------------------------//
+  //----- Temperature effect current a --------------------------------------//
   FillSpeciesSpecificValue( p_oElement, "nciDoubNoLocTempEffCurrA",
       "ndnltecaVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
@@ -108,7 +108,7 @@ void clTemperatureEffectDoubleNoLocalDiff::DoSetup(clTreePopulation *p_oPop, clB
     mp_fCurrA[p_fTempValues[i].code] = p_fTempValues[i].val;
 
 
-  //----- Temperature effect current b lo ---------------------------------//
+  //----- Temperature effect current b lo -----------------------------------//
   FillSpeciesSpecificValue( p_oElement, "nciDoubNoLocTempEffCurrBLo",
       "ndnltecblVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
@@ -116,7 +116,7 @@ void clTemperatureEffectDoubleNoLocalDiff::DoSetup(clTreePopulation *p_oPop, clB
     mp_fCurrBLo[p_fTempValues[i].code] = p_fTempValues[i].val;
 
 
-  //----- Temperature effect current b hi ---------------------------------//
+  //----- Temperature effect current b hi -----------------------------------//
   FillSpeciesSpecificValue( p_oElement, "nciDoubNoLocTempEffCurrBHi",
       "ndnltecbhVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
@@ -124,7 +124,7 @@ void clTemperatureEffectDoubleNoLocalDiff::DoSetup(clTreePopulation *p_oPop, clB
     mp_fCurrBHi[p_fTempValues[i].code] = p_fTempValues[i].val;
 
 
-  //----- Temperature effect current c ------------------------------------//
+  //----- Temperature effect current c --------------------------------------//
   FillSpeciesSpecificValue( p_oElement, "nciDoubNoLocTempEffCurrC",
       "ndnlteccVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
@@ -132,7 +132,7 @@ void clTemperatureEffectDoubleNoLocalDiff::DoSetup(clTreePopulation *p_oPop, clB
     mp_fCurrC[p_fTempValues[i].code] = p_fTempValues[i].val;
 
 
-  //----- Temperature effect previous a -----------------------------------//
+  //----- Temperature effect previous a -------------------------------------//
   FillSpeciesSpecificValue( p_oElement, "nciDoubNoLocTempEffPrevA",
       "ndnltepaVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
@@ -140,7 +140,7 @@ void clTemperatureEffectDoubleNoLocalDiff::DoSetup(clTreePopulation *p_oPop, clB
     mp_fPrevA[p_fTempValues[i].code] = p_fTempValues[i].val;
 
 
-  //----- Temperature effect previous b lo --------------------------------//
+  //----- Temperature effect previous b lo ----------------------------------//
   FillSpeciesSpecificValue( p_oElement, "nciDoubNoLocTempEffPrevBLo",
       "ndnltepblVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
@@ -148,7 +148,7 @@ void clTemperatureEffectDoubleNoLocalDiff::DoSetup(clTreePopulation *p_oPop, clB
     mp_fPrevBLo[p_fTempValues[i].code] = p_fTempValues[i].val;
 
 
-  //----- Temperature effect previous b hi --------------------------------//
+  //----- Temperature effect previous b hi ----------------------------------//
   FillSpeciesSpecificValue( p_oElement, "nciDoubNoLocTempEffPrevBHi",
       "ndnltepbhVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
@@ -156,7 +156,7 @@ void clTemperatureEffectDoubleNoLocalDiff::DoSetup(clTreePopulation *p_oPop, clB
     mp_fPrevBHi[p_fTempValues[i].code] = p_fTempValues[i].val;
 
 
-  //----- Temperature effect previous c -----------------------------------//
+  //----- Temperature effect previous c -------------------------------------//
   FillSpeciesSpecificValue( p_oElement, "nciDoubNoLocTempEffPrevC",
       "ndnltepcVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
   //Transfer to the appropriate array buckets
