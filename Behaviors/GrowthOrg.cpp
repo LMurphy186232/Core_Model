@@ -527,11 +527,11 @@ void clGrowthOrg::DoGrowthAssignments()
   {
     clTreeSearch * p_oAllTrees; //search object for getting all trees
     clTree * p_oTree; //for working with a single tree
-    float fDiamGrowthVal, //diameter growth value to be assigned to the tree
-         fHeightGrowthVal, //height growth value to be assigned to the tree
-         fOldDiam, //old diameter value to be changed
-         fOldHeight, //old height value to be changed
-         fGrowthMemberVal; //new value going into "Growth" data member
+    float fDiamGrowthVal = 0, //diameter growth value to be assigned to the tree
+         fHeightGrowthVal = 0, //height growth value to be assigned to the tree
+         fOldDiam = 0, //old diameter value to be changed
+         fOldHeight = 0, //old height value to be changed
+         fGrowthMemberVal = 0; //new value going into "Growth" data member
     int iDead;
     short int iSp, //species of a given tree
                iDeadCode; //dead code for a tree

@@ -137,137 +137,149 @@ void clPrecipitationEffectDoubleLocalDiff::DoSetup(clTreePopulation *p_oPop, clB
   doubleVal * p_fTempValues; //for getting species-specific values
 
   int iNumBehaviorSpecies = p_oNCI->GetNumBehaviorSpecies(),
-        iNumTotalSpecies = p_oPop->GetNumberOfSpecies(), i, iPrecipType;
+      iNumTotalSpecies = p_oPop->GetNumberOfSpecies(), i, iPrecipType;
+  bool bLinkedAA;
 
-    mp_fCurrAA = new double[iNumTotalSpecies];
-    mp_fCurrABLo = new double[iNumTotalSpecies];
-    mp_fCurrABHi = new double[iNumTotalSpecies];
-    mp_fCurrAC = new double[iNumTotalSpecies];
-    mp_fCurrBLo = new double[iNumTotalSpecies];
-    mp_fCurrBHi = new double[iNumTotalSpecies];
-    mp_fCurrC = new double[iNumTotalSpecies];
-    mp_fPrevAA = new double[iNumTotalSpecies];
-    mp_fPrevABLo = new double[iNumTotalSpecies];
-    mp_fPrevABHi = new double[iNumTotalSpecies];
-    mp_fPrevAC = new double[iNumTotalSpecies];
-    mp_fPrevBLo = new double[iNumTotalSpecies];
-    mp_fPrevBHi = new double[iNumTotalSpecies];
-    mp_fPrevC = new double[iNumTotalSpecies];
+  mp_fCurrAA = new double[iNumTotalSpecies];
+  mp_fCurrABLo = new double[iNumTotalSpecies];
+  mp_fCurrABHi = new double[iNumTotalSpecies];
+  mp_fCurrAC = new double[iNumTotalSpecies];
+  mp_fCurrBLo = new double[iNumTotalSpecies];
+  mp_fCurrBHi = new double[iNumTotalSpecies];
+  mp_fCurrC = new double[iNumTotalSpecies];
+  mp_fPrevAA = new double[iNumTotalSpecies];
+  mp_fPrevABLo = new double[iNumTotalSpecies];
+  mp_fPrevABHi = new double[iNumTotalSpecies];
+  mp_fPrevAC = new double[iNumTotalSpecies];
+  mp_fPrevBLo = new double[iNumTotalSpecies];
+  mp_fPrevBHi = new double[iNumTotalSpecies];
+  mp_fPrevC = new double[iNumTotalSpecies];
 
-    //Set up our doubleVal array that will extract values only for the species
-    //assigned to this behavior
-    p_fTempValues = new doubleVal[iNumBehaviorSpecies];
-    for ( i = 0; i < iNumBehaviorSpecies; i++ ) p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
+  //Set up our doubleVal array that will extract values only for the species
+  //assigned to this behavior
+  p_fTempValues = new doubleVal[iNumBehaviorSpecies];
+  for ( i = 0; i < iNumBehaviorSpecies; i++ ) p_fTempValues[i].code = p_oNCI->GetBehaviorSpecies(i);
 
-    //----- Precipitation effect current a a ----------------------------------//
-    FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffCurrAA",
-        "ndlpecaaVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
-    //Transfer to the appropriate array buckets
-    for ( i = 0; i < iNumBehaviorSpecies; i++ )
-      mp_fCurrAA[p_fTempValues[i].code] = p_fTempValues[i].val;
-
-
-    //----- Precipitation effect current a b lo -------------------------------//
-    FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffCurrABLo",
-        "ndlpecablVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
-    //Transfer to the appropriate array buckets
-    for ( i = 0; i < iNumBehaviorSpecies; i++ )
-      mp_fCurrABLo[p_fTempValues[i].code] = p_fTempValues[i].val;
+  //----- Precipitation effect current a a ----------------------------------//
+  FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffCurrAA",
+      "ndlpecaaVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
+  //Transfer to the appropriate array buckets
+  for ( i = 0; i < iNumBehaviorSpecies; i++ )
+    mp_fCurrAA[p_fTempValues[i].code] = p_fTempValues[i].val;
 
 
-    //----- Precipitation effect current a b hi -------------------------------//
-    FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffCurrABHi",
-        "ndlpecabhVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
-    //Transfer to the appropriate array buckets
-    for ( i = 0; i < iNumBehaviorSpecies; i++ )
-      mp_fCurrABHi[p_fTempValues[i].code] = p_fTempValues[i].val;
+  //----- Precipitation effect current a b lo -------------------------------//
+  FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffCurrABLo",
+      "ndlpecablVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
+  //Transfer to the appropriate array buckets
+  for ( i = 0; i < iNumBehaviorSpecies; i++ )
+    mp_fCurrABLo[p_fTempValues[i].code] = p_fTempValues[i].val;
 
 
-    //----- Precipitation effect current a c ----------------------------------//
-    FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffCurrAC",
-        "ndlpecacVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
-    //Transfer to the appropriate array buckets
-    for ( i = 0; i < iNumBehaviorSpecies; i++ )
-      mp_fCurrAC[p_fTempValues[i].code] = p_fTempValues[i].val;
+  //----- Precipitation effect current a b hi -------------------------------//
+  FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffCurrABHi",
+      "ndlpecabhVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
+  //Transfer to the appropriate array buckets
+  for ( i = 0; i < iNumBehaviorSpecies; i++ )
+    mp_fCurrABHi[p_fTempValues[i].code] = p_fTempValues[i].val;
 
 
-    //----- Precipitation effect current b lo ---------------------------------//
-    FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffCurrBLo",
-        "ndlpecblVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
-    //Transfer to the appropriate array buckets
-    for ( i = 0; i < iNumBehaviorSpecies; i++ )
-      mp_fCurrBLo[p_fTempValues[i].code] = p_fTempValues[i].val;
+  //----- Precipitation effect current a c ----------------------------------//
+  FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffCurrAC",
+      "ndlpecacVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
+  //Transfer to the appropriate array buckets
+  for ( i = 0; i < iNumBehaviorSpecies; i++ )
+    mp_fCurrAC[p_fTempValues[i].code] = p_fTempValues[i].val;
 
 
-    //----- Precipitation effect current b hi ---------------------------------//
-    FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffCurrBHi",
-        "ndlpecbhVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
-    //Transfer to the appropriate array buckets
-    for ( i = 0; i < iNumBehaviorSpecies; i++ )
-      mp_fCurrBHi[p_fTempValues[i].code] = p_fTempValues[i].val;
+  //----- Precipitation effect current b lo ---------------------------------//
+  FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffCurrBLo",
+      "ndlpecblVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
+  //Transfer to the appropriate array buckets
+  for ( i = 0; i < iNumBehaviorSpecies; i++ )
+    mp_fCurrBLo[p_fTempValues[i].code] = p_fTempValues[i].val;
 
 
-    //----- Precipitation effect current c ------------------------------------//
-    FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffCurrC",
-        "ndlpeccVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
-    //Transfer to the appropriate array buckets
-    for ( i = 0; i < iNumBehaviorSpecies; i++ )
-      mp_fCurrC[p_fTempValues[i].code] = p_fTempValues[i].val;
+  //----- Precipitation effect current b hi ---------------------------------//
+  FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffCurrBHi",
+      "ndlpecbhVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
+  //Transfer to the appropriate array buckets
+  for ( i = 0; i < iNumBehaviorSpecies; i++ )
+    mp_fCurrBHi[p_fTempValues[i].code] = p_fTempValues[i].val;
 
 
-    //----- Precipitation effect previous a a ---------------------------------//
+  //----- Precipitation effect current c ------------------------------------//
+  FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffCurrC",
+      "ndlpeccVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
+  //Transfer to the appropriate array buckets
+  for ( i = 0; i < iNumBehaviorSpecies; i++ )
+    mp_fCurrC[p_fTempValues[i].code] = p_fTempValues[i].val;
+
+
+  //----- Precipitation effect previous a a ---------------------------------//
+  // Check to see if this is linked to current a a or not
+  FillSingleValue(p_oElement, "nciDoubLocPrecipEffPrevAALinked", &bLinkedAA, true);
+
+  if (bLinkedAA) {
+    // The value is just 1-current a a. Take advantage of the codes still
+    // being present in the temp array
+    for ( i = 0; i < iNumBehaviorSpecies; i++ ) {
+      mp_fPrevAA[p_fTempValues[i].code] = 1 - mp_fCurrAA[p_fTempValues[i].code];
+    }
+  } else {
     FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffPrevAA",
         "ndlpepaaVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
     //Transfer to the appropriate array buckets
     for ( i = 0; i < iNumBehaviorSpecies; i++ )
       mp_fPrevAA[p_fTempValues[i].code] = p_fTempValues[i].val;
+  }
 
-    //----- Precipitation effect previous a b lo ------------------------------//
-    FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffPrevABLo",
-        "ndlpepablVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
-    //Transfer to the appropriate array buckets
-    for ( i = 0; i < iNumBehaviorSpecies; i++ )
-      mp_fPrevABLo[p_fTempValues[i].code] = p_fTempValues[i].val;
-
-
-    //----- Precipitation effect previous a b hi ------------------------------//
-    FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffPrevABHi",
-        "ndlpepabhVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
-    //Transfer to the appropriate array buckets
-    for ( i = 0; i < iNumBehaviorSpecies; i++ )
-      mp_fPrevABHi[p_fTempValues[i].code] = p_fTempValues[i].val;
+  //----- Precipitation effect previous a b lo ------------------------------//
+  FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffPrevABLo",
+      "ndlpepablVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
+  //Transfer to the appropriate array buckets
+  for ( i = 0; i < iNumBehaviorSpecies; i++ )
+    mp_fPrevABLo[p_fTempValues[i].code] = p_fTempValues[i].val;
 
 
-    //----- Precipitation effect previous a c ---------------------------------//
-    FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffPrevAC",
-        "ndlpepacVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
-    //Transfer to the appropriate array buckets
-    for ( i = 0; i < iNumBehaviorSpecies; i++ )
-      mp_fPrevAC[p_fTempValues[i].code] = p_fTempValues[i].val;
+  //----- Precipitation effect previous a b hi ------------------------------//
+  FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffPrevABHi",
+      "ndlpepabhVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
+  //Transfer to the appropriate array buckets
+  for ( i = 0; i < iNumBehaviorSpecies; i++ )
+    mp_fPrevABHi[p_fTempValues[i].code] = p_fTempValues[i].val;
 
 
-    //----- Precipitation effect previous b lo --------------------------------//
-    FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffPrevBLo",
-        "ndlpepblVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
-    //Transfer to the appropriate array buckets
-    for ( i = 0; i < iNumBehaviorSpecies; i++ )
-      mp_fPrevBLo[p_fTempValues[i].code] = p_fTempValues[i].val;
+  //----- Precipitation effect previous a c ---------------------------------//
+  FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffPrevAC",
+      "ndlpepacVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
+  //Transfer to the appropriate array buckets
+  for ( i = 0; i < iNumBehaviorSpecies; i++ )
+    mp_fPrevAC[p_fTempValues[i].code] = p_fTempValues[i].val;
 
 
-    //----- Precipitation effect previous b hi --------------------------------//
-    FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffPrevBHi",
-        "ndlpepbhVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
-    //Transfer to the appropriate array buckets
-    for ( i = 0; i < iNumBehaviorSpecies; i++ )
-      mp_fPrevBHi[p_fTempValues[i].code] = p_fTempValues[i].val;
+  //----- Precipitation effect previous b lo --------------------------------//
+  FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffPrevBLo",
+      "ndlpepblVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
+  //Transfer to the appropriate array buckets
+  for ( i = 0; i < iNumBehaviorSpecies; i++ )
+    mp_fPrevBLo[p_fTempValues[i].code] = p_fTempValues[i].val;
 
 
-    //----- Precipitation effect previous c -----------------------------------//
-    FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffPrevC",
-        "ndlpepcVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
-    //Transfer to the appropriate array buckets
-    for ( i = 0; i < iNumBehaviorSpecies; i++ )
-      mp_fPrevC[p_fTempValues[i].code] = p_fTempValues[i].val;
+  //----- Precipitation effect previous b hi --------------------------------//
+  FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffPrevBHi",
+      "ndlpepbhVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
+  //Transfer to the appropriate array buckets
+  for ( i = 0; i < iNumBehaviorSpecies; i++ )
+    mp_fPrevBHi[p_fTempValues[i].code] = p_fTempValues[i].val;
+
+
+  //----- Precipitation effect previous c -----------------------------------//
+  FillSpeciesSpecificValue( p_oElement, "nciDoubLocPrecipEffPrevC",
+      "ndlpepcVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
+  //Transfer to the appropriate array buckets
+  for ( i = 0; i < iNumBehaviorSpecies; i++ )
+    mp_fPrevC[p_fTempValues[i].code] = p_fTempValues[i].val;
 
   delete[] p_fTempValues;
 

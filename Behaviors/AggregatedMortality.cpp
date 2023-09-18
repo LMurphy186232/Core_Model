@@ -171,7 +171,7 @@ void clAggregatedMortality::PreMortCalcs( clTreePopulation *p_oPop )
 
   clTreeSearch *p_oTrees;
   clTree *p_oTree;
-  int iClumpSize; //size of a clump
+  int iClumpSize = 0; //size of a clump
 
   //Go through the trees and find each one to this behavior applies
   p_oTrees = p_oPop->Find("all");

@@ -33,6 +33,9 @@ class clPlot;
  *
  * where a.a, a.b.lo, a.b.hi, and a.c are parameters.
  *
+ * This has two possible forms: one where a.a.prev = 1-a.a.curr, and one
+ * where it is an independent parameter.
+ *
  * Copyright 2023 Charles D. Canham.
  * @author Lora E. Murphy
  *
