@@ -133,7 +133,6 @@ void clTemperatureEffectDoubleLocalDiff::DoSetup(clTreePopulation *p_oPop, clBeh
 
   int iNumBehaviorSpecies = p_oNCI->GetNumBehaviorSpecies(),
       iNumTotalSpecies = p_oPop->GetNumberOfSpecies(), i;
-  bool bLinkedAA;
 
   mp_fCurrAA = new double[iNumTotalSpecies];
   mp_fCurrABLo = new double[iNumTotalSpecies];
@@ -212,21 +211,11 @@ void clTemperatureEffectDoubleLocalDiff::DoSetup(clTreePopulation *p_oPop, clBeh
 
 
   //----- Temperature effect previous a a -----------------------------------//
-  // Check to see if this is linked to current a a or not
-  FillSingleValue(p_oElement, "nciDoubLocTempEffPrevAALinked", &bLinkedAA, true);
-
-  if (bLinkedAA) {
-    // The value is just 1-current a a. Take advantage of the codes still
-    // being present in the temp array
-    for ( i = 0; i < iNumBehaviorSpecies; i++ )
-      mp_fPrevAA[p_fTempValues[i].code] = 1 - mp_fCurrAA[p_fTempValues[i].code];
-  } else {
-    FillSpeciesSpecificValue( p_oElement, "nciDoubLocTempEffPrevAA",
-        "ndltepaaVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
-    //Transfer to the appropriate array buckets
-    for ( i = 0; i < iNumBehaviorSpecies; i++ )
-      mp_fPrevAA[p_fTempValues[i].code] = p_fTempValues[i].val;
-  }
+  FillSpeciesSpecificValue( p_oElement, "nciDoubLocTempEffPrevAA",
+      "ndltepaaVal", p_fTempValues, iNumBehaviorSpecies, p_oPop, true );
+  //Transfer to the appropriate array buckets
+  for ( i = 0; i < iNumBehaviorSpecies; i++ )
+    mp_fPrevAA[p_fTempValues[i].code] = p_fTempValues[i].val;
 
   //----- Temperature effect previous a b lo --------------------------------//
   FillSpeciesSpecificValue( p_oElement, "nciDoubLocTempEffPrevABLo",
