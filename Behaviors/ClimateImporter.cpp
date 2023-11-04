@@ -32,6 +32,7 @@ clClimateImporter::clClimateImporter(clSimManager * p_oSimManager) : clWorkerBas
     mp_fSeasonalPpt = NULL;
     mp_fTemp = NULL;
     mp_fWD = NULL;
+    mp_fNDep = NULL;
 
     mp_fLTMPpt = NULL;
     mp_fLTMSeasonalPpt = NULL;
@@ -67,6 +68,7 @@ clClimateImporter::~clClimateImporter()
   delete[] mp_fSeasonalPpt;
   delete[] mp_fTemp;
   delete[] mp_fWD;
+  delete[] mp_fNDep;
 
   delete[] mp_fLTMPpt;
   delete[] mp_fLTMSeasonalPpt;
@@ -181,6 +183,8 @@ void clClimateImporter::GetData(DOMDocument * p_oDoc)
 
 
     //----- Read individual month climate values ----------------------------//
+    // We'll read directly into N dep so declare it now
+    mp_fNDep = new double[iNumTimesteps];
     ReadParameterFileData(p_oElement, p_fMonthlyPpt, p_fMonthlyTemp,
         p_fPreMonthlyPpt, p_fPreMonthlyTemp, p_fRad, iStart);
 
@@ -604,6 +608,10 @@ void clClimateImporter::Action()
   p_oPlot->SetSeasonalPrecipitation(mp_fSeasonalPpt[iTS]);
   p_oPlot->SetWaterDeficit(mp_fWD[iTS]);
 
+  if (mp_fNDep[iTS] > -900) {
+    p_oPlot->SetNDeposition(mp_fNDep[iTS]);
+  }
+
   if (m_iLTM > 0) {
     p_oPlot->SetLTMAnnualPrecip(mp_fLTMPpt[iTS]);
     p_oPlot->SetLTMAnnualTemp(mp_fLTMTemp[iTS]);
@@ -637,6 +645,9 @@ void clClimateImporter::ReadParameterFileData(DOMElement * p_oElement, double **
         p_fTemp[i][j] = -999;
       }
     }
+  }
+  for (j = 0; j < iNumTimesteps; j++) {
+    mp_fNDep[j] = -999;
   }
   //-------------------------------------------------------------------------//
 
@@ -729,6 +740,11 @@ void clClimateImporter::ReadParameterFileData(DOMElement * p_oElement, double **
     ReadMonthlyData(p_oElement, "sc_ciMonthlyTempDec", "sc_cimtdecVal", p_fTemp[11], NULL, iStart, iNumTimesteps);
   }
 
+  //-------------------------------------------------------------------------//
+  // Nitrogen data
+  //-------------------------------------------------------------------------//
+  ReadNitrogenData(p_oElement, iNumTimesteps);
+
   //Check our data
   for (i = 0; i < 12; i++) {
     if (p_fRad[i] < 0) {
@@ -783,6 +799,17 @@ void clClimateImporter::ReadParameterFileData(DOMElement * p_oElement, double **
           }
         }
       }
+    }
+  }
+
+  for (j = 0; j < iNumTimesteps; j++) {
+
+    if (mp_fNDep[0] > -900 && mp_fNDep[j] < 0) {
+      modelErr stcErr;
+      stcErr.iErrorCode = BAD_DATA;
+      stcErr.sFunction = "clClimateImporter::ReadParameterFileData";
+      stcErr.sMoreInfo = "Annual nitrogen value is missing or negative.";
+      throw(stcErr);
     }
   }
 }
@@ -859,7 +886,7 @@ void clClimateImporter::ReadMonthlyData(DOMElement *p_oParent,
     if (-1 == iCode && cName[0] != '-') { //throw an error
       modelErr stcErr;
       stcErr.iErrorCode = BAD_DATA;
-      stcErr.sFunction = "clClimateImporter::ReadParameterFileData";
+      stcErr.sFunction = "clClimateImporter::ReadMonthlyData";
       stcErr.sMoreInfo = "Unrecognized timestep in climate importer.";
       throw(stcErr);
     }
@@ -867,7 +894,7 @@ void clClimateImporter::ReadMonthlyData(DOMElement *p_oParent,
     if (iCode == 0) {
       modelErr stcErr;
       stcErr.iErrorCode = BAD_DATA;
-      stcErr.sFunction = "clClimateImporter::ReadParameterFileData";
+      stcErr.sFunction = "clClimateImporter::ReadMonthlyData";
       stcErr.sMoreInfo = "Zero is not an allowed timestep in climate importer.";
       throw(stcErr);
     }
@@ -886,6 +913,97 @@ void clClimateImporter::ReadMonthlyData(DOMElement *p_oParent,
         } else {
           p_fVal[(iCode-1)] = fVal;
         }
+      }
+    }
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// ReadNitrogenData
+///////////////////////////////////////////////////////////////////////////////
+void clClimateImporter::ReadNitrogenData(DOMElement *p_oParent, int iEnd) {
+
+  DOMNodeList *p_oNodeList;
+  DOMElement *p_oElement, *p_oChildElement;
+  DOMNode *p_oDocNode;
+  XMLCh *sVal;
+  std::string sParentTag = "sc_ciNDep", sSubTag = "sc_cindVal";
+  char *cName;
+  double fVal;
+  int iNumChildren, iNumNodes, i, iCode;
+
+  //-------------------------------------------------------------------------//
+  // Find the parent element
+  //-------------------------------------------------------------------------//
+  sVal = XMLString::transcode(sParentTag.c_str());
+  p_oNodeList = p_oParent->getElementsByTagName(sVal);
+  XMLString::release(&sVal);
+  iNumNodes = p_oNodeList->getLength();
+  if (0 == iNumNodes) {
+    // This is okay, nitrogen isn't required
+    return;
+  }
+  p_oDocNode = p_oNodeList->item(0); //get first element returned by the list
+
+  //----- Bein' sneaky: make a flag to say we need all values ---------------//
+  mp_fNDep[0] = 0;
+
+  //-------------------------------------------------------------------------//
+  // Now get the list of all subelements with the actual data
+  // At this point, it IS required
+  //-------------------------------------------------------------------------//
+  p_oElement = (DOMElement *) p_oDocNode; //cast to DOM_Element
+  sVal = XMLString::transcode(sSubTag.c_str());
+  p_oNodeList = p_oElement->getElementsByTagName(sVal);
+  XMLString::release(&sVal);
+  iNumChildren = p_oNodeList->getLength();
+  if (iNumChildren < iEnd) {
+    modelErr stcErr;
+    stcErr.iErrorCode = BAD_DATA;
+    stcErr.sFunction = "clClimateImporter::ReadNitrogenData";
+    stcErr.sMoreInfo = "Not enough timesteps of data.";
+    throw(stcErr);
+  }
+
+
+  //-------------------------------------------------------------------------//
+  // Read the data into our arrays
+  //-------------------------------------------------------------------------//
+  for (i = 0; i < iNumChildren; i++) {
+    p_oDocNode = p_oNodeList->item(i);
+    p_oChildElement = (DOMElement *) p_oDocNode;
+
+    //----- Read the timestep this is for -----------------------------------//
+    sVal = XMLString::transcode("ts");
+    cName = XMLString::transcode(p_oChildElement->getAttributeNode(sVal)->getNodeValue());
+    XMLString::release(&sVal);
+    iCode = atoi(cName);
+
+    //----- A negative is allowed for other data but not nitrogen ----------//
+    if (-1 == iCode) { //throw an error
+      modelErr stcErr;
+      stcErr.iErrorCode = BAD_DATA;
+      stcErr.sFunction = "clClimateImporter::ReadNitrogenData";
+      stcErr.sMoreInfo = "Unrecognized timestep in climate importer.";
+      throw(stcErr);
+    }
+    //----- A zero is not allowed -------------------------------------------//
+    if (iCode == 0) {
+      modelErr stcErr;
+      stcErr.iErrorCode = BAD_DATA;
+      stcErr.sFunction = "clClimateImporter::ReadNitrogenData";
+      stcErr.sMoreInfo = "Zero is not an allowed timestep in climate importer.";
+      throw(stcErr);
+    }
+
+    //----- Proceed only if this is data we need ----------------------------//
+    if (iCode <= iEnd) {
+
+      //----- Get the actual value here -------------------------------------//
+      cName = XMLString::transcode(p_oChildElement->getChildNodes()->item(0)->getNodeValue());
+      fVal = strtod(cName, NULL);
+      if (fVal != 0 || cName[0] == '0') {
+        mp_fNDep[(iCode-1)] = fVal;
       }
     }
   }

@@ -115,6 +115,9 @@ class clClimateImporter : virtual public clBehaviorBase {
   /** Long term mean water deficit. Array length is # timesteps.*/
   double *mp_fLTMWD;
 
+  /** Nitrogen deposition. Array length is # timesteps. */
+  double *mp_fNDep;
+
   /** Length of time of long-term mean, if desired */
   int m_iLTM;
 
@@ -151,6 +154,15 @@ class clClimateImporter : virtual public clBehaviorBase {
   void ReadMonthlyData(xercesc::DOMElement *p_oParent, std::string sParentTag,
       std::string sSubTag, double *p_fVal, double *p_fPreVal, int iStart,
       int iEnd);
+
+  /**
+     * Does the heavy lifting to extract XML values for nitrogen deposition,
+     * which yearly rather than monthly.
+     * @param p_oParent Parent tag to look in.
+     * @param iEnd Ending year. In case there is extra data, this will not
+     * try to run past the array end.
+     */
+    void ReadNitrogenData(xercesc::DOMElement *p_oParent, int iEnd);
 };
 //---------------------------------------------------------------------------
 #endif // ClimateImporter_H
