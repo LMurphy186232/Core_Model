@@ -249,7 +249,7 @@ void FillSpeciesSpecificValue( xercesc::DOMElement *p_oParent, string sTagName,
     //Make sure we got a piece of data for each species we needed - if not
     //throw an error
     for (i = 0; i < iNumSpecies; i++)
-      if (-1 == p_iSpeciesRead[i] & bRequired) {
+      if ((-1 == p_iSpeciesRead[i]) & bRequired) {
         delete[] p_iSpeciesRead;
         modelErr stcErr;
         stcErr.sFunction = "FillSpeciesSpecificValue";

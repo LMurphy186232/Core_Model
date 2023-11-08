@@ -164,7 +164,7 @@ void clDisturbance::ReadHarvestParameterFileData(xercesc::DOMDocument * p_oDoc) 
   iX, iY, //X and Y grid values for package
   iNumberTimesteps = mp_oSimManager->GetNumberOfTimesteps(), iNumSpecies =
       mp_oPop->GetNumberOfSpecies(), iTimestep, //timestep of harvest cut event
-      iMinIndex, //index of the smallest value on a list
+      iMinIndex = 0, //index of the smallest value on a list
       iNumChildren, //number of sub-cut-events
       iCutType, //cut type - value matches enum cutType
       iTemp; //for extracting integer data from parameter file
@@ -537,7 +537,7 @@ void clDisturbance::ReadMortEpParameterFileData(xercesc::DOMDocument * p_oDoc) {
   iX, iY, //X and Y grid values for package
   iNumberTimesteps = mp_oSimManager->GetNumberOfTimesteps(), iNumSpecies =
       mp_oPop->GetNumberOfSpecies(), iTimestep, //timestep of mortality episode
-      iMinIndex, //index of the smallest value on a list
+      iMinIndex = 0, //index of the smallest value on a list
       iNumChildren, //number of sub-cut-events
       iTemp; //for extracting integer data from parameter file
   short int i, j, k; //loop counters

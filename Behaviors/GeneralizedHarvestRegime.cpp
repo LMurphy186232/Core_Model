@@ -288,7 +288,7 @@ void clGeneralizedHarvestRegime::Action()
         fCorrectionFactor,
         fBARemoved = 0;
   float fDbh;
-  int i, iSp;
+  int i, iSp = 0;
   bool bIsHarvested;
 
   //Are we harvesting this timestep? If not, exit

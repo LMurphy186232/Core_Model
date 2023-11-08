@@ -476,7 +476,7 @@ void clMastingNonSpatialDisperse::AddSeeds() {
         iNumYCells = mp_oSeedGrid->GetNumberYCells(), //number y cells in seed grid
         iDraw; //whether or not to mast
     float fNumGridSeeds, //seeds already in one grid cell
-          fNumSeeds,
+          fNumSeeds = 0,
           fTotalBasalArea=0, //total group basal area
           //grid cell lengths in the middle of the grid
           fMidX = mp_oSeedGrid->GetLengthXCells(),

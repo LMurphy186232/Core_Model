@@ -802,7 +802,7 @@ void clCompetitionHarvest::CalculateAllCOEsSpeciesSpecific(clTreePopulation *p_o
   clPlot *p_oPlot = mp_oSimManager->GetPlotObject();
   clTree *p_oTree;
   bool *p_bEligible = new bool[m_iNumSpecies];
-  float fCOE, fHeight, fDbh;
+  float fCOE = 0, fHeight, fDbh;
   int iX, iY, iSp, iTp; //grid loop counters
 
   //Reset the grid array where we stash the current highest or lowest COEs

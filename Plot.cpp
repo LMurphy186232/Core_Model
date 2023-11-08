@@ -322,7 +322,8 @@ float clPlot::GetUncorrectedY(float fFromY, float fAzimuth, float fDistance)
 ///////////////////////////////////////////////////////////////////////////
 float clPlot::GetAzimuthAngle(float fFromX, float fFromY, float fToX, float fToY)
 {
-  float fDistX = GetXDistance(fFromX, fToX), fDistY = GetYDistance(fFromY, fToY), fAzimuth; //azimuth angle to return
+  float fDistX = GetXDistance(fFromX, fToX), fDistY = GetYDistance(fFromY, fToY),
+      fAzimuth = 0; //azimuth angle to return
 
   //Calculate the azimuth - correct for quadrant of "to" relative to "from"
   //(counting clockwise from upper right)

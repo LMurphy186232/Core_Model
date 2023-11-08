@@ -479,7 +479,7 @@ clTree* clTreeSearch::FindNextTTree() {
 ////////////////////////////////////////////////////////////////////////////
 clTree* clTreeSearch::FindFirstAllTree() {
   clTree *p_oTree = NULL; //tree object to assign to current tree variable
-  int iX, iY, iDiv; //loop counters
+  int iX = 0, iY = 0, iDiv; //loop counters
 
   //Loop through grid cells and height divisions until we find a tree
   for (iX = 0; iX < mp_oTreePop->m_iNumXCells; iX++) {

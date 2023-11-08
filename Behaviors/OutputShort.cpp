@@ -922,7 +922,7 @@ void clShortOutput::GetLiveTreeStats() {
     clTree * p_oTree; //for getting trees from the search object
     float fDbh, //dbh of tree if not a seed or seedling
          fTotal, //for relativizing values
-         fBA, //tree's basal area
+         fBA = 0, //tree's basal area
          fCoord, //tree's X or Y coordinate
          fPlotArea = p_oPlot->GetPlotArea(); //area of the plot, in hectares
     int iTreeX, iTreeY, //tree's X and Y grid cell numbers
