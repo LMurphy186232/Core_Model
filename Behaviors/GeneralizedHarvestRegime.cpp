@@ -20,7 +20,7 @@ clGeneralizedHarvestRegime::clGeneralizedHarvestRegime( clSimManager * p_oSimMan
   m_sXMLRoot = "GeneralizedHarvestRegime";
 
   //Versions
-  m_fVersionNumber = 1.1;
+  m_fVersionNumber = 2.0;
   m_fMinimumVersionNumber = 1;
 
   m_iReasonCode = harvest;
@@ -37,21 +37,23 @@ clGeneralizedHarvestRegime::clGeneralizedHarvestRegime( clSimManager * p_oSimMan
   mp_fCutAmtIntensityClasses = NULL;
   mp_fCutAmtIntensityClassProb = NULL;
 
+  mp_fCutProbA = NULL;
+  mp_fCutProbB = NULL;
+  mp_fCutProbC = NULL;
+
   m_fGammaMeanRemoveM = 0;
   m_fLogProbB = 0;
   m_iNumSpecies = 0;
   m_fTotalBiomass = 0;
   m_fLogProbA = 0;
-  m_fCutProbC = 0;
+
   m_fScale = 0;
   m_fGammaMeanRemoveA = 0;
   mp_oPop = NULL;
   m_fGammaMeanRemoveB = 0;
-  m_fCutProbB = 0;
   m_fLogProbM = 0;
   m_fTotalBA = 0;
   m_fAllowedRange = 0;
-  m_fCutProbA = 0;
   m_bUseBiomass = true;
   m_bSaplingMortality = false;
   m_bUseGammaDist = true;
@@ -84,6 +86,9 @@ clGeneralizedHarvestRegime::~clGeneralizedHarvestRegime()
   delete[] mp_iHarvestCode;
   delete[] mp_fCutAmtIntensityClasses;
   delete[] mp_fCutAmtIntensityClassProb;
+  delete[] mp_fCutProbA;
+  delete[] mp_fCutProbB;
+  delete[] mp_fCutProbC;
 }
 
 
@@ -98,6 +103,9 @@ void clGeneralizedHarvestRegime::ReadHarvestParameterFileData( xercesc::DOMDocum
   mp_fCutProbBeta = new double[m_iNumSpecies];
   mp_fCutProbGamma = new double[m_iNumSpecies];
   mp_fCutProbMu = new double[m_iNumSpecies];
+  mp_fCutProbA = new double[m_iNumSpecies];
+  mp_fCutProbB = new double[m_iNumSpecies];
+  mp_fCutProbC = new double[m_iNumSpecies];
 
   //------------------------------------
   // Logging probability parameters
@@ -225,14 +233,17 @@ void clGeneralizedHarvestRegime::ReadHarvestParameterFileData( xercesc::DOMDocum
   FillSpeciesSpecificValue( p_oElement, "di_genHarvLogCutProbMu",
       "di_ghlcpmVal", mp_fCutProbMu, mp_oPop, true );
 
-  // Cut probability A
-  FillSingleValue( p_oElement, "di_genHarvLogCutProbA", &m_fCutProbA, true);
+  // Cut probability A - species specific
+  FillSpeciesSpecificValue( p_oElement, "di_genHarvLogCutProbA",
+        "di_ghlcpaaVal", mp_fCutProbA, mp_oPop, true );
 
   // Cut probability B
-  FillSingleValue( p_oElement, "di_genHarvLogCutProbB", &m_fCutProbB, true);
+  FillSpeciesSpecificValue( p_oElement, "di_genHarvLogCutProbB",
+          "di_ghlcpbVal", mp_fCutProbB, mp_oPop, true );
 
   // Cut probability C
-  FillSingleValue( p_oElement, "di_genHarvLogCutProbC", &m_fCutProbC, true);
+  FillSpeciesSpecificValue( p_oElement, "di_genHarvLogCutProbC",
+          "di_ghlcpcVal", mp_fCutProbC, mp_oPop, true );
 
   //Allowed range
   FillSingleValue( p_oElement, "di_genHarvAllowedDeviation", &m_fAllowedRange, true);
@@ -279,11 +290,11 @@ void clGeneralizedHarvestRegime::Action()
   sprintf(cQuery, "%s%d", "type=", clTreePopulation::adult);
   clTreeSearch *p_oAdults = mp_oPop->Find(cQuery);
   clTree *p_oTree = p_oAdults->NextTree(), *p_oNextTree;
-  double *p_fPlotCutProb = new double[m_iNumSpecies];
+  double *p_fPlotCutProb = new double[m_iNumSpecies],
+         *p_fCutProbSigma = new double[m_iNumSpecies];
   double fAmtBAToCut,  //target amount of plot BA to cut
         fPercentBAToCut, //target percentage of plot BA to cut
         fThisBA,
-        fCutProbSigma,
         fCutProb,
         fCorrectionFactor,
         fBARemoved = 0;
@@ -311,9 +322,10 @@ void clGeneralizedHarvestRegime::Action()
   for (i = 0; i < m_iNumSpecies; i++) {
     p_fPlotCutProb[i] = 1 - (mp_fCutProbGamma[i] * exp(-mp_fCutProbBeta[i] *
                           pow(fPercentBAToCut, mp_fCutProbAlpha[i])));
+    p_fCutProbSigma[i] = mp_fCutProbA[i] + mp_fCutProbB[i] *
+                                  pow(fPercentBAToCut, mp_fCutProbC[i]);
   }
-  fCutProbSigma = m_fCutProbA + m_fCutProbB *
-                              pow(fPercentBAToCut, m_fCutProbC);
+
 
 
   //*****************************
@@ -323,7 +335,7 @@ void clGeneralizedHarvestRegime::Action()
     //Calculate cut probability
     p_oTree->GetValue(mp_oPop->GetDbhCode(iSp, p_oTree->GetType()), &fDbh);
     fCutProb = p_fPlotCutProb[iSp] *
-    exp(-0.5*pow(((fDbh - mp_fCutProbMu[iSp])/fCutProbSigma), 2));
+    exp(-0.5*pow(((fDbh - mp_fCutProbMu[iSp])/p_fCutProbSigma[iSp]), 2));
 
     if (clModelMath::GetRand() <= fCutProb) {
       p_oTree->SetValue(mp_iHarvestCode[iSp], true);
@@ -358,7 +370,7 @@ void clGeneralizedHarvestRegime::Action()
           //Calculate cut probability
           p_oTree->GetValue(mp_oPop->GetDbhCode(iSp, p_oTree->GetType()), &fDbh);
           fCutProb = p_fPlotCutProb[iSp] *
-          exp(-0.5*pow(((fDbh - mp_fCutProbMu[iSp])/fCutProbSigma), 2));
+          exp(-0.5*pow(((fDbh - mp_fCutProbMu[iSp])/p_fCutProbSigma[iSp]), 2));
           fCutProb *= fCorrectionFactor;
 
           if (clModelMath::GetRand() <= fCutProb) {
@@ -378,7 +390,7 @@ void clGeneralizedHarvestRegime::Action()
           //Calculate cut probability
           p_oTree->GetValue(mp_oPop->GetDbhCode(iSp, p_oTree->GetType()), &fDbh);
           fCutProb = p_fPlotCutProb[iSp] *
-          exp(-0.5*pow(((fDbh - mp_fCutProbMu[iSp])/fCutProbSigma), 2));
+          exp(-0.5*pow(((fDbh - mp_fCutProbMu[iSp])/p_fCutProbSigma[iSp]), 2));
           fCutProb *= fCorrectionFactor;
 
           if (clModelMath::GetRand() <= fCutProb) {
@@ -407,6 +419,7 @@ void clGeneralizedHarvestRegime::Action()
     p_oTree = p_oNextTree;
   } //end of while (p_oTree)
   delete[] p_fPlotCutProb;
+  delete[] p_fCutProbSigma;
 
   //Sapling mortality, if applicable; I'm re-using some variables here
   if (m_bSaplingMortality) {

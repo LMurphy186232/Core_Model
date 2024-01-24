@@ -186,14 +186,17 @@ class clGeneralizedHarvestRegime : virtual public clBehaviorBase {
   /**Gamma random draw scale parameter */
   double m_fScale;
 
-  /** A in the function for calculating sigma in the cut probability function */
-  double m_fCutProbA;
+  /** A in the function for calculating sigma in the cut probability function.
+   * Array size is total number of species.*/
+  double *mp_fCutProbA;
 
-  /** B in the function for calculating sigma in the cut probability function */
-  double m_fCutProbB;
+  /** B in the function for calculating sigma in the cut probability function.
+   * Array size is total number of species.*/
+  double *mp_fCutProbB;
 
-  /** C in the function for calculating sigma in the cut probability function */
-  double m_fCutProbC;
+  /** C in the function for calculating sigma in the cut probability function.
+   * Array size is total number of species.*/
+  double *mp_fCutProbC;
 
   /** p in the sapling mortality function */
   double m_fSapP;
