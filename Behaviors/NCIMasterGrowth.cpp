@@ -41,6 +41,8 @@ clNCIMasterGrowth::clNCIMasterGrowth(clSimManager * p_oSimManager) :
   mp_iGrowthCodes = NULL;
   mp_fMaxPotentialValue = NULL;
   mp_fRandParameter = NULL;
+  mp_fRandInt = NULL;
+  mp_fRandSigma = NULL;
 
   m_iStochasticGrowthMethod = deterministic_pdf;
   Adjust = NULL;
@@ -63,6 +65,8 @@ clNCIMasterGrowth::~clNCIMasterGrowth() {
   }
   delete[] mp_fMaxPotentialValue;
   delete[] mp_fRandParameter;
+  delete[] mp_fRandInt;
+  delete[] mp_fRandSigma;
 }
 
 
@@ -137,6 +141,10 @@ void clNCIMasterGrowth::DoShellSetup(xercesc::DOMDocument * p_oDoc) {
     m_iStochasticGrowthMethod = normal_pdf;
     Adjust = & clNCIMasterGrowth::NormalAdjust;
 
+  } else if (heteroscedastic_normal_pdf == iTemp) {
+    Adjust = & clNCIMasterGrowth::HeteroscedasticNormalAdjust;
+    m_iStochasticGrowthMethod = heteroscedastic_normal_pdf;
+
   } else {
     modelErr stcErr;
     stcErr.sFunction = "clNCIMasterGrowth::DoShellSetup";
@@ -159,6 +167,26 @@ void clNCIMasterGrowth::DoShellSetup(xercesc::DOMDocument * p_oDoc) {
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       mp_fRandParameter[p_fTempValues[i].code] = p_fTempValues[i].val;
 
+  }
+
+  //If heteroscedastic normal, get intercept and sigma
+  if (heteroscedastic_normal_pdf == m_iStochasticGrowthMethod) {
+    mp_fRandInt   = new double[m_iNumTotalSpecies];
+    mp_fRandSigma = new double[m_iNumTotalSpecies];
+
+    FillSpeciesSpecificValue(p_oElement, "gr_hetNormInt", "gr_hniVal",
+        p_fTempValues, m_iNumBehaviorSpecies, p_oPop, true);
+
+    //Transfer to the appropriate array buckets
+    for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
+      mp_fRandInt[p_fTempValues[i].code] = p_fTempValues[i].val;
+
+    FillSpeciesSpecificValue(p_oElement, "gr_hetNormSigma", "gr_hnsVal",
+        p_fTempValues, m_iNumBehaviorSpecies, p_oPop, true);
+
+    //Transfer to the appropriate array buckets
+    for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
+      mp_fRandSigma[p_fTempValues[i].code] = p_fTempValues[i].val;
   }
 
   delete[] p_fTempValues;
@@ -446,6 +474,18 @@ float clNCIMasterGrowth::NormalAdjust(float fNumber, int iSpecies) {
 /////////////////////////////////////////////////////////////////////////////
 float clNCIMasterGrowth::LognormalAdjust(float fNumber, int iSpecies) {
   float fReturn = clModelMath::LognormalRandomDraw(fNumber, mp_fRandParameter[iSpecies]);
+  if (fReturn < 0) fReturn = 0;
+  return fReturn;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// HeteroscedasticNormalAdjust()
+/////////////////////////////////////////////////////////////////////////////
+float clNCIMasterGrowth::HeteroscedasticNormalAdjust(float fNumber, int iSpecies) {
+  //Calculate standard deviation in cm for parameters in mm
+  float fSD = mp_fRandInt[iSpecies] + pow((fNumber*10.0), mp_fRandSigma[iSpecies]);
+  fSD /= 10.0;
+  float fReturn = fNumber + clModelMath::NormalRandomDraw(fSD);
   if (fReturn < 0) fReturn = 0;
   return fReturn;
 }

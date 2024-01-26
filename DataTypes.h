@@ -95,7 +95,8 @@ enum pdf {
   normal_pdf, /**<Normal*/
   negative_binomial_pdf, /**<Negative binomial*/
   binomial_pdf, /**<Binomial*/
-  inverse_gaussian_pdf /**Inverse Gaussian*/
+  inverse_gaussian_pdf, /**Inverse Gaussian*/
+  heteroscedastic_normal_pdf /**<Heteroscedastic normal - sd = int + mean^sigma*/
 };
 
 /**Reason codes for why a tree died.  This controls the life history stage
