@@ -39,6 +39,8 @@ clNCIMasterQuadratGrowth::clNCIMasterQuadratGrowth(clSimManager * p_oSimManager)
   //Null out our pointers
   mp_fMaxPotentialValue = NULL;
   mp_fRandParameter = NULL;
+  mp_fRandInt = NULL;
+  mp_fRandSigma = NULL;
   mp_iGridGrowthCodes = NULL;
   mp_oGrid = NULL;
 
@@ -57,6 +59,8 @@ clNCIMasterQuadratGrowth::~clNCIMasterQuadratGrowth() {
   delete[] mp_fMaxPotentialValue;
   delete[] mp_fRandParameter;
   delete[] mp_iGridGrowthCodes;
+  delete[] mp_fRandInt;
+  delete[] mp_fRandSigma;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -105,6 +109,10 @@ void clNCIMasterQuadratGrowth::DoShellSetup(xercesc::DOMDocument * p_oDoc) {
     m_iStochasticGrowthMethod = normal_pdf;
     Adjust = & clNCIMasterQuadratGrowth::NormalAdjust;
 
+  } else if (heteroscedastic_normal_pdf == iTemp) {
+    Adjust = & clNCIMasterQuadratGrowth::HeteroscedasticNormalAdjust;
+    m_iStochasticGrowthMethod = heteroscedastic_normal_pdf;
+
   } else {
     modelErr stcErr;
     stcErr.sFunction = "clNCIMasterQuadratGrowth::DoShellSetup";
@@ -127,6 +135,26 @@ void clNCIMasterQuadratGrowth::DoShellSetup(xercesc::DOMDocument * p_oDoc) {
     for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
       mp_fRandParameter[p_fTempValues[i].code] = p_fTempValues[i].val;
 
+  }
+
+  //If heteroscedastic normal, get intercept and sigma
+  if (heteroscedastic_normal_pdf == m_iStochasticGrowthMethod) {
+    mp_fRandInt   = new double[m_iNumTotalSpecies];
+    mp_fRandSigma = new double[m_iNumTotalSpecies];
+
+    FillSpeciesSpecificValue(p_oElement, "gr_hetNormInt", "gr_hniVal",
+        p_fTempValues, m_iNumBehaviorSpecies, p_oPop, true);
+
+    //Transfer to the appropriate array buckets
+    for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
+      mp_fRandInt[p_fTempValues[i].code] = p_fTempValues[i].val;
+
+    FillSpeciesSpecificValue(p_oElement, "gr_hetNormSigma", "gr_hnsVal",
+        p_fTempValues, m_iNumBehaviorSpecies, p_oPop, true);
+
+    //Transfer to the appropriate array buckets
+    for ( i = 0; i < m_iNumBehaviorSpecies; i++ )
+      mp_fRandSigma[p_fTempValues[i].code] = p_fTempValues[i].val;
   }
 
   delete[] p_fTempValues;
@@ -337,6 +365,20 @@ float clNCIMasterQuadratGrowth::LognormalAdjust(float fNumber, int iSpecies) {
   return fReturn;
 }
 
+
+//////////////////////////////////////////////////////////////////////////////
+// HeteroscedasticNormalAdjust()
+/////////////////////////////////////////////////////////////////////////////
+float clNCIMasterQuadratGrowth::HeteroscedasticNormalAdjust(float fNumber, int iSpecies) {
+  //Calculate standard deviation in cm for parameters in mm
+  float fSD = mp_fRandInt[iSpecies] + pow((fNumber*10.0), mp_fRandSigma[iSpecies]);
+  fSD /= 10.0;
+  float fReturn = fNumber + clModelMath::NormalRandomDraw(fSD);
+  if (fReturn < 0) fReturn = 0;
+  return fReturn;
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 // SetupGrid()
 /////////////////////////////////////////////////////////////////////////////
@@ -387,5 +429,4 @@ void clNCIMasterQuadratGrowth::SetupGrid(clTreePopulation *p_oPop)
       }
     }
   }
-
 }

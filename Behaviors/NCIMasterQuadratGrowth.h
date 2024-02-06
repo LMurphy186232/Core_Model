@@ -126,6 +126,12 @@ class clNCIMasterQuadratGrowth : virtual public clGrowthBase, clNCIBehaviorBase 
    * each species.*/
   double *mp_fRandParameter;
 
+  /**Sigma if we're using heteroscedastic normal. One for each species.*/
+  double *mp_fRandSigma;
+
+  /**Intercept if we're using heteroscedastic normal. One for each species.*/
+  double *mp_fRandInt;
+
   /** Holds data member codes for the "growth_x" data members of the "NCI
    * Climate Quadrat Growth" grid.  Array size is total # species.*/
   short int *mp_iGridGrowthCodes;
@@ -167,6 +173,18 @@ class clNCIMasterQuadratGrowth : virtual public clGrowthBase, clNCIBehaviorBase 
   * @return Final growth.
   */
   float LognormalAdjust(float fNumber, int iSpecies);
+
+  /**
+   * Performs a stochastic adjustment of growth according to a heteroscedastic
+   * normal distribution (sd = int + mean^sigma). Because everything is
+   * stupid when matching analyses and modeling, the parameters here are for
+   * values in mm, when the value will be in cm. So there will be an
+   * adjustment here.
+   * @param fNumber Growth to adjust.
+   * @param iSpecies Species.
+   * @return Final growth.
+   */
+  float HeteroscedasticNormalAdjust(float fNumber, int iSpecies);
 
   /**
   * Sets the Adjust function pointer according to the value of
