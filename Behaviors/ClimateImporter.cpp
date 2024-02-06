@@ -147,7 +147,7 @@ void clClimateImporter::GetData(DOMDocument * p_oDoc)
     }
 
     //----- If LTM > 0, make arrays for this pre-run time -------------------//
-    if (m_iLTM > 0) {
+    if (m_iLTM > 0 || !bCalendarMean) {
       p_fPreMonthlyPpt = new double*[12];
       p_fPreMonthlyTemp = new double*[12];
       for (i = 0; i < 12; i++) {
