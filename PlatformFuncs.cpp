@@ -58,8 +58,12 @@ void ZipFile(string sFileName, string sAppPath) {
   // gzip flags - -f is force, which will overwrite
   string sArgs = " -f -q \"" + sFileName + "\"";
 
+#ifdef linux
+  LaunchProcess("gzip", sArgs, "");
+#else
   LaunchProcess("gzip", sArgs, sAppPath);
   /// @todo check error
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -115,8 +119,12 @@ void AddFileToTarball(string sTarball, string sFileToAdd, string sAppPath) {
 
   string sArgs = sFlags + "\"" + sTarball + "\" \"" + sFileToAdd + "\"";
 
+#ifdef linux
+  LaunchProcess("tar", sArgs, "");
+#else
   LaunchProcess("tar", sArgs, sAppPath);
   /// @todo check error
+#endif
 }
 
 
@@ -139,8 +147,12 @@ void AddFileToNewTarball(string sTarball, string sFileToAdd, string sAppPath) {
   //Set up the parameters for tar to create the tarball
   string sArgs = " -cf\"" + sTarball + "\" \"" + sFileToAdd + "\"";
 
+#ifdef linux
+  LaunchProcess("tar", sArgs, "");
+#else
   LaunchProcess("tar", sArgs, sAppPath);
   /// @todo check error
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////
