@@ -76,7 +76,7 @@ int main( int argc, char * argv[] )
   //***************************************
   // Version numbers
   //***************************************
-  int iMajorVersion = 7, iMinorVersion = 12;
+  int iMajorVersion = 7, iMinorVersion = 06;
   clSimManager p_oSimManager( iMajorVersion, iMinorVersion, sPath);
 
   //***************************************
